@@ -19,5 +19,5 @@ func Routes(router *mux.Router) {
 	// Protected Routes
 	api := router.PathPrefix("/api").Subrouter()
 	api.Use(middleware.JWTAuthMiddleware)
-	userRouter.HandleFunc("/profile", controllers.GetProfile).Methods("GET")
+	api.HandleFunc("/profile", controllers.GetProfile).Methods("GET")
 }
