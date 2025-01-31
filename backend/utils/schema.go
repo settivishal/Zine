@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/golang-jwt/jwt/v5"
+	"time"
 )
 
 type Credentials struct {
@@ -15,6 +16,14 @@ type Claims struct {
 }
 
 type Response struct {
+	Message      string    `json:"message"`
+	Username     string    `json:"username"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	ExpiresAt    time.Time `json:"expires_at"`
+}
+
+type ErrorResponse struct {
 	Message string `json:"message"`
-	Token string `json:"token"`
+	Error   string `json:"error"`
 }
