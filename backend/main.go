@@ -21,8 +21,8 @@ func main() {
 	// Initialize router
 	router := mux.NewRouter()
 
-	// Register routes
-	routes.RegisterUserRoutes(router)
+	// Auth routes
+	routes.AuthRoutes(router)
 
 	// Start the server
 	port := config.AppConfig.Port
