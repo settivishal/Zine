@@ -13,7 +13,9 @@ import (
 
 func main() {
 	// Load configuration
-	config.LoadConfig()
+	if err := config.LoadConfig(); err != nil {
+		log.Fatal("Failed to load config:", err)
+	}
 
 	// Connect to the database
 	db.ConnectDB()
@@ -21,11 +23,11 @@ func main() {
 	// Initialize router
 	router := mux.NewRouter()
 
-	// Register routes
-	routes.RegisterUserRoutes(router)
+	// Auth routes
+	routes.Routes(router)
 
 	// Start the server
-	port := config.AppConfig.Port
+	port := config.Env("PORT", "8080")
 	log.Printf("Server running on port %s...", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
