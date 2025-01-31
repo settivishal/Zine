@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func AuthRoutes(router *mux.Router) {
+func Routes(router *mux.Router) {
 	userRouter := router.PathPrefix("/consumer").Subrouter()
 
 	// Public Routes

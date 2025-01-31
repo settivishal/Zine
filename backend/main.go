@@ -24,7 +24,7 @@ func main() {
 	router := mux.NewRouter()
 
 	// Auth routes
-	routes.AuthRoutes(router)
+	routes.Routes(router)
 
 	// Start the server
 	port := config.Env("PORT", "8080")
