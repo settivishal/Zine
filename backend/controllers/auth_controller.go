@@ -3,95 +3,93 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
-	"backend/utils"
 	"backend/config"
-
-	"github.com/golang-jwt/jwt/v5"
+	"backend/utils"
 )
 
-var jwtKey = []byte(config.Env("JWT_SECRET_KEY"));
+var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOXbP"))
 
+// should be replaced with a database call
 var users = map[string]string{
-	"user1": "password1",
-	"user2": "password2",
-} //should be replaced with a database call
+	"user1": "$2y$10$lP0oE3YZKQV77x0MeBmfWujZiH0TOpW8G/zZquqrEJPlDj/ILiOCO", // "password1" hashed
+	"user2": "$2y$10$BA0PCJkhIDSIhkPcAZGoherzyxXxs9PzkobSsQY6htI5zPqWM7Zla", // "password2" hashed
+}
 
-func Auth(w http.ResponseWriter, r *http.Request) {
+func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	//Validate credentials
+	// Validate credentials
 	var credentials utils.Credentials
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(utils.ErrorResponse{
-			Message: "Invalid request format",
-			Error:   err.Error(),
-		})
+		utils.SendErrorResponse(w, "Invalid request format", err, http.StatusBadRequest)
 		return
 	}
 
 	// Verify credentials (replace with database check)
-	expectedPassword, ok := users[credentials.Username]
-	if !ok || expectedPassword != credentials.Password {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(utils.Response{
-			Message: "Invalid credentials",
-		})
+	expectedPassword := users[credentials.Username]
+
+	// Verify password
+	if !utils.CheckPasswordHash(credentials.Password, expectedPassword) {
+		utils.SendResponse(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
 
-	//Generate access token
-	accessTokenExpiry := time.Now().Add(time.Minute * 5)
-	accessClaims := &utils.Claims{
-		Username: credentials.Username,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(accessTokenExpiry),
-			Subject:   "access_token",
-		},
-	}
+	// Generate JWT Tokens
+	accessToken, accessExpiry, refreshToken := utils.GenerateTokens(credentials, w)
 
-	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
-	accessTokenString, err := accessToken.SignedString(jwtKey)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(utils.ErrorResponse{
-			Message: "Error generating access token",
-			Error:   err.Error(),
-		})
-		return
-	}
-
-	//Generate refresh token with longer expiry
-	refreshTokenExpiry := time.Now().Add(time.Hour * 24 * 7)
-	refreshClaims := &utils.Claims{
-		Username: credentials.Username,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(refreshTokenExpiry),
-			Subject:   "refresh_token",
-		},
-	}
-
-	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
-	refreshTokenString, err := refreshToken.SignedString(jwtKey)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(utils.ErrorResponse{
-			Message: "Error generating refresh token",
-			Error:   err.Error(),
-		})
-		return
-	}
-
-	//Return response with tokens and user info
+	// Return response
 	response := utils.Response{
 		Message:      "Authentication successful",
 		Username:     credentials.Username,
-		AccessToken:  accessTokenString,
-		RefreshToken: refreshTokenString,
-		ExpiresAt:    accessTokenExpiry,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		ExpiresAt:    accessExpiry,
 	}
 
-	json.NewEncoder(w).Encode(response)
+	utils.SendJSONResponse(w, response, http.StatusOK)
 }
+
+func Register(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Validate credentials
+	var credentials utils.Credentials
+	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
+		utils.SendErrorResponse(w, "Invalid request format", err, http.StatusBadRequest)
+		return
+	}
+
+	// Hash password
+	hashedPassword, err := utils.HashPassword(credentials.Password)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error hashing password", err, http.StatusInternalServerError)
+		return
+	}
+
+	// Save user (replace with database save)
+	users[credentials.Username] = hashedPassword
+
+	// Generate JWT Tokens
+	accessToken, accessExpiry, refreshToken := utils.GenerateTokens(credentials, w)
+
+	// Return response
+	response := utils.Response{
+		Message:      "Registration successful",
+		Username:     credentials.Username,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		ExpiresAt:    accessExpiry,
+	}
+
+	utils.SendJSONResponse(w, response, http.StatusOK)
+}
+
+// // Authenticate checks JWT token validity (handled via middleware)
+// func Authenticate(w http.ResponseWriter, r *http.Request) {
+// 	username := r.Context().Value("username").(string)
+// 	utils.SendJSONResponse(w, map[string]string{
+// 		"message":  "Authenticated successfully",
+// 		"username": username,
+// 	}, http.StatusOK)
+// }

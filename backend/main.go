@@ -27,7 +27,7 @@ func main() {
 	routes.AuthRoutes(router)
 
 	// Start the server
-	port := config.Env("PORT", "8000")
+	port := config.Env("PORT", "8080")
 	log.Printf("Server running on port %s...", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
