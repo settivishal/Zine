@@ -17,8 +17,6 @@ var users = map[string]string{
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	// Validate credentials
 	var credentials utils.Credentials
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
@@ -51,8 +49,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	// Validate credentials
 	var credentials utils.Credentials
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {

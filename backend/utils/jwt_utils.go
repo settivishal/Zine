@@ -64,6 +64,7 @@ func GenerateTokens(credentials Credentials, w http.ResponseWriter) (string, tim
 // SendErrorResponse sends a JSON error response
 func SendErrorResponse(w http.ResponseWriter, message string, err error, statusCode int) {
 	w.WriteHeader(statusCode)
+
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": message,
 		"error":   err.Error(),
@@ -73,6 +74,7 @@ func SendErrorResponse(w http.ResponseWriter, message string, err error, statusC
 // SendResponse sends a JSON response with a message
 func SendResponse(w http.ResponseWriter, message string, statusCode int) {
 	w.WriteHeader(statusCode)
+
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": message,
 	})
