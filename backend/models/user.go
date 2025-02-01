@@ -1,7 +1,8 @@
 package models
 
+// User struct represents a user document
 type User struct {
-	Name  string `bson:"name"`
-	Email string `bson:"email"`
-	Age   int    `bson:"age"`
+	Username string `bson:"username"`
+	Password string `bson:"password"`
+	Email    string `bson:"email"`
 }
