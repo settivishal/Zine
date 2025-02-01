@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"backend/config"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 var jwtKey = []byte(config.Env("JWT_SECRET_KEY"))
