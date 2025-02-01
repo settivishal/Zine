@@ -3,6 +3,7 @@ package utils
 import (
 	"github.com/golang-jwt/jwt/v5"
 	"time"
+	"golang.org/x/oauth2"
 )
 
 type Credentials struct {
@@ -26,4 +27,16 @@ type Response struct {
 type ErrorResponse struct {
 	Message string `json:"message"`
 	Error   string `json:"error"`
+}
+
+type GoogleUser struct {
+	ID            string `json:"id"`
+	Email         string `json:"email"`
+	VerifiedEmail bool   `json:"verified_email"`
+	Name          string `json:"name"`
+	Picture       string `json:"picture"`
+}
+
+type AuthController struct {
+	Config *oauth2.Config
 }
