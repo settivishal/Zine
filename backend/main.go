@@ -12,13 +12,14 @@ import (
 )
 
 func main() {
-	// Load configuration
+	// Load configuration file
 	if err := config.LoadConfig(); err != nil {
 		log.Fatal("Failed to load config:", err)
 	}
 
-	// Connect to the database
-	db.ConnectDB()
+	// Connect to the MongoDB
+	database.ConnectDB()
+	defer database.DisconnectDB()
 
 	// Initialize router
 	router := mux.NewRouter()

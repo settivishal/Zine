@@ -4,19 +4,20 @@ import (
 	"encoding/json"
 	"net/http"
 
+	// "fmt"
+
 	"backend/config"
+	"backend/db"
 	"backend/utils"
+
+	"backend/models"
 )
 
 var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOXbP"))
 
-// should be replaced with a database call
-var users = map[string]string{
-	"user1": "$2y$10$lP0oE3YZKQV77x0MeBmfWujZiH0TOpW8G/zZquqrEJPlDj/ILiOCO", // "password1" hashed
-	"user2": "$2y$10$BA0PCJkhIDSIhkPcAZGoherzyxXxs9PzkobSsQY6htI5zPqWM7Zla", // "password2" hashed
-}
-
+// Login handles user authentication
 func Login(w http.ResponseWriter, r *http.Request) {
+
 	// Validate credentials
 	var credentials utils.Credentials
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
@@ -24,12 +25,16 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Verify credentials (replace with database check)
-	expectedPassword := users[credentials.Username]
+	// Fetch user from database
+	user, err := database.GetUser(credentials.Username)
+	if err != nil {
+		utils.SendErrorResponse(w, "Invalid credentials", err, http.StatusUnauthorized)
+		return
+	}
 
 	// Verify password
-	if !utils.CheckPasswordHash(credentials.Password, expectedPassword) {
-		utils.SendResponse(w, "Invalid credentials", http.StatusUnauthorized)
+	if !utils.CheckPasswordHash(credentials.Password, user.Password) {
+		utils.SendErrorResponse(w, "Invalid credentials", nil, http.StatusUnauthorized)
 		return
 	}
 
@@ -37,9 +42,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	accessToken, accessExpiry, refreshToken := utils.GenerateTokens(credentials, w)
 
 	// Return response
-	response := utils.Response{
+	response := utils.LoginResponse{
 		Message:      "Authentication successful",
-		Username:     credentials.Username,
+		Username:     user.Username,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		ExpiresAt:    accessExpiry,
@@ -63,29 +68,30 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Save user (replace with database save)
-	users[credentials.Username] = hashedPassword
+	// Check if the username already exists
+	if database.UserExists(credentials.Username) {
+		utils.SendErrorResponse(w, "User already exists", nil, http.StatusConflict)
+		return
+	}
 
-	// Generate JWT Tokens
-	accessToken, accessExpiry, refreshToken := utils.GenerateTokens(credentials, w)
+	// Save user in MongoDB
+	user := models.User{
+		Username: credentials.Username,
+		Password: hashedPassword, // Store hashed password, not plain text
+		Email:    credentials.Email,
+	}
+
+	if err := database.InsertUser(user); err != nil {
+		utils.SendErrorResponse(w, "Error saving user", err, http.StatusInternalServerError)
+		return
+	}
 
 	// Return response
-	response := utils.Response{
-		Message:      "Registration successful",
-		Username:     credentials.Username,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		ExpiresAt:    accessExpiry,
+	response := utils.RegisterResponse{
+		Message:  "Registration successful",
+		Username: credentials.Username,
+		Email:    credentials.Email,
 	}
 
 	utils.SendJSONResponse(w, response, http.StatusOK)
 }
-
-// // Authenticate checks JWT token validity (handled via middleware)
-// func Authenticate(w http.ResponseWriter, r *http.Request) {
-// 	username := r.Context().Value("username").(string)
-// 	utils.SendJSONResponse(w, map[string]string{
-// 		"message":  "Authenticated successfully",
-// 		"username": username,
-// 	}, http.StatusOK)
-// }
