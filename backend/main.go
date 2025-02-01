@@ -5,8 +5,7 @@ import (
 	"net/http"
 
 	"backend/config"
-	database "backend/db"
-
+	"backend/db"
 	"backend/routes"
 
 	"github.com/gorilla/mux"
@@ -18,9 +17,8 @@ func main() {
 		log.Fatal("Failed to load config:", err)
 	}
 
-	// Connect to the mongodb database
-	database.ConnectDB()
-	defer database.DisconnectDB()
+	// Connect to the database
+	db.ConnectDB()
 
 	// Initialize router
 	router := mux.NewRouter()
