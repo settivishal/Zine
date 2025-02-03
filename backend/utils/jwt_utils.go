@@ -69,6 +69,7 @@ func SendErrorResponse(w http.ResponseWriter, message string, err error, statusC
 	response := map[string]interface{}{
 		"error": message,
 	}
+
 	if err != nil {
 		response["details"] = err.Error()
 	}
