@@ -2,13 +2,19 @@ package controllers
 
 import (
 	"encoding/json"
+	"backend/utils"
 	"net/http"
 )
 
 func GetProfile(w http.ResponseWriter, r *http.Request) {
-	// username := r.Context().Value("username").(string)
-	email := r.Context().Value("email").(string)
+	Name, ok := r.Context().Value("name").(string)
+
+	if !ok {
+		utils.SendResponse(w, "Invalid or missing name in context", http.StatusInternalServerError)
+		return
+	}
+
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Welcome, " + email,
+		"message": "Welcome, " + Name,
 	})
 }

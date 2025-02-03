@@ -7,26 +7,26 @@ import (
 )
 
 type Credentials struct {
-	Username string `json:"username"`
+	Name 		 string `json:"name"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
 }
 
 type Claims struct {
-	// Username string `json:"username"`
+	Name 	string `json:"name"`
 	Email string `json:"email"`
 	jwt.RegisteredClaims
 }
 
 type RegisterResponse struct {
 	Message  string `json:"message"`
-	// Username string `json:"username"`
 	Email    string `json:"email"`
+	Name string `json:"name"`
 }
 
 type LoginResponse struct {
 	Message      string    `json:"message"`
-	// Username     string    `json:"username"`
+	Name     		 string    `json:"name"`
 	Email				 string    `json:"email"`
 	AccessToken  string    `json:"access_token"`
 	RefreshToken string    `json:"refresh_token"`

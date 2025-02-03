@@ -42,7 +42,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Return response
 	response := utils.LoginResponse{
 		Message:      "Authentication successful",
-		// Name:     user.Name,
+		Name:         user.Name,
 		Email:        user.Email,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
@@ -75,9 +75,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	// Save user in MongoDB
 	user := models.User{
-		// Username: credentials.Username,
-		Password: hashedPassword, // Store hashed password, not plain text
 		Email:    credentials.Email,
+		Password: hashedPassword, // Store hashed password, not plain text
+		Name:     credentials.Name,
 	}
 
 	if err := database.InsertUser(user); err != nil {
@@ -87,9 +87,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	// Return response
 	response := utils.RegisterResponse{
-		Message:  "Registration successful",
-		// Username: credentials.Username,
-		Email:    credentials.Email,
+		Message: "Registration successful",
+		Name:    credentials.Name,
+		Email:   credentials.Email,
 	}
 
 	// Send Onboarding Email
