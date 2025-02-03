@@ -24,7 +24,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch user from database
-	user, err := database.GetUser(credentials.Username)
+	user, err := database.GetUser(credentials.Email)
 	if err != nil {
 		utils.SendErrorResponse(w, "Invalid credentials", err, http.StatusUnauthorized)
 		return
@@ -42,7 +42,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Return response
 	response := utils.LoginResponse{
 		Message:      "Authentication successful",
-		// Username:     user.Username,
+		// Name:     user.Name,
 		Email:        user.Email,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
@@ -67,15 +67,15 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the username already exists
-	if database.UserExists(credentials.Username) {
-		utils.SendErrorResponse(w, "User already exists", nil, http.StatusConflict)
+	// Check if the email already exists
+	if database.UserExists(credentials.Email) {
+		utils.SendErrorResponse(w, "Email already exists", nil, http.StatusConflict)
 		return
 	}
 
 	// Save user in MongoDB
 	user := models.User{
-		Username: credentials.Username,
+		// Username: credentials.Username,
 		Password: hashedPassword, // Store hashed password, not plain text
 		Email:    credentials.Email,
 	}
