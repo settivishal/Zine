@@ -66,19 +66,25 @@ func GenerateTokens(credentials Credentials, w http.ResponseWriter) (string, tim
 func SendErrorResponse(w http.ResponseWriter, message string, err error, statusCode int) {
 	w.WriteHeader(statusCode)
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": message,
-		"error":   err.Error(),
-	})
+	response := map[string]interface{}{
+		"error": message,
+	}
+	if err != nil {
+		response["details"] = err.Error()
+	}
+
+	json.NewEncoder(w).Encode(response)
 }
 
 // SendResponse sends a JSON response with a message
 func SendResponse(w http.ResponseWriter, message string, statusCode int) {
 	w.WriteHeader(statusCode)
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": message,
-	})
+	response := map[string]interface{}{
+		"error": message,
+	}
+
+	json.NewEncoder(w).Encode(response)
 }
 
 // SendJSONResponse sends a structured JSON response
