@@ -42,7 +42,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Return response
 	response := utils.LoginResponse{
 		Message:      "Authentication successful",
-		Username:     user.Username,
+		// Username:     user.Username,
+		Email:        user.Email,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		ExpiresAt:    accessExpiry,
@@ -87,7 +88,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	// Return response
 	response := utils.RegisterResponse{
 		Message:  "Registration successful",
-		Username: credentials.Username,
+		// Username: credentials.Username,
 		Email:    credentials.Email,
 	}
 

@@ -13,19 +13,21 @@ type Credentials struct {
 }
 
 type Claims struct {
-	Username string `json:"username"`
+	// Username string `json:"username"`
+	Email string `json:"email"`
 	jwt.RegisteredClaims
 }
 
 type RegisterResponse struct {
 	Message  string `json:"message"`
-	Username string `json:"username"`
+	// Username string `json:"username"`
 	Email    string `json:"email"`
 }
 
 type LoginResponse struct {
 	Message      string    `json:"message"`
-	Username     string    `json:"username"`
+	// Username     string    `json:"username"`
+	Email				 string    `json:"email"`
 	AccessToken  string    `json:"access_token"`
 	RefreshToken string    `json:"refresh_token"`
 	ExpiresAt    time.Time `json:"expires_at"`
