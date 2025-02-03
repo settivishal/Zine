@@ -13,10 +13,10 @@ import (
 var jwtKey = []byte(config.Env("JWT_SECRET_KEY"))
 
 // GenerateJWT creates a new JWT token with custom expiration and subject
-func GenerateJWT(username, subject string, expiry time.Duration) (string, time.Time, error) {
+func GenerateJWT(email, subject string, expiry time.Duration) (string, time.Time, error) {
 	expirationTime := time.Now().Add(expiry)
 	claims := &Claims{
-		Username: username,
+		Email: email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			Subject:   subject,
@@ -49,12 +49,12 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 // Return Access and Refesh Tokens
 func GenerateTokens(credentials Credentials, w http.ResponseWriter) (string, time.Time, string) {
 	// Generate JWT Tokens
-	accessToken, accessExpiry, err := GenerateJWT(credentials.Username, "access_token", time.Minute*5)
+	accessToken, accessExpiry, err := GenerateJWT(credentials.Email, "access_token", time.Minute*5)
 	if err != nil {
 		SendErrorResponse(w, "Error generating access token", err, http.StatusInternalServerError)
 	}
 
-	refreshToken, _, err := GenerateJWT(credentials.Username, "refresh_token", time.Hour*24*7)
+	refreshToken, _, err := GenerateJWT(credentials.Email, "refresh_token", time.Hour*24*7)
 	if err != nil {
 		SendErrorResponse(w, "Error generating refresh token", err, http.StatusInternalServerError)
 	}

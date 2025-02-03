@@ -59,21 +59,21 @@ func InsertUser(user models.User) error {
 }
 
 // UserExists checks if a user already exists in the database
-func UserExists(username string) bool {
+func UserExists(email string) bool {
 	collection := client.Database("zine").Collection("users")
 
 	var result models.User
-	filter := bson.M{"username": username}
+	filter := bson.M{"email": email}
 
 	err := collection.FindOne(context.TODO(), filter).Decode(&result)
 	return err == nil // If err is nil, the user exists
 }
 
-// GetUser retrieves a user from MongoDB by username
-func GetUser(username string) (models.User, error) {
+// GetUser retrieves a user from MongoDB by email
+func GetUser(email string) (models.User, error) {
 	collection := client.Database("zine").Collection("users")
 	var user models.User
-	filter := bson.M{"username": username}
+	filter := bson.M{"email": email}
 
 	err := collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err == mongo.ErrNoDocuments {
