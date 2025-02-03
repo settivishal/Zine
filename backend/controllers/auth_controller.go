@@ -91,8 +91,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		Email:    credentials.Email,
 	}
 
-	// fmt.Println(credentials.Email)
-
 	// Send Onboarding Email
 	utils.SendEmail(credentials.Email)
 
