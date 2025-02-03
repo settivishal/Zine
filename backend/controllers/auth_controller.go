@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	// "fmt"
-
 	"backend/config"
 	"backend/db"
 	"backend/utils"
@@ -92,6 +90,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		Username: credentials.Username,
 		Email:    credentials.Email,
 	}
+
+	// fmt.Println(credentials.Email)
+
+	// Send Onboarding Email
+	utils.SendEmail(credentials.Email)
 
 	utils.SendJSONResponse(w, response, http.StatusOK)
 }
