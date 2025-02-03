@@ -30,7 +30,6 @@ func JWTAuthMiddleware(next http.Handler) http.Handler {
 
 		// Attach user info to request context
 		ctx := context.WithValue(r.Context(), "email", claims.Email)
-		ctx = context.WithValue(ctx, "name", claims.Name) 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
