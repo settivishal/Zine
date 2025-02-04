@@ -4,11 +4,13 @@ import (
 	"backend/utils"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
 	"backend/config"
+	"backend/db"
+	"backend/models"
+	"backend/services"
 )
 
 // GoogleUser represents the user info obtained from Google
@@ -53,22 +55,47 @@ func GoogleCallback(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to get user info", http.StatusInternalServerError)
 		return
 	}
-
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
 
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		http.Error(w, "Failed to read user info", http.StatusInternalServerError)
 		return
 	}
 
-	var user GoogleUser
-	err = json.Unmarshal(body, &user)
+	var google_user GoogleUser
+	err = json.Unmarshal(body, &google_user)
 	if err != nil {
 		http.Error(w, "Failed to unmarshal user info", http.StatusInternalServerError)
 		return
 	}
 
-	// TODO: Store user details in DB and generate JWT token
-	fmt.Fprintf(w, "User Info: %+v\n", user)
+	user := models.User{
+		Email:      google_user.Email,
+		Name:       google_user.Name,
+		Picture:    google_user.Picture,
+		OauthToken: google_user.ID,
+	}
+
+	if err := database.InsertUser(user); err != nil {
+		utils.SendErrorResponse(w, "Error saving user", err, http.StatusInternalServerError)
+		return
+	}
+
+	credentials := utils.Credentials{
+		Email: user.Email,
+		Name:  user.Name,
+	}
+	accessToken, accessExpiry, refreshToken := services.GenerateTokens(credentials, w)
+
+	response := utils.LoginResponse{
+		Message:      "Registration successful",
+		Name:         google_user.Name,
+		Email:        google_user.Email,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		ExpiresAt:    accessExpiry,
+	}
+
+	utils.SendJSONResponse(w, response, http.StatusOK)
 }
