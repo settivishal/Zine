@@ -36,3 +36,7 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 	Error   string `json:"error"`
 }
+
+type LogoutResponse struct {
+	Message string `json:"message"`
+}

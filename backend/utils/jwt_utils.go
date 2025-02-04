@@ -93,3 +93,14 @@ func SendJSONResponse(w http.ResponseWriter, response interface{}, statusCode in
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(response)
 }
+
+func InvalidateJWT(tokenString string) error {
+	claims, err := ValidateJWT(tokenString)
+
+	if err != nil {
+		return err
+	}
+
+	claims.ExpiresAt = jwt.NewNumericDate(time.Now())
+	return nil
+}
