@@ -1,11 +1,12 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"backend/config"
-	"backend/utils"
 	"backend/services"
+	"backend/utils"
 )
 
 var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOXbP"))
@@ -14,29 +15,30 @@ var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOX
 func Login(w http.ResponseWriter, r *http.Request) {
 	response, err, status := services.HandleLogin(w, r)
 	if err != nil {
-		utils.SendErrorResponse(w, "Authentication failed", err, status)
+		utils.SendErrorResponse(w, "Authorization Failed", err, status)
 		return
 	}
 
-	utils.SendJSONResponse(w, response, http.StatusOK)
+	utils.SendJSONResponse(w, response, status)
 }
 
 // Register function
 func Register(w http.ResponseWriter, r *http.Request) {
-	response, err := services.HandleRegister(r)
+	response, err, status := services.HandleRegister(r)
+	log.Println(response, err, status)
 	if err != nil {
-		utils.SendErrorResponse(w, "Registration failed", err, http.StatusInternalServerError)
+		utils.SendErrorResponse(w, "Registration Failed", err, status)
 		return
 	}
 
-	utils.SendJSONResponse(w, response, http.StatusOK)
+	utils.SendJSONResponse(w, response, status)
 }
 
 // Logout function to handle user logout
 func Logout(w http.ResponseWriter, r *http.Request) {
-	err := services.HandleLogout(r)
+	err, status := services.HandleLogout(r)
 	if err != nil {
-		utils.SendErrorResponse(w, "Failed to logout", err, http.StatusInternalServerError)
+		utils.SendErrorResponse(w, "Failed to logout", err, status)
 		return
 	}
 
@@ -45,5 +47,5 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		Message: "Logout successful",
 	}
 
-	utils.SendJSONResponse(w, response, http.StatusOK)
+	utils.SendJSONResponse(w, response, status)
 }

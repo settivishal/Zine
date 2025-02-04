@@ -1,16 +1,16 @@
 package services
 
 import (
-	"net/http"
-	"time"
 	"encoding/json"
 	"errors"
 	"log"
+	"net/http"
 	"strings"
+	"time"
 
 	"backend/db"
-	"backend/utils"
 	"backend/models"
+	"backend/utils"
 )
 
 // Return Access and Refesh Tokens
@@ -34,12 +34,17 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*utils.LoginResponse, 
 	// Parse request body
 	var credentials utils.Credentials
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
-		return nil, err, http.StatusBadRequest
+		return nil, errors.New(err.Error() + ": invalid request format"), http.StatusBadRequest
 	}
 
 	// Fetch user from database
 	user, err := database.GetUser(credentials.Email)
-	if err != nil || !utils.CheckPasswordHash(credentials.Password, user.Password) {
+	if err != nil {
+		return nil, errors.New(err.Error() + ": invalid credentials"), http.StatusUnauthorized
+	}
+
+	// Verify password
+	if !utils.CheckPasswordHash(credentials.Password, user.Password) {
 		return nil, errors.New("Invalid credentials"), http.StatusUnauthorized
 	}
 
@@ -58,22 +63,22 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*utils.LoginResponse, 
 }
 
 // HandleRegister processes user registration
-func HandleRegister(r *http.Request) (*utils.RegisterResponse, error) {
+func HandleRegister(r *http.Request) (*utils.RegisterResponse, error, int) {
 	// Parse request body
 	var credentials utils.Credentials
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
-		return nil, errors.New("invalid request format")
+		return nil, errors.New(err.Error() + ": Invalid request format"), http.StatusBadRequest
 	}
 
 	// Check if the email already exists
 	if database.UserExists(credentials.Email) {
-		return nil, errors.New("email already exists")
+		return nil, errors.New("Email already exists"), http.StatusConflict
 	}
 
 	// Hash password
 	hashedPassword, err := utils.HashPassword(credentials.Password)
 	if err != nil {
-		return nil, err
+		return nil, errors.New(err.Error() + ": Error hashing password"), http.StatusInternalServerError
 	}
 
 	// Save user in MongoDB
@@ -84,7 +89,7 @@ func HandleRegister(r *http.Request) (*utils.RegisterResponse, error) {
 	}
 
 	if err := database.InsertUser(user); err != nil {
-		return nil, err
+		return nil, errors.New(err.Error() + ": Error saving user"), http.StatusInternalServerError
 	}
 
 	// Send onboarding email
@@ -95,20 +100,20 @@ func HandleRegister(r *http.Request) (*utils.RegisterResponse, error) {
 		Message: "Registration successful",
 		Name:    credentials.Name,
 		Email:   credentials.Email,
-	}, nil
+	}, nil, http.StatusOK
 }
 
 // HandleLogout processes user logout and invalidates the token
-func HandleLogout(r *http.Request) error {
+func HandleLogout(r *http.Request) (error, int) {
 	// Get Authorization Header
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
-		return errors.New("missing token")
+		return errors.New("missing token"), http.StatusUnauthorized
 	}
 
 	tokenParts := strings.Split(authHeader, "Bearer ")
 	if len(tokenParts) < 2 {
-		return errors.New("invalid token format")
+		return errors.New("invalid token format"), http.StatusUnauthorized
 	}
 
 	token := tokenParts[1]
@@ -117,8 +122,8 @@ func HandleLogout(r *http.Request) error {
 	// Invalidate JWT Token
 	err := utils.InvalidateJWT(token)
 	if err != nil {
-		return errors.New("Failed to invalidate token")
+		return errors.New(err.Error() + ": Failed to logout"), http.StatusInternalServerError
 	}
 
-	return nil
+	return nil, http.StatusOK
 }
