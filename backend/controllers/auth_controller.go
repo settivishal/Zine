@@ -52,6 +52,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, response, http.StatusOK)
 }
 
+// Register function
 func Register(w http.ResponseWriter, r *http.Request) {
 	// Validate credentials
 	var credentials utils.Credentials
@@ -76,7 +77,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	// Save user in MongoDB
 	user := models.User{
 		Email:    credentials.Email,
-		Password: hashedPassword, // Store hashed password, not plain text
+		Password: hashedPassword,
 		Name:     credentials.Name,
 	}
 

@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"backend/utils"
 	"context"
 	"encoding/json"
 	"io"
 	"net/http"
-
+	
+	"backend/utils"
 	"backend/config"
 	"backend/db"
 	"backend/services"
@@ -14,20 +14,20 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// GoogleUser represents the user info obtained from Google
-type GoogleUser struct {
-	ID      string `json:"id"`
-	Email   string `json:"email"`
-	Picture string `json:"picture"`
-	Name    string `json:"name"`
-}
-
 // GoogleLogin redirects user to Google OAuth2 Login page
 func GoogleLogin(w http.ResponseWriter, r *http.Request) {
+	var encryptionKey = []byte(config.Env("AES_GCM_SECRET_KEY"))
+
 	url := config.GoogleOauthConfig.AuthCodeURL("randomstate")
-	// http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+
+	encryptedURL, err := utils.Encrypt(url, encryptionKey)
+	if err != nil {
+		utils.SendErrorResponse(w, "Encryption error", err, http.StatusInternalServerError)
+		return
+	}
+
 	json.NewEncoder(w).Encode(map[string]string{
-		"auth_url": url,
+		"auth_url": encryptedURL,
 	})
 }
 
@@ -64,7 +64,7 @@ func GoogleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user GoogleUser
+	var user utils.GoogleUser
 	err = json.Unmarshal(body, &user)
 	if err != nil {
 		utils.SendErrorResponse(w, "Failed to unmarshal user info", err, http.StatusInternalServerError)
