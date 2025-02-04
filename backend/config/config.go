@@ -20,7 +20,6 @@ func LoadConfig() error {
 		envFile = fmt.Sprintf(".env.%s", env)
 	}
 
-	// fmt.Println(envFile)
 	if err := godotenv.Load(envFile); err != nil {
 		return fmt.Errorf("Error loading %s file: %w", envFile, err)
 	}

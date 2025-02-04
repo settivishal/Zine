@@ -7,6 +7,7 @@ import (
 	"backend/config"
 	"backend/db"
 	"backend/utils"
+	"backend/services"
 
 	"backend/models"
 )
@@ -37,7 +38,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate JWT Tokens
-	accessToken, accessExpiry, refreshToken := utils.GenerateTokens(credentials, w)
+	accessToken, accessExpiry, refreshToken := services.GenerateTokens(credentials, w)
 
 	// Return response
 	response := utils.LoginResponse{
