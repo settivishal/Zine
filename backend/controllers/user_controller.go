@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"backend/db"
@@ -23,7 +22,11 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Welcome, " + user.Name,
-	})
+	response := utils.RegisterResponse{
+		Message: "Welcome, " + user.Name,
+		Name:    user.Name,
+		Email:   user.Email,
+	}
+
+	utils.SendJSONResponse(w, response, http.StatusOK)
 }

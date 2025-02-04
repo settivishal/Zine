@@ -1,55 +1,21 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"backend/config"
-	"backend/db"
 	"backend/utils"
 	"backend/services"
-
-	"backend/models"
-	"strings"
-
-	"log"
 )
 
 var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOXbP"))
 
 // Login handles user authentication
 func Login(w http.ResponseWriter, r *http.Request) {
-	// Validate credentials
-	var credentials utils.Credentials
-	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
-		utils.SendErrorResponse(w, "Invalid request format", err, http.StatusBadRequest)
-		return
-	}
-
-	// Fetch user from database
-	user, err := database.GetUser(credentials.Email)
+	response, err, status := services.HandleLogin(w, r)
 	if err != nil {
-		utils.SendErrorResponse(w, "Invalid credentials", err, http.StatusUnauthorized)
+		utils.SendErrorResponse(w, "Authentication failed", err, status)
 		return
-	}
-
-	// Verify password
-	if !utils.CheckPasswordHash(credentials.Password, user.Password) {
-		utils.SendErrorResponse(w, "Invalid credentials", nil, http.StatusUnauthorized)
-		return
-	}
-
-	// Generate JWT Tokens
-	accessToken, accessExpiry, refreshToken := services.GenerateTokens(credentials, w)
-
-	// Return response
-	response := utils.LoginResponse{
-		Message:      "Authentication successful",
-		Name:         user.Name,
-		Email:        user.Email,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		ExpiresAt:    accessExpiry,
 	}
 
 	utils.SendJSONResponse(w, response, http.StatusOK)
@@ -57,73 +23,20 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 // Register function
 func Register(w http.ResponseWriter, r *http.Request) {
-	// Validate credentials
-	var credentials utils.Credentials
-	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
-		utils.SendErrorResponse(w, "Invalid request format", err, http.StatusBadRequest)
-		return
-	}
-
-	// Hash password
-	hashedPassword, err := utils.HashPassword(credentials.Password)
+	response, err := services.HandleRegister(r)
 	if err != nil {
-		utils.SendErrorResponse(w, "Error hashing password", err, http.StatusInternalServerError)
+		utils.SendErrorResponse(w, "Registration failed", err, http.StatusInternalServerError)
 		return
 	}
-
-	// Check if the email already exists
-	if database.UserExists(credentials.Email) {
-		utils.SendErrorResponse(w, "Email already exists", nil, http.StatusConflict)
-		return
-	}
-
-	// Save user in MongoDB
-	user := models.User{
-		Email:    credentials.Email,
-		Password: hashedPassword,
-		Name:     credentials.Name,
-	}
-
-	if err := database.InsertUser(user); err != nil {
-		utils.SendErrorResponse(w, "Error saving user", err, http.StatusInternalServerError)
-		return
-	}
-
-	// Return response
-	response := utils.RegisterResponse{
-		Message: "Registration successful",
-		Name:    credentials.Name,
-		Email:   credentials.Email,
-	}
-
-	// Send Onboarding Email
-	utils.SendEmail(credentials.Email)
 
 	utils.SendJSONResponse(w, response, http.StatusOK)
 }
 
 // Logout function to handle user logout
 func Logout(w http.ResponseWriter, r *http.Request) {
-	// Invalidate the user's token
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(w, "Missing token", http.StatusUnauthorized)
-		return
-	}
-
-	token := strings.Split(authHeader, "Bearer ")
-
-	if len(token) < 2 {
-		http.Error(w, "Invalid token format", http.StatusUnauthorized)
-		return
-	}
-
-	log.Println(token[1])
-
-	err := utils.InvalidateJWT(token[1])
-
+	err := services.HandleLogout(r)
 	if err != nil {
-		http.Error(w, "Failed to logout", http.StatusInternalServerError)
+		utils.SendErrorResponse(w, "Failed to logout", err, http.StatusInternalServerError)
 		return
 	}
 
