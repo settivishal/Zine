@@ -7,6 +7,7 @@ import (
 	"backend/config"
 	"backend/db"
 	"backend/utils"
+	"backend/services"
 
 	"backend/models"
 )
@@ -15,7 +16,6 @@ var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOX
 
 // Login handles user authentication
 func Login(w http.ResponseWriter, r *http.Request) {
-
 	// Validate credentials
 	var credentials utils.Credentials
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
@@ -37,7 +37,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate JWT Tokens
-	accessToken, accessExpiry, refreshToken := utils.GenerateTokens(credentials, w)
+	accessToken, accessExpiry, refreshToken := services.GenerateTokens(credentials, w)
 
 	// Return response
 	response := utils.LoginResponse{
@@ -52,6 +52,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, response, http.StatusOK)
 }
 
+// Register function
 func Register(w http.ResponseWriter, r *http.Request) {
 	// Validate credentials
 	var credentials utils.Credentials
@@ -76,7 +77,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	// Save user in MongoDB
 	user := models.User{
 		Email:    credentials.Email,
-		Password: hashedPassword, // Store hashed password, not plain text
+		Password: hashedPassword,
 		Name:     credentials.Name,
 	}
 

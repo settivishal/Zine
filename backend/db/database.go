@@ -82,6 +82,20 @@ func GetUser(email string) (models.User, error) {
 	return user, err
 }
 
+// UpsertUser updates an existing document or inserts a new one if it doesn't exist
+func UpsertUser(collectionName string, filter bson.M, updateData bson.M) error {
+	collection := client.Database("zine").Collection(collectionName)
+
+	// Construct the update document
+	update := bson.M{"$set": updateData}
+
+	// Use UpdateOne with upsert enabled
+	opts := options.Update().SetUpsert(true)
+	_, err := collection.UpdateOne(context.TODO(), filter, update, opts)
+
+	return err
+}
+
 // DisconnectDB closes the database connection
 func DisconnectDB() {
 	if client != nil {
