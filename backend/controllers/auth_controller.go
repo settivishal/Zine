@@ -10,6 +10,9 @@ import (
 	"backend/services"
 
 	"backend/models"
+	"strings"
+
+	"log"
 )
 
 var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOXbP"))
@@ -95,6 +98,39 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	// Send Onboarding Email
 	utils.SendEmail(credentials.Email)
+
+	utils.SendJSONResponse(w, response, http.StatusOK)
+}
+
+// Logout function to handle user logout
+func Logout(w http.ResponseWriter, r *http.Request) {
+	// Invalidate the user's token
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		http.Error(w, "Missing token", http.StatusUnauthorized)
+		return
+	}
+
+	token := strings.Split(authHeader, "Bearer ")
+
+	if len(token) < 2 {
+		http.Error(w, "Invalid token format", http.StatusUnauthorized)
+		return
+	}
+
+	log.Println(token[1])
+
+	err := utils.InvalidateJWT(token[1])
+
+	if err != nil {
+		http.Error(w, "Failed to logout", http.StatusInternalServerError)
+		return
+	}
+
+	// Send a successful logout response
+	response := utils.LogoutResponse{
+		Message: "Logout successful",
+	}
 
 	utils.SendJSONResponse(w, response, http.StatusOK)
 }

@@ -43,3 +43,7 @@ type GoogleUser struct {
 	Picture string `json:"picture"`
 	Name    string `json:"name"`
 }
+
+type LogoutResponse struct {
+	Message string `json:"message"`
+}
