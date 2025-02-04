@@ -16,7 +16,6 @@ var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOX
 
 // Login handles user authentication
 func Login(w http.ResponseWriter, r *http.Request) {
-
 	// Validate credentials
 	var credentials utils.Credentials
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {

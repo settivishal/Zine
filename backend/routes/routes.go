@@ -16,6 +16,11 @@ func Routes(router *mux.Router) {
 	userRouter.HandleFunc("/login", controllers.Login).Methods("POST")
 	userRouter.HandleFunc("/register", controllers.Register).Methods("POST")
 
+	// Google
+	authRouter := router.PathPrefix("/auth").Subrouter()
+	authRouter.HandleFunc("/google", controllers.GoogleLogin).Methods("GET")
+	authRouter.HandleFunc("/google/callback", controllers.GoogleCallback).Methods("GET")
+
 	// Protected Routes
 	api := router.PathPrefix("/api").Subrouter()
 	api.Use(middleware.JWTAuthMiddleware)
