@@ -5,7 +5,12 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
+
+var GoogleOauthConfig *oauth2.Config
 
 func LoadConfig() error {
 	err := godotenv.Load(".env")
@@ -20,9 +25,17 @@ func LoadConfig() error {
 		envFile = fmt.Sprintf(".env.%s", env)
 	}
 
-	// fmt.Println(envFile)
 	if err := godotenv.Load(envFile); err != nil {
 		return fmt.Errorf("Error loading %s file: %w", envFile, err)
+	}
+
+	// Initialize Google OAuth Config
+	GoogleOauthConfig = &oauth2.Config{
+		ClientID:     Env("GOOGLE_CLIENT_ID"),
+		ClientSecret: Env("GOOGLE_CLIENT_SECRET"),
+		RedirectURL:  Env("REDIRECT_URL"),
+		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"},
+		Endpoint:     google.Endpoint,
 	}
 
 	return nil

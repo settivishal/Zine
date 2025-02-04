@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"encoding/json"
-	"net/http"
 	"time"
 
 	"backend/config"
@@ -44,52 +42,4 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 	}
 
 	return claims, nil
-}
-
-// Return Access and Refesh Tokens
-func GenerateTokens(credentials Credentials, w http.ResponseWriter) (string, time.Time, string) {
-	// Generate JWT Tokens
-	accessToken, accessExpiry, err := GenerateJWT(credentials.Email, "access_token", time.Minute*5)
-	if err != nil {
-		SendErrorResponse(w, "Error generating access token", err, http.StatusInternalServerError)
-	}
-
-	refreshToken, _, err := GenerateJWT(credentials.Email, "refresh_token", time.Hour*24*7)
-	if err != nil {
-		SendErrorResponse(w, "Error generating refresh token", err, http.StatusInternalServerError)
-	}
-
-	return accessToken, accessExpiry, refreshToken
-}
-
-// SendErrorResponse sends a JSON error response
-func SendErrorResponse(w http.ResponseWriter, message string, err error, statusCode int) {
-	w.WriteHeader(statusCode)
-
-	response := map[string]interface{}{
-		"error": message,
-	}
-
-	if err != nil {
-		response["details"] = err.Error()
-	}
-
-	json.NewEncoder(w).Encode(response)
-}
-
-// SendResponse sends a JSON response with a message
-func SendResponse(w http.ResponseWriter, message string, statusCode int) {
-	w.WriteHeader(statusCode)
-
-	response := map[string]interface{}{
-		"error": message,
-	}
-
-	json.NewEncoder(w).Encode(response)
-}
-
-// SendJSONResponse sends a structured JSON response
-func SendJSONResponse(w http.ResponseWriter, response interface{}, statusCode int) {
-	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(response)
 }

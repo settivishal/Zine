@@ -36,3 +36,10 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 	Error   string `json:"error"`
 }
+
+type GoogleUser struct {
+	ID      string `json:"id"`
+	Email   string `json:"email"`
+	Picture string `json:"picture"`
+	Name    string `json:"name"`
+}
