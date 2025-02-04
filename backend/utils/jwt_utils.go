@@ -43,3 +43,14 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 
 	return claims, nil
 }
+
+func InvalidateJWT(tokenString string) error {
+	claims, err := ValidateJWT(tokenString)
+
+	if err != nil {
+		return err
+	}
+
+	claims.ExpiresAt = jwt.NewNumericDate(time.Now())
+	return nil
+}
