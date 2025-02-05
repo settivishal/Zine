@@ -1,7 +1,55 @@
+"use client";
+
 import Image from 'next/image';
 import myImg from '../zine.png';
+import { useState } from 'react';
 
 export default function LoginPage() {
+    // State variables for form inputs
+    const [identifier, setIdentifier] = useState('');
+    const [password, setPassword] = useState('');
+
+
+    // Handle form submission from Login Button
+    const handleLogin = async (e) => {
+      e.preventDefault(); // Prevent default form submission behavior
+    
+      if (!identifier || !password) {
+        alert("Please enter both email/username and password.");
+        return;
+      }
+    
+      const payload = {
+        email: identifier,
+        password: password,
+      };
+    
+      try {
+        const response = await fetch("http://localhost:8080/consumer/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+    
+        if (!response.ok) {
+          const errorData = await response.json();
+          alert(errorData.message || "Login failed.");
+          return;
+        }
+    
+        const data = await response.json();
+        // Store tokens and redirect or update UI as needed
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
+        window.location.href = "/profile"; // Redirect upon success
+      } catch (error) {
+        console.error("Error during login:", error);
+        alert("An error occurred. Please try again.");
+      }
+    };
+    
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center space-y-4">
         {/* Main Login Card */}
@@ -13,17 +61,22 @@ export default function LoginPage() {
           <form>
             <input
               type="text"
-              placeholder="Phone number, username, or email"
-              className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+              placeholder="Email"
+              className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
             />
             <input
               type="password"
               placeholder="Password"
-              className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+              className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <button
               type="button"
               className="w-full bg-blue-500 text-white py-2 rounded font-semibold text-sm hover:bg-blue-600 transition"
+              onClick={handleLogin} // Call handleLogin function on click
             >
               Log In
             </button>
