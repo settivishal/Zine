@@ -1,0 +1,49 @@
+definitions:
+  utils.LogoutResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  utils.RegisterResponse:
+    properties:
+      email:
+        type: string
+      message:
+        type: string
+      name:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/profile:
+    get:
+      consumes:
+      - application/json
+      description: Get deatils of a user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.RegisterResponse'
+      summary: Get Profile
+      tags:
+      - users
+  /api/v1/hello:
+    get:
+      consumes:
+      - application/json
+      description: This is a test route
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.LogoutResponse'
+      summary: API Documentation
+      tags:
+      - test
+swagger: "2.0"

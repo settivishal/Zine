@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"backend/config"
-	"backend/db"
+	database "backend/db"
 	"backend/routes"
 
 	"github.com/gorilla/mux"
@@ -27,8 +27,12 @@ func main() {
 	// Auth routes
 	routes.Routes(router)
 
+	// Swagger Routes
+	routes.SwaggerRoutes(router)
+
 	// Start the server
 	port := config.Env("PORT", "8080")
-	log.Printf("Server running on port %s...", port)
+	log.Println("Server running on port", port, "...")
+	log.Println("Swagger UI available at http://localhost:" + port + "/swagger/index.html")
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }

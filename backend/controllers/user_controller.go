@@ -7,6 +7,16 @@ import (
 	"backend/utils"
 )
 
+// @Summary Get Profile
+// @Description Get deatils of a user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 200 {object} utils.RegisterResponse
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @Router /api/profile [get]
 func GetProfile(w http.ResponseWriter, r *http.Request) {
 	Email, ok := r.Context().Value("email").(string)
 
