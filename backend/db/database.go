@@ -59,27 +59,41 @@ func InsertUser(user models.User) error {
 }
 
 // UserExists checks if a user already exists in the database
-func UserExists(username string) bool {
+func UserExists(email string) bool {
 	collection := client.Database("zine").Collection("users")
 
 	var result models.User
-	filter := bson.M{"username": username}
+	filter := bson.M{"email": email}
 
 	err := collection.FindOne(context.TODO(), filter).Decode(&result)
 	return err == nil // If err is nil, the user exists
 }
 
-// GetUser retrieves a user from MongoDB by username
-func GetUser(username string) (models.User, error) {
+// GetUser retrieves a user from MongoDB by email
+func GetUser(email string) (models.User, error) {
 	collection := client.Database("zine").Collection("users")
 	var user models.User
-	filter := bson.M{"username": username}
+	filter := bson.M{"email": email}
 
 	err := collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err == mongo.ErrNoDocuments {
 		return models.User{}, errors.New("user not found")
 	}
 	return user, err
+}
+
+// UpsertUser updates an existing document or inserts a new one if it doesn't exist
+func UpsertUser(collectionName string, filter bson.M, updateData bson.M) error {
+	collection := client.Database("zine").Collection(collectionName)
+
+	// Construct the update document
+	update := bson.M{"$set": updateData}
+
+	// Use UpdateOne with upsert enabled
+	opts := options.Update().SetUpsert(true)
+	_, err := collection.UpdateOne(context.TODO(), filter, update, opts)
+
+	return err
 }
 
 // DisconnectDB closes the database connection
