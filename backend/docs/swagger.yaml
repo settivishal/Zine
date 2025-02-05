@@ -1,4 +1,19 @@
 definitions:
+  utils.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      email:
+        type: string
+      expires_at:
+        type: string
+      message:
+        type: string
+      name:
+        type: string
+      refresh_token:
+        type: string
+    type: object
   utils.LogoutResponse:
     properties:
       message:
@@ -46,4 +61,82 @@ paths:
       summary: API Documentation
       tags:
       - test
+  /consumer/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user with email and password
+      parameters:
+      - description: User login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            email:
+              type: string
+            password:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.LoginResponse'
+      summary: User Login
+      tags:
+      - users
+  /consumer/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout the user from application
+      parameters:
+      - default: Bearer
+        description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.LogoutResponse'
+      summary: User Logout
+      tags:
+      - users
+  /consumer/register:
+    post:
+      consumes:
+      - application/json
+      description: Register user with email, password and other details
+      parameters:
+      - description: User register credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            email:
+              type: string
+            name:
+              type: string
+            password:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.RegisterResponse'
+      summary: User Login
+      tags:
+      - users
 swagger: "2.0"

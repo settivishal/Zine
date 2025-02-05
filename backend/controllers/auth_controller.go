@@ -12,6 +12,15 @@ import (
 var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOXbP"))
 
 // Login handles user authentication
+
+// @Summary User Login
+// @Description Login user with email and password
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body object{email=string,password=string} true "User login credentials"
+// @Success 200 {object} utils.LoginResponse
+// @Router /consumer/login [post]
 func Login(w http.ResponseWriter, r *http.Request) {
 	response, err, status := services.HandleLogin(w, r)
 	if err != nil {
@@ -23,6 +32,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 // Register function
+
+// @Summary User Login
+// @Description Register user with email, password and other details
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body object{email=string,password=string,name=string} true "User register credentials"
+// @Success 200 {object} utils.RegisterResponse
+// @Router /consumer/register [post]
 func Register(w http.ResponseWriter, r *http.Request) {
 	response, err, status := services.HandleRegister(r)
 	log.Println(response, err, status)
@@ -35,6 +53,15 @@ func Register(w http.ResponseWriter, r *http.Request) {
 }
 
 // Logout function to handle user logout
+
+// @Summary User Logout
+// @Description Logout the user from application
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token" default(Bearer )
+// @Success 200 {object} utils.LogoutResponse
+// @Router /consumer/logout [post]
 func Logout(w http.ResponseWriter, r *http.Request) {
 	err, status := services.HandleLogout(r)
 	if err != nil {
