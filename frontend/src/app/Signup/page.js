@@ -6,7 +6,7 @@ import myImg from '../zine.png';
 export default function SignUp() {
   
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center space-y-4">
+    <div className="bg-gray-50 flex flex-col items-center justify-center space-y-4">
       {/* Main Login Card */}
       <div className="w-full max-w-xs bg-white border border-gray-300 rounded-md p-8">
         {/* Zine Logo */}

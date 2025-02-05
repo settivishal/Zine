@@ -2,12 +2,13 @@
 import Link from "next/link";
 
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
+// import Box from '@mui/material/Box';
+// import Button from '@mui/material/Button';
+// import Typography from '@mui/material/Typography';
+// import Modal from '@mui/material/Modal';
 
-import SignUp from "../Signup/page";
+// import SignUp from "../Signup/page";
+import AuthModal from "../Modal/page";
 
 const style = {
   position: 'absolute',
@@ -21,10 +22,14 @@ const style = {
   p: 4,
 };
 
+
+
 export default function LandingPage() {
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  // const handleOpen = () => setOpen(true);
+  // const handleClose = () => setOpen(false);
+
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navbar */}
@@ -52,19 +57,28 @@ export default function LandingPage() {
               Sign Up
             </button>
           </Link> */}
-          <div>
-              <Button onClick={handleOpen}>Open modal</Button>
-              <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-              >
-                <Box sx={style}>
-                  <SignUp />
-                </Box>
-              </Modal>
-            </div>
+          {/* <div>
+            <Button onClick={handleOpen}>Sign up</Button>
+            <Modal
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={style}>
+                <SignUp />
+              </Box>
+            </Modal>
+          </div> */}
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+          >
+          Open Auth Modal
+          </button>
+
+          {/* Auth Modal */}
+          <AuthModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </nav>
       </header>
 
