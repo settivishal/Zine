@@ -14,7 +14,7 @@ func SendErrorResponse(w http.ResponseWriter, message string, err error, statusC
 	}
 
 	if err != nil {
-		response["details"] = err.Error()
+		response["message"] = err.Error()
 	}
 
 	json.NewEncoder(w).Encode(response)

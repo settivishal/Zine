@@ -4,9 +4,9 @@ import (
     "log"
     "net/http"
 
-    "backend/config"
-    "backend/db"
-    "backend/routes" // Importing routes
+	"backend/config"
+	database "backend/db"
+	"backend/routes"
 
     "github.com/gorilla/mux"
     "github.com/rs/cors" // Added import for CORS
@@ -29,15 +29,14 @@ func main() {
     routes.Routes(router) // Using the existing Routes function
 
     // Set up CORS
-    c := cors.New(cors.Options{
+    cors.New(cors.Options{
         AllowedOrigins: []string{"http://localhost:3000"}, // Allow access from localhost:3000
         AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
         AllowedHeaders: []string{"Content-Type", "Authorization"},
-    })
+	
+})
 
-    // Use the CORS middleware
-    handler := c.Handler(router)
+    log.Println("Swagger UI available at http://localhost:" + "8080" + "/swagger/index.html")
+	log.Fatal(http.ListenAndServe(":"+"8080", router))
 
-    // Start the server
-    log.Fatal(http.ListenAndServe(":8080", handler))
 }
