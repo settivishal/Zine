@@ -47,3 +47,16 @@ type GoogleUser struct {
 type LogoutResponse struct {
 	Message string `json:"message"`
 }
+
+// type MockRegisterResponse struct {
+// 	UserID    string `json:"user_id"`
+// 	Username  string `json:"username"`
+// 	Email     string `json:"email"`
+// 	FullName  string `json:"full_name"`
+// 	CreatedAt string `json:"created_at"`
+// }
+
+// type MockErrorResponse struct {
+// 	Error   string `json:"error"`
+// 	Message string `json:"message"`
+// }
