@@ -13,7 +13,7 @@ import (
 // @Accept json
 // @Produce json
 // @Success 200 {object} utils.LogoutResponse
-// @Router /api/v1/hello [get]
+// @Router /api/v1/hello [GET]
 func HelloHandler(w http.ResponseWriter, r *http.Request) {
 	response := utils.LogoutResponse{Message: "Hello, World!"}
 	json.NewEncoder(w).Encode(response)

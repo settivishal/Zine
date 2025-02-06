@@ -108,12 +108,12 @@ func HandleLogout(r *http.Request) (error, int) {
 	// Get Authorization Header
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
-		return errors.New("missing token"), http.StatusUnauthorized
+		return errors.New("Missing token"), http.StatusUnauthorized
 	}
 
 	tokenParts := strings.Split(authHeader, "Bearer ")
 	if len(tokenParts) < 2 {
-		return errors.New("invalid token format"), http.StatusUnauthorized
+		return errors.New("Invalid token format"), http.StatusUnauthorized
 	}
 
 	token := tokenParts[1]

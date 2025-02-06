@@ -1,4 +1,11 @@
 definitions:
+  utils.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
   utils.LoginResponse:
     properties:
       access_token:
@@ -33,8 +40,6 @@ info:
 paths:
   /api/profile:
     get:
-      consumes:
-      - application/json
       description: Get deatils of a user
       produces:
       - application/json
@@ -61,6 +66,17 @@ paths:
       summary: API Documentation
       tags:
       - test
+  /auth/google:
+    get:
+      description: Google login function returns redirect url
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Google Login
+      tags:
+      - users
   /consumer/login:
     post:
       consumes:
@@ -82,9 +98,21 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Authentication successful
           schema:
             $ref: '#/definitions/utils.LoginResponse'
+        "400":
+          description: Invalid request format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
       summary: User Login
       tags:
       - users
