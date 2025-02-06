@@ -7,6 +7,14 @@ import (
 	"backend/utils"
 )
 
+// Get profile of user
+
+// @Summary Get Profile
+// @Description Get deatils of a user
+// @Tags users
+// @Produce json
+// @Success 200 {object} utils.RegisterResponse
+// @Router /api/profile [GET]
 func GetProfile(w http.ResponseWriter, r *http.Request) {
 	response, err, status := services.HandleProfile(w, r)
 	if err != nil {

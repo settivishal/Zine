@@ -1,0 +1,170 @@
+definitions:
+  utils.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  utils.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      email:
+        type: string
+      expires_at:
+        type: string
+      message:
+        type: string
+      name:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  utils.LogoutResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  utils.RegisterResponse:
+    properties:
+      email:
+        type: string
+      message:
+        type: string
+      name:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/profile:
+    get:
+      description: Get deatils of a user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.RegisterResponse'
+      summary: Get Profile
+      tags:
+      - users
+  /api/v1/hello:
+    get:
+      consumes:
+      - application/json
+      description: This is a test route
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.LogoutResponse'
+      summary: API Documentation
+      tags:
+      - test
+  /auth/google:
+    get:
+      description: Google login function returns redirect url
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Google Login
+      tags:
+      - users
+  /consumer/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user with email and password
+      parameters:
+      - description: User login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            email:
+              type: string
+            password:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Authentication successful
+          schema:
+            $ref: '#/definitions/utils.LoginResponse'
+        "400":
+          description: Invalid request format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: User Login
+      tags:
+      - users
+  /consumer/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout the user from application
+      parameters:
+      - default: Bearer
+        description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.LogoutResponse'
+      summary: User Logout
+      tags:
+      - users
+  /consumer/register:
+    post:
+      consumes:
+      - application/json
+      description: Register user with email, password and other details
+      parameters:
+      - description: User register credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            email:
+              type: string
+            name:
+              type: string
+            password:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.RegisterResponse'
+      summary: User Login
+      tags:
+      - users
+swagger: "2.0"
