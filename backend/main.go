@@ -9,6 +9,7 @@ import (
 	"backend/routes"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors" // Added import for CORS
 )
 
 func main() {
@@ -21,16 +22,19 @@ func main() {
 	database.ConnectDB()
 	defer database.DisconnectDB()
 
-	// Initialize router
+	// Initialize the router
 	router := mux.NewRouter()
 
-	// Auth routes
-	routes.Routes(router)
+	// Register routes
+	routes.Routes(router) // Using the existing Routes function
 
-	// Swagger Routes
-	routes.SwaggerRoutes(router)
+	// Set up CORS
+	cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:3000"}, // Allow access from localhost:3000
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Content-Type", "Authorization"},
+	})
 
-	// Start the server
 	port := config.Env("PORT", "8080")
 	log.Println("Server running on port", port, "...")
 	log.Println("Swagger UI available at http://localhost:" + port + "/swagger/index.html")
