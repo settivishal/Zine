@@ -8,6 +8,7 @@ export default function LoginPage() {
     // State variables for form inputs
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState(''); // Error message state
 
 
     // Handle form submission from Login Button
@@ -15,7 +16,7 @@ export default function LoginPage() {
       e.preventDefault(); // Prevent default form submission behavior
     
       if (!identifier || !password) {
-        alert("Please enter both email/username and password.");
+        setErrorMessage("Please enter both email/username and password.");
         return;
       }
     
@@ -35,7 +36,7 @@ export default function LoginPage() {
     
         if (!response.ok) {
           const errorData = await response.json();
-          alert(errorData.message || "Login failed.");
+          setErrorMessage(errorData.message || "Login failed.");
           return;
         }
     
@@ -46,10 +47,33 @@ export default function LoginPage() {
         window.location.href = "/profile"; // Redirect upon success
       } catch (error) {
         console.error("Error during login:", error);
-        alert("An error occurred. Please try again.");
+        setErrorMessage("An error occurred. Please try again.");
       }
     };
     
+    // Add this function inside your LoginPage component
+    const handleGoogleLogin = async (e) => {
+      e.preventDefault();
+      // Clear any previous error messages if using an error state
+      setErrorMessage('');
+
+      try {
+        const response = await fetch("http://localhost:8080/auth/google");
+        if (!response.ok) {
+          // Set an error message if the response is not OK
+          setErrorMessage("Failed to initiate Google authentication.");
+          return;
+        }
+
+        const data = await response.json();
+        // Redirect to the Google OAuth URL returned by your backend
+        window.location.href = data.auth_url;
+      } catch (error) {
+        console.error("Google login error:", error);
+        setErrorMessage("An error occurred while logging in with Google.");
+      }
+    };
+
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center space-y-4">
         {/* Main Login Card */}
@@ -73,6 +97,18 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {errorMessage && (
+              <div className="mb-4 flex items-center justify-between bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-sm">
+                <span>{errorMessage}</span>
+                <button
+                  onClick={() => setErrorMessage('')}
+                  className="ml-4 font-bold focus:outline-none"
+                >
+                  X
+                </button>
+              </div>
+            )}
+
             <button
               type="button"
               className="w-full bg-blue-500 text-white py-2 rounded font-semibold text-sm hover:bg-blue-600 transition"
@@ -84,6 +120,7 @@ export default function LoginPage() {
             <div className="text-center">
             <button
               type="button"
+              onClick={handleGoogleLogin} // Call handleGoogleLogin function on click
               className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
             >
               <svg 
