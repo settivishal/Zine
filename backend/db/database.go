@@ -1,20 +1,108 @@
-package db
+package database
 
 import (
-	"database/sql"
+	"context"
+	"fmt"
 	"log"
+	"time"
 
-	_ "github.com/lib/pq" // PostgreSQL driver
+	"errors"
+	"os"
+
+	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"backend/models"
 )
 
-var DB *sql.DB
+var client *mongo.Client
 
-func ConnectDB() {
-	var err error
-	connStr := "user=youruser dbname=yourdb password=yourpass sslmode=disable"
-	DB, err = sql.Open("postgres", connStr)
+// ConnectDB initializes and connects to MongoDB Atlas
+func ConnectDB() *mongo.Client {
+
+	// Load environment variables from.env file
+	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatal("Error loading .env file")
 	}
-	log.Println("Database connected successfully.")
+
+	uri := os.Getenv("MONGO_URI")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	clientOptions := options.Client().ApplyURI(uri)
+	c, err := mongo.Connect(ctx, clientOptions)
+	if err != nil {
+		log.Fatal("Error connecting to MongoDB Atlas:", err)
+	}
+
+	// Ensure connection is established
+	err = c.Ping(ctx, nil)
+	if err != nil {
+		log.Fatal("Could not connect to MongoDB Atlas:", err)
+	}
+
+	fmt.Println("Connected to MongoDB Atlas!")
+	client = c
+	return client
+}
+
+// InsertUser saves a new user in MongoDB
+func InsertUser(user models.User) error {
+	collection := client.Database("zine").Collection("users")
+
+	_, err := collection.InsertOne(context.TODO(), user)
+	return err
+}
+
+// UserExists checks if a user already exists in the database
+func UserExists(email string) bool {
+	collection := client.Database("zine").Collection("users")
+
+	var result models.User
+	filter := bson.M{"email": email}
+
+	err := collection.FindOne(context.TODO(), filter).Decode(&result)
+	return err == nil // If err is nil, the user exists
+}
+
+// GetUser retrieves a user from MongoDB by email
+func GetUser(email string) (models.User, error) {
+	collection := client.Database("zine").Collection("users")
+	var user models.User
+	filter := bson.M{"email": email}
+
+	err := collection.FindOne(context.TODO(), filter).Decode(&user)
+	if err == mongo.ErrNoDocuments {
+		return models.User{}, errors.New("user not found")
+	}
+	return user, err
+}
+
+// UpsertUser updates an existing document or inserts a new one if it doesn't exist
+func UpsertUser(collectionName string, filter bson.M, updateData bson.M) error {
+	collection := client.Database("zine").Collection(collectionName)
+
+	// Construct the update document
+	update := bson.M{"$set": updateData}
+
+	// Use UpdateOne with upsert enabled
+	opts := options.Update().SetUpsert(true)
+	_, err := collection.UpdateOne(context.TODO(), filter, update, opts)
+
+	return err
+}
+
+// DisconnectDB closes the database connection
+func DisconnectDB() {
+	if client != nil {
+		err := client.Disconnect(context.TODO())
+		if err != nil {
+			log.Fatal("Error disconnecting from MongoDB Atlas:", err)
+		}
+		fmt.Println("Disconnected from MongoDB Atlas")
+	}
 }

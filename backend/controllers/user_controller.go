@@ -3,15 +3,24 @@ package controllers
 import (
 	"net/http"
 
-	"backend/models"
+	"backend/services"
 	"backend/utils"
 )
 
-func GetUsers(w http.ResponseWriter, r *http.Request) {
-	users := []models.User{
-		{ID: 1, Username: "user1", Email: "user1@example.com"},
-		{ID: 2, Username: "user2", Email: "user2@example.com"},
+// Get profile of user
+
+// @Summary Get Profile
+// @Description Get deatils of a user
+// @Tags users
+// @Produce json
+// @Success 200 {object} utils.RegisterResponse
+// @Router /api/profile [GET]
+func GetProfile(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleProfile(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error retrieving profile", err, status)
+		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, users)
+	utils.SendJSONResponse(w, response, status)
 }
