@@ -1,3 +1,4 @@
+# Command for unit test
 ## Basic Testing Commands
 ### Run all tests in the current package:
 ```go test```
@@ -17,7 +18,7 @@
 ```go test -cover```
 
 ### Generate a coverage profile file:
-```go test -coverprofile="coverage.out" ./...```
+```go test -coverprofile="coverage.out"```
 
 ### Display the coverage percentage by function:
 ```go tool cover -func="coverage.out"```
@@ -36,6 +37,6 @@
 ## Combining Flags
 ### You can combine several flags together. For example, to run all tests with verbose output and generate a coverage profile:
 ```go test -v -coverprofile="coverage.out" ./...```
-```go tool cover -html=<package>/tests/coverage.out -o <package>/tests/coverage.html```
-```go test -coverprofile=<package>/tests/coverage.out ./<package>/...```
+```go tool cover -html="coverage.out" -o coverage.html```
+```go test -coverprofile="coverage.out" ./<package>/...```
 ```go test -coverpkg=./<package> -coverprofile=<package>/tests/coverage.out ./<package>/tests```

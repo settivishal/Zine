@@ -93,7 +93,7 @@ func HandleRegister(r *http.Request) (*utils.RegisterResponse, error, int) {
 	}
 
 	// Send onboarding email
-	utils.SendEmail(credentials.Email)
+	SendEmail(credentials.Email)
 
 	// Return structured response
 	return &utils.RegisterResponse{
