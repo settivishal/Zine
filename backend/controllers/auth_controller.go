@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 
 	"backend/config"
@@ -51,7 +50,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 // @Router /consumer/register [POST]
 func Register(w http.ResponseWriter, r *http.Request) {
 	response, err, status := services.HandleRegister(r)
-	log.Println(response, err, status)
 	if err != nil {
 		utils.SendErrorResponse(w, "Registration Failed", err, status)
 		return

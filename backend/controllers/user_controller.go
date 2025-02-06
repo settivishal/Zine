@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"backend/db"
+	"backend/services"
 	"backend/utils"
 )
 
@@ -16,25 +16,11 @@ import (
 // @Success 200 {object} utils.RegisterResponse
 // @Router /api/profile [GET]
 func GetProfile(w http.ResponseWriter, r *http.Request) {
-	Email, ok := r.Context().Value("email").(string)
-
-	if !ok {
-		utils.SendResponse(w, "Error getting email", http.StatusInternalServerError)
-		return
-	}
-
-	user, err := database.GetUser(Email)
-
+	response, err, status := services.HandleProfile(w, r)
 	if err != nil {
-		utils.SendErrorResponse(w, "Error getting user with email: "+Email, err, http.StatusInternalServerError)
+		utils.SendErrorResponse(w, "Error retrieving profile", err, status)
 		return
 	}
 
-	response := utils.RegisterResponse{
-		Message: "Welcome, " + user.Name,
-		Name:    user.Name,
-		Email:   user.Email,
-	}
-
-	utils.SendJSONResponse(w, response, http.StatusOK)
+	utils.SendJSONResponse(w, response, status)
 }
