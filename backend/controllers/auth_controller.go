@@ -1,98 +1,88 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"backend/config"
-	"backend/db"
+	"backend/services"
 	"backend/utils"
-
-	"backend/models"
 )
 
 var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOXbP"))
 
 // Login handles user authentication
+
+// @Summary User Login
+// @Description Login user with email and password
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body object{email=string,password=string} true "User login credentials"
+// @Success 200 {object} utils.LoginResponse "Authentication successful"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request format"
+// @Failure 401 {object} utils.ErrorResponse "Invalid credentials"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /consumer/login [POST]
 func Login(w http.ResponseWriter, r *http.Request) {
-
-	// Validate credentials
-	var credentials utils.Credentials
-	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
-		utils.SendErrorResponse(w, "Invalid request format", err, http.StatusBadRequest)
-		return
-	}
-
-	// Fetch user from database
-	user, err := database.GetUser(credentials.Username)
+	response, err, status := services.HandleLogin(w, r)
 	if err != nil {
-		utils.SendErrorResponse(w, "Invalid credentials", err, http.StatusUnauthorized)
+		utils.SendErrorResponse(w, "Authorization Failed", err, status)
 		return
 	}
 
-	// Verify password
-	if !utils.CheckPasswordHash(credentials.Password, user.Password) {
-		utils.SendErrorResponse(w, "Invalid credentials", nil, http.StatusUnauthorized)
-		return
-	}
-
-	// Generate JWT Tokens
-	accessToken, accessExpiry, refreshToken := utils.GenerateTokens(credentials, w)
-
-	// Return response
-	response := utils.LoginResponse{
-		Message:      "Authentication successful",
-		Username:     user.Username,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		ExpiresAt:    accessExpiry,
-	}
-
-	utils.SendJSONResponse(w, response, http.StatusOK)
+	utils.SendJSONResponse(w, response, status)
 }
 
+// Register function
+
+// @Summary User Login
+// @Description Register user with email, password and other details
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body object{email=string,password=string,name=string} true "User register credentials"
+// @Success 200 {object} utils.RegisterResponse "Registration successful"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request format"
+// @Failure 409 {object} utils.ErrorResponse "Email already exists"
+// @Failure 500 {object} utils.ErrorResponse "Error hashing password"
+// @Failure 500 {object} utils.ErrorResponse "Error saving user"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /consumer/register [POST]
 func Register(w http.ResponseWriter, r *http.Request) {
-	// Validate credentials
-	var credentials utils.Credentials
-	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
-		utils.SendErrorResponse(w, "Invalid request format", err, http.StatusBadRequest)
-		return
-	}
-
-	// Hash password
-	hashedPassword, err := utils.HashPassword(credentials.Password)
+	response, err, status := services.HandleRegister(r)
 	if err != nil {
-		utils.SendErrorResponse(w, "Error hashing password", err, http.StatusInternalServerError)
+		utils.SendErrorResponse(w, "Registration Failed", err, status)
 		return
 	}
 
-	// Check if the username already exists
-	if database.UserExists(credentials.Username) {
-		utils.SendErrorResponse(w, "User already exists", nil, http.StatusConflict)
+	utils.SendJSONResponse(w, response, status)
+}
+
+// Logout function to handle user logout
+
+// @Summary User Logout
+// @Description Logout the user from application
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token" default(Bearer )
+// @Success 200 {object} utils.LogoutResponse "Logout successful"
+// @Failure 401 {object} utils.ErrorResponse "Missing token"
+// @Failure 409 {object} utils.ErrorResponse "Invalid token format"
+// @Failure 500 {object} utils.ErrorResponse "Failed to logout"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /consumer/logout [POST]
+func Logout(w http.ResponseWriter, r *http.Request) {
+	err, status := services.HandleLogout(r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Failed to logout", err, status)
 		return
 	}
 
-	// Save user in MongoDB
-	user := models.User{
-		Username: credentials.Username,
-		Password: hashedPassword, // Store hashed password, not plain text
-		Email:    credentials.Email,
+	// Send a successful logout response
+	response := utils.LogoutResponse{
+		Message: "Logout successful",
 	}
 
-	if err := database.InsertUser(user); err != nil {
-		utils.SendErrorResponse(w, "Error saving user", err, http.StatusInternalServerError)
-		return
-	}
-
-	// Return response
-	response := utils.RegisterResponse{
-		Message:  "Registration successful",
-		Username: credentials.Username,
-		Email:    credentials.Email,
-	}
-
-	// Send Onboarding Email
-	utils.SendEmail(credentials.Email)
-
-	utils.SendJSONResponse(w, response, http.StatusOK)
+	utils.SendJSONResponse(w, response, status)
 }
