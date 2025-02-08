@@ -47,3 +47,13 @@ type GoogleUser struct {
 type LogoutResponse struct {
 	Message string `json:"message"`
 }
+
+type ChangePasswordCredentials struct {
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	NewPassword string `json:"new_password"`
+}
+
+type ChangePasswordResponse struct {
+	Message string `json:"message"`
+}

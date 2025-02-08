@@ -106,3 +106,13 @@ func DisconnectDB() {
 		fmt.Println("Disconnected from MongoDB Atlas")
 	}
 }
+
+func UpdatePassword(email string, hashedPassword string) error {
+	collection := client.Database("zine").Collection("users")
+
+	filter := bson.M{"email": email}
+	update := bson.M{"$set": bson.M{"password": hashedPassword}}
+
+	_, err := collection.UpdateOne(context.TODO(), filter, update)
+	return err
+}
