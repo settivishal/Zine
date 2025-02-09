@@ -150,3 +150,55 @@ func TestEncrypt(t *testing.T) {
 		})
 	}
 }
+
+func TestDecrypt(t *testing.T) {
+	plainTexts := []string{"Hello, World!", "Go is awesome", "Testing encryption"}
+
+	tests := []struct {
+		name          string
+		encryptedText string
+		keySize       int
+		wantErr       bool
+	}{
+		{
+			name:          "Valid decryption",
+			keySize:       32,
+			wantErr:       false,
+		},
+		{
+			name:          "Short key (invalid)",
+			keySize:       15,
+			wantErr:       true,
+		},
+	}
+
+	for _, tt := range tests {
+		for _, plainText := range plainTexts {
+			t.Run(tt.name+" - "+plainText, func(t *testing.T) {
+				key := make([]byte, tt.keySize)
+				if _, err := rand.Read(key); err != nil {
+					t.Fatalf("Failed to generate key: %v", err)
+				}
+
+				// Handle cases where the key is invalid
+				encryptedText, err := Encrypt(plainText, key)
+				if err != nil {
+					if tt.wantErr {
+						t.Logf("[%s] Expected encryption failure: %v", tt.name, err)
+						return
+					}
+					t.Fatalf("Encryption failed: %v", err)
+				}
+
+				decryptedText, err := Decrypt(encryptedText, key)
+				if (err != nil) != tt.wantErr {
+					t.Fatalf("[%s] Unexpected error: %v", tt.name, err)
+				}
+
+				if !tt.wantErr && decryptedText != plainText {
+					t.Errorf("[%s] Decryption mismatch: expected %q, got %q", tt.name, plainText, decryptedText)
+				}
+			})
+		}
+	}
+}
