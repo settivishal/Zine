@@ -3,6 +3,7 @@ import { useState } from "react";
 import SignUp from "../Signin/signup";
 import SignIn from "../Signin/signin";
 
+
 export default function AuthModal({ isOpen, onClose }) {
     const [activeTab, setActiveTab] = useState("signin"); // 'signin' or 'signup'
 

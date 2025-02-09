@@ -1,61 +1,61 @@
 "use client";
-
+// import axiosInstance from "../../../helpers/axiosInstance";
 import Image from "next/image";
 import myImg from "../zine.png";
 import { useState } from "react";
 
+
+
+
 export default function SignIn() {
-    const [identifier, setIdentifier] = useState("");
+    
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState(""); // Error message state
 
-    // Handle form submission from Login Button
+    // Handle form submission from Sign up Button
     const handleLogin = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
-
-        if (!identifier || !password) {
-            setErrorMessage("Please enter both email/username and password.");
-            return;
+      
+        if (!email || !password) {
+          setErrorMessage("Please enter both email/username and password.");
+          return;
         }
-
+      
         const payload = {
-            email: identifier,
-            password: password,
+          email: email,
+          password: password,
         };
-
+      
         try {
-            const response = await fetch(
-                "http://localhost:8080/consumer/login",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
-                }
-            );
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                setErrorMessage(errorData.message || "Login failed.");
-                return;
-            }
-
-            const data = await response.json();
-            // Store tokens and redirect or update UI as needed
-            localStorage.setItem("accessToken", data.accessToken);
-            localStorage.setItem("refreshToken", data.refreshToken);
-            window.location.href = "/profile"; // Redirect upon success
+          const response = await fetch("http://localhost:8080/consumer/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.json();
+            setErrorMessage(errorData.message || "Login failed.");
+            return;
+          }
+      
+          const data = await response.json();
+          // Store tokens and redirect or update UI as needed
+          localStorage.setItem("accessToken", data.accessToken);
+          localStorage.setItem("refreshToken", data.refreshToken);
+          window.location.href = "/profile"; // Redirect upon success
         } catch (error) {
-            console.error("Error during login:", error);
-            setErrorMessage("An error occurred. Please try again.");
+          console.error("Error during login:", error);
+          setErrorMessage("An error occurred. Please try again.");
         }
     };
-
     return (
         <div className="bg-gray-50 flex flex-col items-center justify-center space-y-4">
             {/* Main Login Card */}
-            <div className="w-full max-w-xs bg-white border border-gray-300 rounded-lg p-8">
+            <div className="w-full max-w-s bg-white border border-gray-300 rounded-lg p-8">
                 {/* Zine Logo */}
                 <div className="flex justify-center mb-6">
                     <Image src={myImg} width={70} height={70} alt="Zine" />
@@ -64,14 +64,14 @@ export default function SignIn() {
                     <input
                         type="text"
                         placeholder="Email"
-                        className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400"
-                        value={identifier}
-                        onChange={(e) => setIdentifier(e.target.value)}
+                        className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm text-black focus:outline-none focus:ring-1 focus:ring-gray-400"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                     <input
                         type="password"
                         placeholder="Password"
-                        className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                        className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm text-black focus:outline-none focus:ring-1 focus:ring-gray-400"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
@@ -85,7 +85,7 @@ export default function SignIn() {
                         className="w-full bg-blue-500 text-white py-2 rounded font-semibold text-sm hover:bg-blue-600 transition"
                         onClick={handleLogin} // Call handleLogin function on click
                     >
-                        Log In
+                        Sign In
                     </button>
                     <div className="text-center text-sm text-gray-500 my-4">
                         OR
@@ -126,12 +126,12 @@ export default function SignIn() {
                 </div>
             </div>
             {/* Sign Up Card */}
-            <div className="w-full max-w-xs bg-white border border-gray-300 rounded-lg p-4 text-center text-sm">
+            {/* <div className="w-full max-w-xs bg-white border border-gray-300 rounded-lg p-4 text-center text-sm">
                 <span className="text-gray-700">Don't have an account?</span>{" "}
                 <a href="#" className="text-blue-600 font-semibold">
                     Sign up
                 </a>
-            </div>
+            </div> */}
         </div>
     );
 }

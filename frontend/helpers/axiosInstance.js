@@ -1,0 +1,25 @@
+import axios from 'axios';
+
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:8080', // Replace with your API's base URL
+  headers: {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': 'http://localhost:3000',
+    // 'Access-Control-Allow-Methods': 'POST' | 'GET' | 'OPTIONS' |'DELETE',
+    // 'Access-Control-Allow-Headers': 'Content-Type',
+  },
+});
+
+// Add a request interceptor to include tokens (if needed)
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken'); // Retrieve token from localStorage
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+export default axiosInstance;
