@@ -92,8 +92,8 @@ func HandleRegister(r *http.Request) (*utils.RegisterResponse, error, int) {
 		return nil, errors.New(err.Error() + ": Error saving user"), http.StatusInternalServerError
 	}
 
-	// Send onboarding email
-	SendEmail(credentials.Email)
+	// send email
+	SendMailSimple("Welcome to Zine!"+" "+credentials.Name, "<h1>Thank you for signing up!<h1> We are glad you joined us!", []string{credentials.Email})
 
 	// Return structured response
 	return &utils.RegisterResponse{
