@@ -152,8 +152,8 @@ func HandleChangePassword(w http.ResponseWriter, r *http.Request) (error, int) {
 		return errors.New("error hashing password"), http.StatusInternalServerError
 	}
 
-	log.Println("New Password", credentials.NewPassword)
-	log.Println("New Password Hashed", hashedPassword)
+	// log.Println("New Password", credentials.NewPassword)
+	// log.Println("New Password Hashed", hashedPassword)
 	// Update password in database
 	if err := database.UpdatePassword(user.Email, hashedPassword); err != nil {
 		return errors.New("error updating password"), http.StatusInternalServerError
