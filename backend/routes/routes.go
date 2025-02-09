@@ -5,6 +5,8 @@ import (
 	"backend/middleware"
 
 	"github.com/gorilla/mux"
+	// "github.com/rs/cors"
+	"github.com/swaggo/http-swagger"
 )
 
 func Routes(router *mux.Router) {
@@ -26,4 +28,20 @@ func Routes(router *mux.Router) {
 	api := router.PathPrefix("/api").Subrouter()
 	api.Use(middleware.JWTAuthMiddleware)
 	api.HandleFunc("/profile", controllers.GetProfile).Methods("GET")
+}
+
+func SwaggerRoutes(router *mux.Router) {
+	router.Use(middleware.JSONMiddleware)
+
+	// Test route
+	api := router.PathPrefix("/api/v1").Subrouter()
+	api.HandleFunc("/hello", controllers.HelloHandler).Methods("GET")
+
+	// Serve Swagger UI
+	router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
+		httpSwagger.URL("/api-docs"), // The URL pointing to API definition
+	))
+
+	// Serve OpenAPI specification
+	router.HandleFunc("/api-docs", controllers.ServeSwaggerDocs)
 }
