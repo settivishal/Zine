@@ -32,15 +32,24 @@ export default function SignUp (){
         };
     
         try {
-            
-            
-            const response = await axiosInstance.post('/consumer/register', payload);
-            // const { message, email, name } = response.data;
+            const response = await fetch("http://localhost:8080/consumer/register", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            });
         
-            return response.data;
+            if (!response.ok) {
+              const errorData = await response.json();
+              setErrorMessage(errorData.message || "Sign up failed.");
+              return;
+            }
+        
+            const data = await response.json();
         } catch (error) {
-            console.error('Sign Up Error:', error.response?.data || error.message);
-            throw error.response?.data || error.message;
+            console.error("Error during register:", error);
+            setErrorMessage("An error occurred. Please try again.");
         }
     };
 

@@ -1,5 +1,5 @@
 "use client";
-// import axiosInstance from "../../../helpers/axiosInstance";
+import axiosInstance from "../../../helpers/axiosInstance";
 import Image from "next/image";
 import myImg from "../zine.png";
 import { useState } from "react";
@@ -26,7 +26,7 @@ export default function SignIn() {
           email: email,
           password: password,
         };
-      
+
         try {
           const response = await fetch("http://localhost:8080/consumer/login", {
             method: "POST",
