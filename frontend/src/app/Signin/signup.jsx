@@ -1,6 +1,6 @@
 "use client";
 // import { useRouter } from 'next/router';
-import axiosInstance from "../../../helpers/axiosInstance";
+// import axiosInstance from "../../../helpers/axiosInstance";
 import Image from "next/image";
 import myImg from "../zine.png";
 
@@ -16,6 +16,8 @@ export default function SignUp (){
     // Handle form submission from Login Button
     const handleRegister = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
+
+        setErrorMessage("");
 
         if (!username || !email || !password) {
             setErrorMessage("Please enter both email/username and password.");
