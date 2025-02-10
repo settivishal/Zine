@@ -52,6 +52,7 @@ export default function LoginPage() {
     };
     
     // Add this function inside your LoginPage component
+    // Add this function inside your LoginPage component
     const handleGoogleLogin = async (e) => {
       e.preventDefault();
       try {
@@ -61,11 +62,11 @@ export default function LoginPage() {
             "Accept": "application/json"
           }
         });
-    
+
         if (!response.ok) {
           throw new Error("Failed to initiate Google authentication");
         }
-    
+
         const data = await response.json();
         // Redirect to Google's consent page
         if (data.auth_url) {
