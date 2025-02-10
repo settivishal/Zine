@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"reflect"
 
 	"errors"
 	"os"
@@ -83,11 +84,33 @@ func GetUser(email string) (models.User, error) {
 }
 
 // UpsertUser updates an existing document or inserts a new one if it doesn't exist
-func UpsertUser(collectionName string, filter bson.M, updateData bson.M) error {
+func UpsertUser(collectionName string, filter bson.M, updateData models.User) error {
 	collection := client.Database("zine").Collection(collectionName)
 
-	// Construct the update document
-	update := bson.M{"$set": updateData}
+	// Convert updateData into a dynamic BSON document
+	updateFields := bson.M{}
+	val := reflect.ValueOf(updateData)
+
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+	if val.Kind() != reflect.Struct {
+		return fmt.Errorf("updateData must be a struct")
+	}
+
+	typ := val.Type()
+	for i := 0; i < val.NumField(); i++ {
+		field := typ.Field(i)
+		fieldValue := val.Field(i)
+
+		// Skip zero values (prevents resetting fields)
+		if !fieldValue.IsZero() {
+			updateFields[field.Tag.Get("bson")] = fieldValue.Interface()
+		}
+	}
+
+	// Construct the update document dynamically
+	update := bson.M{"$set": updateFields}
 
 	// Use UpdateOne with upsert enabled
 	opts := options.Update().SetUpsert(true)
