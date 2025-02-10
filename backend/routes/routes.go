@@ -28,6 +28,7 @@ func Routes(router *mux.Router) {
 	api := router.PathPrefix("/api").Subrouter()
 	api.Use(middleware.JWTAuthMiddleware)
 	api.HandleFunc("/profile", controllers.GetProfile).Methods("GET")
+	api.HandleFunc("/change_password", controllers.ChangePassword).Methods("POST")
 }
 
 func SwaggerRoutes(router *mux.Router) {

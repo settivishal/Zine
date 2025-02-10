@@ -2,9 +2,10 @@ package models
 
 // User struct represents a user document
 type User struct {
-	Password   string `bson:"password"`
-	Email      string `bson:"email"`
 	Name       string `bson:"name"`
-	Picture    string `bson:"picture"`
+	Email      string `bson:"email"`
+	Password   string `bson:"password"`
+	Image      string `bson:"image"`
 	OauthToken string `bson:"token"`
+	Bio        string `bson:"bio"`
 }

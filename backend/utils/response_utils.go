@@ -34,5 +34,6 @@ func SendResponse(w http.ResponseWriter, message string, statusCode int) {
 // SendJSONResponse sends a structured JSON response
 func SendJSONResponse(w http.ResponseWriter, response interface{}, statusCode int) {
 	w.WriteHeader(statusCode)
+
 	json.NewEncoder(w).Encode(response)
 }

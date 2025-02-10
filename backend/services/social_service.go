@@ -9,6 +9,7 @@ import (
 
 	"backend/config"
 	"backend/db"
+	"backend/models"
 	"backend/utils"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -56,11 +57,11 @@ func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) (*utils.LoginR
 	}
 
 	// Update ot Create User Data
-	updateData := bson.M{
-		"email":       user.Email,
-		"name":        user.Name,
-		"picture":     user.Picture,
-		"oauth_token": user.ID,
+	updateData := models.User{
+		Email:      user.Email,
+		Name:       user.Name,
+		Image:      user.Picture,
+		OauthToken: user.ID,
 	}
 
 	if err := database.UpsertUser("users", bson.M{"email": user.Email}, updateData); err != nil {
@@ -73,6 +74,8 @@ func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) (*utils.LoginR
 		Name:  user.Name,
 	}
 	accessToken, accessExpiry, refreshToken := GenerateTokens(credentials, w)
+
+	http.Redirect(w, r, "http://localhost:3000/home", http.StatusSeeOther)
 
 	// Return structured response
 	return &utils.LoginResponse{

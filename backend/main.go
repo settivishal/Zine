@@ -1,8 +1,8 @@
 package main
 
 import (
-	"log"
-	"net/http"
+    "log"
+    "net/http"
 
 	"backend/config"
 	database "backend/db"
@@ -13,14 +13,14 @@ import (
 )
 
 func main() {
-	// Load configuration file
-	if err := config.LoadConfig(); err != nil {
-		log.Fatal("Failed to load config:", err)
-	}
+    // Load configuration file
+    if err := config.LoadConfig(); err != nil {
+        log.Fatal("Failed to load config:", err)
+    }
 
-	// Connect to the MongoDB
-	database.ConnectDB()
-	defer database.DisconnectDB()
+    // Connect to the MongoDB
+    database.ConnectDB()
+    defer database.DisconnectDB()
 
 	// Initialize the router
 	router := mux.NewRouter()
