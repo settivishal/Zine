@@ -33,7 +33,7 @@ func main() {
 
 	// Set up CORS
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000"}, // Allow access from localhost:3000
+		AllowedOrigins: []string{"http://localhost:3000", "http://localhost:8080"},
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type", "Authorization"},
 	})
@@ -44,7 +44,6 @@ func main() {
 	port := config.Env("PORT", "8080")
 	log.Println("Server running on port", port, "...")
 	log.Println("Swagger UI available at http://localhost:" + port + "/swagger/index.html")
-	// log.Fatal(http.ListenAndServe(":"+port, router))
     log.Fatal(http.ListenAndServe(":8080", handler))
 }
 
