@@ -74,6 +74,8 @@ func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) (*utils.LoginR
 	}
 	accessToken, accessExpiry, refreshToken := GenerateTokens(credentials, w)
 
+	http.Redirect(w, r, "http://localhost:3000/home", http.StatusSeeOther)
+
 	// Return structured response
 	return &utils.LoginResponse{
 		Message:      "Registration successful",
