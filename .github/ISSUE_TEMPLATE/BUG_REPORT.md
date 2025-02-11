@@ -21,12 +21,4 @@ Steps to reproduce the behavior:
 <!-- A clear and concise description of what you expected to happen. -->
 
 ## 📸 Screenshots (if applicable)  
-<!-- If applicable, add screenshots to help explain the problem. -->
-
-## 🖥️ Environment  
-- OS: [e.g., Windows 10, macOS Ventura]  
-- Browser: [e.g., Chrome, Firefox]  
-- Backend/Frontend Version: [e.g., v1.2.3]  
-
-## 📝 Additional Information  
-<!-- Add any other context or logs related to the bug here. -->
+<!-- If applicable, add screenshots to help explain the problem. --> 
