@@ -16,8 +16,8 @@ export default function AuthModal({ isOpen, onClose }) {
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-black-500 hover:text-gray-700">
-                    X
+                    className="abdolute top-4 right-4 text-black-500 hover:text-gray-700">
+                    ❌
                 </button>
 
                 {/* Tabs Header */}

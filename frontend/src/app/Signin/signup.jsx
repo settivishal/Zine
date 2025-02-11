@@ -41,6 +41,7 @@ export default function SignUp (){
               },
               body: JSON.stringify(payload),
             });
+
         
             if (!response.ok) {
               const errorData = await response.json();
@@ -49,6 +50,7 @@ export default function SignUp (){
             }
         
             const data = await response.json();
+            window.location.href = "/profile";
         } catch (error) {
             console.error("Error during register:", error);
             setErrorMessage("An error occurred. Please try again.");

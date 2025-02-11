@@ -50,13 +50,13 @@ const Hero = () => {
             <HeroOneButton
                 title={
                     <>
-                        {"The modern landing page for\n"}
-                        <span className="text-primary-500">
-                            React developers
+                        {"Per diem\n"}
+                        <span className="text-primary-500 font-bold text-7xl">
+                            ZINE
                         </span>
                     </>
                 }
-                description="The easiest way to build a React landing page in seconds."
+                description="Write and publish your day-to-day experiences"
             />
         </Section>
     </ div>
