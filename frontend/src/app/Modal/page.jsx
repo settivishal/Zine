@@ -12,12 +12,12 @@ export default function AuthModal({ isOpen, onClose }) {
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             {/* Modal Content */}
-            <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
+            <div className="relative bg-white rounded-lg shadow-lg max-w-md w-full p-6">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="abdolute top-4 right-4 text-black-500 hover:text-gray-700">
-                    ❌
+                    className="absolute right-4 top-4 text-black-500 text-xl hover:text-gray-700">
+                    ❎
                 </button>
 
                 {/* Tabs Header */}
