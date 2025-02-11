@@ -3,40 +3,22 @@ package services
 import (
 	"fmt"
 
-	"github.com/resend/resend-go/v2"
-
-	"os"
-
 	"log"
-
-	"github.com/joho/godotenv"
+	"net/smtp"
 )
 
-func SendEmail(Email string) (*resend.SendEmailResponse, error) {
+func SendMailSimple(subject string, html string, to []string) {
+	auth := smtp.PlainAuth("", "zinejounral@gmail.com", "zlse aoxk pzil cnnq", "smtp.gmail.com")
 
-	// Load environment variables from.env file
-	err := godotenv.Load()
+	Headers := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";"
+
+	msg := "Subject: " + subject + "\n" + Headers + "\n\n" + html
+
+	err := smtp.SendMail("smtp.gmail.com:587", auth, "zinejounral@gmail.com", to, []byte(msg))
+
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal(err)
+	} else {
+		fmt.Println("Email sent successfully!")
 	}
-
-	apiKey := os.Getenv("RESEND_API_KEY")
-
-	client := resend.NewClient(apiKey)
-
-	log.Println("Sending email to", Email)
-
-	params := &resend.SendEmailRequest{
-		From:    "onboarding@resend.dev",
-		To:      []string{Email},
-		Subject: "Welcome to Zine!",
-		Html:    "<h1> welcome to Zine! </h1>",
-	}
-
-	sent, err := client.Emails.Send(params)
-
-	fmt.Println(sent)
-
-	// sent is of type *resend.SendEmailResponse
-	return sent, err
 }
