@@ -1,13 +1,12 @@
 import Link from "next/link";
 
-import Background from "./Components/Background";
 import CenteredFooter from "./Components/footer/CenteredFooter";
 import Section from "../layout/Section";
-import Logo from "./Logo";
+// import Logo from "./Logo";
 import React from "react";
 
 const Footer = () => (
-    <Background color="bg-gray-100">
+    <div className = "bg-gray-100">
         <Section>
             <CenteredFooter
                 // logo={<Logo />}
@@ -86,7 +85,7 @@ const Footer = () => (
                 </li>
             </CenteredFooter>
         </Section>
-    </Background>
+    </div>
 );
 
 export default Footer;

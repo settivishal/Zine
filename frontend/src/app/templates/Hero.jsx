@@ -1,11 +1,10 @@
 import Link from "next/link";
 import React from "react";
 
-import Background from "./Components/Background";
 // import { Button } from "./Components/Button";
 import HeroOneButton from "./Components/HeroOneButton";
 import Section from "../layout/Section";
-import NavbarTwoColumns from "./Components/NavbarTwoColumns";
+// import NavbarTwoColumns from "./Components/NavbarTwoColumns";
 
 import Image from "next/image";
 import myImg from "../zine.png"
