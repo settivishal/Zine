@@ -1,8 +1,8 @@
 package main
 
 import (
-    "log"
-    "net/http"
+	"log"
+	"net/http"
 
 	"backend/config"
 	database "backend/db"
@@ -13,24 +13,27 @@ import (
 )
 
 func main() {
-    // Load configuration file
-    if err := config.LoadConfig(); err != nil {
-        log.Fatal("Failed to load config:", err)
-    }
+	// Load configuration file
+	if err := config.LoadConfig(); err != nil {
+		log.Fatal("Failed to load config:", err)
+	}
 
-    // Connect to the MongoDB
-    database.ConnectDB()
-    defer database.DisconnectDB()
+	// Connect to the MongoDB
+	database.ConnectDB()
+	defer database.DisconnectDB()
 
 	// Initialize the router
 	router := mux.NewRouter()
 
-	// Register routes
-	routes.Routes(router) // Using the existing Routes function
+	// Routes
+	routes.Routes(router)
+
+	// Swagger Routes
+	routes.SwaggerRoutes(router)
 
 	// Set up CORS
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000"}, // Allow access from localhost:3000
+		AllowedOrigins: []string{"http://localhost:3000", "http://localhost:8080"},
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type", "Authorization"},
 	})
@@ -41,7 +44,6 @@ func main() {
 	port := config.Env("PORT", "8080")
 	log.Println("Server running on port", port, "...")
 	log.Println("Swagger UI available at http://localhost:" + port + "/swagger/index.html")
-	// log.Fatal(http.ListenAndServe(":"+port, router))
     log.Fatal(http.ListenAndServe(":8080", handler))
 }
 
