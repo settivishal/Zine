@@ -45,7 +45,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*utils.LoginResponse, 
 
 	// Verify password
 	if !utils.CheckPasswordHash(credentials.Password, user.Password) {
-		return nil, errors.New("Invalid credentials"), http.StatusUnauthorized
+		return nil, errors.New("invalid credentials"), http.StatusUnauthorized
 	}
 
 	// Generate JWT tokens
@@ -72,7 +72,7 @@ func HandleRegister(r *http.Request) (*utils.RegisterResponse, error, int) {
 
 	// Check if the email already exists
 	if database.UserExists(credentials.Email) {
-		return nil, errors.New("Email already exists"), http.StatusConflict
+		return nil, errors.New("email already exists"), http.StatusConflict
 	}
 
 	// Hash password
@@ -92,8 +92,8 @@ func HandleRegister(r *http.Request) (*utils.RegisterResponse, error, int) {
 		return nil, errors.New(err.Error() + ": Error saving user"), http.StatusInternalServerError
 	}
 
-	// Send onboarding email
-	utils.SendEmail(credentials.Email)
+	// send email
+	SendMailSimple("Welcome to Zine!"+" "+credentials.Name, "<h1>Thank you for signing up!<h1> We are glad you joined us!", []string{credentials.Email})
 
 	// Return structured response
 	return &utils.RegisterResponse{
@@ -108,12 +108,12 @@ func HandleLogout(r *http.Request) (error, int) {
 	// Get Authorization Header
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
-		return errors.New("Missing token"), http.StatusUnauthorized
+		return errors.New("missing token"), http.StatusUnauthorized
 	}
 
 	tokenParts := strings.Split(authHeader, "Bearer ")
 	if len(tokenParts) < 2 {
-		return errors.New("Invalid token format"), http.StatusUnauthorized
+		return errors.New("invalid token format"), http.StatusUnauthorized
 	}
 
 	token := tokenParts[1]
@@ -123,6 +123,40 @@ func HandleLogout(r *http.Request) (error, int) {
 	err := utils.InvalidateJWT(token)
 	if err != nil {
 		return errors.New(err.Error() + ": Failed to logout"), http.StatusInternalServerError
+	}
+
+	return nil, http.StatusOK
+}
+
+func HandleChangePassword(w http.ResponseWriter, r *http.Request) (error, int) {
+	// Parse request body
+	var credentials utils.ChangePasswordCredentials
+	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
+		return errors.New("invalid request format"), http.StatusBadRequest
+	}
+
+	// Fetch user from database
+	user, err := database.GetUser(credentials.Email)
+	if err != nil {
+		return errors.New("invalid credentials"), http.StatusUnauthorized
+	}
+
+	// Verify password
+	if !utils.CheckPasswordHash(credentials.Password, user.Password) {
+		return errors.New("invalid credentials"), http.StatusUnauthorized
+	}
+
+	// Hash new password
+	hashedPassword, err := utils.HashPassword(credentials.NewPassword)
+	if err != nil {
+		return errors.New("error hashing password"), http.StatusInternalServerError
+	}
+
+	// log.Println("New Password", credentials.NewPassword)
+	// log.Println("New Password Hashed", hashedPassword)
+	// Update password in database
+	if err := database.UpdatePassword(user.Email, hashedPassword); err != nil {
+		return errors.New("error updating password"), http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK
