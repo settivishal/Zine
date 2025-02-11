@@ -28,18 +28,20 @@ func main() {
 	// Register routes
 	routes.Routes(router) // Using the existing Routes function
 
-	// Set up CORS -- after change stored the cors object
+	// Set up CORS
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:3000"}, // Allow access from localhost:3000
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type", "Authorization"},
 	})
-    // after change, used the cors object to create a handler
+
+    // Use the CORS middleware
     handler := c.Handler(router)
 
 	port := config.Env("PORT", "8080")
 	log.Println("Server running on port", port, "...")
 	log.Println("Swagger UI available at http://localhost:" + port + "/swagger/index.html")
-    // after change, passed the handler to the ListenAndServe function
-	log.Fatal(http.ListenAndServe(":"+port, handler))
+	// log.Fatal(http.ListenAndServe(":"+port, router))
+    log.Fatal(http.ListenAndServe(":8080", handler))
 }
+
