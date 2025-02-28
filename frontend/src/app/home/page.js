@@ -2,37 +2,35 @@
 import { useState } from 'react';
 import CalendarComponent from '../../../components/CalendarComponent';
 import CalendarWidget from '../../../components/CalendarWidget';
+import Navbar from '../../../components/navbar';
 
 export default function CalendarLayout() {
-  const [calendarView, setCalendarView] = useState('dayGridMonth'); // Default view is month
+  const [calendarView, setCalendarView] = useState('dayGridMonth');
 
   const handleViewChange = (newView) => {
     setCalendarView(newView);
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        gap: '1rem',
-        padding: '1rem',
-        height: '100vh',
-        backgroundColor: '#ffffff',
-      }}
-    >
-      {/* Calendar Widget */}
-      <div style={{ flexShrink: 0 }}>
-        <CalendarWidget />
-      </div>
+    <div className="flex flex-col p-4 min-h-screen bg-white">
+      {/* Navbar */}
+      <Navbar />
+      
+      {/* Calendar Content */}
+      <div className="flex flex-row gap-4 h-[calc(100vh-80px)]">
+        {/* Calendar Widget */}
+        <div className="flex-shrink-0">
+          <CalendarWidget />
+        </div>
 
-      {/* Full Calendar */}
-      <div style={{ flexGrow: 1 }}>
-        <CalendarComponent 
-          view={calendarView} 
-          onViewChange={handleViewChange} 
-          key={calendarView} 
-        />
+        {/* Full Calendar */}
+        <div className="flex-grow">
+          <CalendarComponent 
+            view={calendarView} 
+            onViewChange={handleViewChange} 
+            key={calendarView} 
+          />
+        </div>
       </div>
     </div>
   );
