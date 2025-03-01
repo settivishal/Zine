@@ -6,7 +6,6 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/gorilla/mux v1.8.1
 	github.com/joho/godotenv v1.5.1
-	github.com/resend/resend-go/v2 v2.15.0
 	github.com/rs/cors v1.11.1
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.4
@@ -18,20 +17,14 @@ require (
 require (
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/go-chi/chi/v5 v5.2.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/jsonreference v0.21.0 // indirect
 	github.com/go-openapi/spec v0.21.0 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
-	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
-	github.com/mailgun/errors v0.4.0 // indirect
-	github.com/mailgun/mailgun-go/v4 v4.22.1 // indirect
 	github.com/mailru/easyjson v0.9.0 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
-	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	github.com/swaggo/files v1.0.1 // indirect

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 	"reflect"
+	"time"
 
 	"errors"
 	"os"
@@ -137,5 +137,13 @@ func UpdatePassword(email string, hashedPassword string) error {
 	update := bson.M{"$set": bson.M{"password": hashedPassword}}
 
 	_, err := collection.UpdateOne(context.TODO(), filter, update)
+	return err
+}
+
+// InsertTag saves a new tag in MongoDB
+func InsertTag(Text string, Color string) error {
+	collection := client.Database("zine").Collection("tags")
+
+	_, err := collection.InsertOne(context.TODO(), bson.M{"text": Text, "color": Color})
 	return err
 }

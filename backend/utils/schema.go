@@ -57,3 +57,12 @@ type ChangePasswordCredentials struct {
 type ChangePasswordResponse struct {
 	Message string `json:"message"`
 }
+
+type Tag struct {
+	Text  string `json:"text"`
+	Color string `json:"color"`
+}
+
+type TagResponse struct {
+	Message string `json:"message"`
+}
