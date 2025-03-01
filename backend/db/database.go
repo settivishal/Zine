@@ -141,9 +141,25 @@ func UpdatePassword(email string, hashedPassword string) error {
 }
 
 // InsertTag saves a new tag in MongoDB
-func InsertTag(Text string, Color string) error {
+func InsertTag(UserID string, Text string, Color string) error {
 	collection := client.Database("zine").Collection("tags")
 
-	_, err := collection.InsertOne(context.TODO(), bson.M{"text": Text, "color": Color})
+	_, err := collection.InsertOne(context.TODO(), bson.M{"user_id": UserID, "text": Text, "color": Color})
+	return err
+}
+
+// DeleteTag removes a tag from MongoDB
+func DeleteTag(UserID string, Text string) error {
+	collection := client.Database("zine").Collection("tags")
+
+	// Check if the tag exists
+	filter := bson.M{"text": Text, "user_id": UserID}
+	var tag models.Tag
+	if err := collection.FindOne(context.TODO(), filter).Decode(&tag); err != nil {
+		return errors.New("tag not found")
+	}
+
+	_, err := collection.DeleteOne(context.TODO(), filter)
+
 	return err
 }

@@ -29,3 +29,27 @@ func CreateTag(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendJSONResponse(w, response, status)
 }
+
+// delete a tag
+// find the tag using the name
+// @Summary Delete Tag
+// @Description Delete a tag
+// @Tags tags
+// @Accept json
+// @Produce json
+// @Param request body object{tag=string} true "Tag details"
+// @Success 200 {object} utils.TagResponse
+// @Failure 400 {object} utils.ErrorResponse "Invalid request format"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 500 {object} utils.ErrorResponse "Error deleting tag"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /api/tags [DELETE]
+func DeleteTag(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleDeleteTag(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error deleting tag", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+}

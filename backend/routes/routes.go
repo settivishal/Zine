@@ -30,6 +30,7 @@ func Routes(router *mux.Router) {
 	api.HandleFunc("/profile", controllers.GetProfile).Methods("GET")
 	api.HandleFunc("/change_password", controllers.ChangePassword).Methods("POST")
 	api.HandleFunc("/tag/create", controllers.CreateTag).Methods("POST")
+	api.HandleFunc("/tag/delete", controllers.DeleteTag).Methods("POST")
 }
 
 func SwaggerRoutes(router *mux.Router) {
