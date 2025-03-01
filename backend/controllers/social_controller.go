@@ -38,4 +38,5 @@ func GoogleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.SendJSONResponse(w, response, http.StatusOK)
+	
 }
