@@ -74,3 +74,9 @@ type Tag struct {
 type TagResponse struct {
 	Message string `json:"message"`
 }
+
+type SetTag struct {
+	UserID string `json:"user_id"`
+	Text   string `json:"text"`
+	Date   string `json:"date"`
+}

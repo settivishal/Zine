@@ -8,7 +8,7 @@ type Blog struct {
 	Videos   []string `bson:"videos"`
 	Links    []string `bson:"links"`
 	Texts    []string `bson:"texts"`
-	Date     string   `bson:"date"`
+	Date     string   `bson:"date"` // THIS WILL BE UNIQUE FOR EACH BLOG
 	Order    []string `bson:"order"`
 	UserID   string   `bson:"user_id"`
 	TagIDs   []string `bson:"tag_ids"`

@@ -46,3 +46,22 @@ func HandleDeleteTag(w http.ResponseWriter, r *http.Request) (*utils.TagResponse
 		Message: "Tag deleted successfully",
 	}, nil, http.StatusOK
 }
+
+// HandleSetTag sets a tag to a specific date
+func HandleSetTag(w http.ResponseWriter, r *http.Request) (*utils.TagResponse, error, int) {
+	// Parse request body
+	var tag utils.SetTag
+	if err := json.NewDecoder(r.Body).Decode(&tag); err != nil {
+		return nil, errors.New(err.Error() + ": Invalid request format"), http.StatusBadRequest
+	}
+
+	// Set tag in database
+	if err := database.SetTag(tag.UserID, tag.Text, tag.Date); err != nil {
+		return nil, errors.New("error setting tag"), http.StatusInternalServerError
+	}
+
+	// Return structured response
+	return &utils.TagResponse{
+		Message: "Tag set successfully",
+	}, nil, http.StatusOK
+}

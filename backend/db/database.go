@@ -163,3 +163,39 @@ func DeleteTag(UserID string, Text string) error {
 
 	return err
 }
+
+// Set tags in MongoDB
+func SetTag(UserID string, Text string, Date string) error {
+	collection := client.Database("zine").Collection("tags")
+
+	// Check if the tag exists
+	filter := bson.M{"text": Text, "user_id": UserID}
+	var tag models.Tag
+	if err := collection.FindOne(context.TODO(), filter).Decode(&tag); err != nil {
+		return errors.New("tag not found")
+	}
+
+	// Add the date to the tag
+	tag.Dates = append(tag.Dates, Date)
+
+	// Update the tag in the database
+	update := bson.M{"$set": bson.M{"dates": tag.Dates}}
+	_, err := collection.UpdateOne(context.TODO(), filter, update)
+
+	// // Add the tagID to the calendar find by userID
+	// // Get the tag's object ID then in tagsDict of the calendar, have date as the key and add the tag ID to the array
+	// tagID := newTag.UpsertedID.(primitive.ObjectID).Hex()
+	// filter = bson.M{"user_id": UserID}
+	// var calender models.Calender
+	// if err := client.Database("zine").Collection("calender").FindOne(context.TODO(), filter).Decode(&calender); err != nil {
+	// 	return errors.New("calendar not found")
+	// }
+	// calender.TagDict[Date] = append(calender.TagDict[Date], tagID)
+
+	// // Add the tagID to the blog find by userID and Date
+	// filter = bson.M{"user_id": UserID, "date": Date}
+	// update = bson.M{"$addToSet": bson.M{"tag_ids": tagID}}
+	// _, err = client.Database("zine").Collection("blogs").UpdateOne(context.TODO(), filter, update)
+
+	return err
+}
