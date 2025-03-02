@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	database "backend/db"
+	"backend/models"
 	"backend/utils"
 )
 
@@ -83,4 +84,16 @@ func HandleRemoveTag(w http.ResponseWriter, r *http.Request) (*utils.TagResponse
 	return &utils.TagResponse{
 		Message: "Tag removed successfully",
 	}, nil, http.StatusOK
+}
+
+// HandleGetTags retrieves all tags for a user
+func HandleGetTags(w http.ResponseWriter, r *http.Request) ([]models.Tag, error, int) {
+	// Get tags from database
+	tags, err := database.GetTags(r.Context().Value("email").(string))
+	if err != nil {
+		return nil, errors.New("error getting tags"), http.StatusInternalServerError
+	}
+
+	// Return structured response
+	return tags, nil, http.StatusOK
 }

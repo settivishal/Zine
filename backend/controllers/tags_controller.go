@@ -99,3 +99,23 @@ func RemoveTag(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendJSONResponse(w, response, status)
 }
+
+// get all tags of an user
+// @Summary Get Tags
+// @Description Get all tags
+// @Tags tags
+// @Accept json
+// @Produce json
+// @Success 200 {object} []utils.Tag
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /api/tags [GET]
+func GetTags(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleGetTags(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error getting tags", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+}

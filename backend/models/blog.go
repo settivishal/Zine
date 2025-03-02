@@ -2,6 +2,7 @@ package models
 
 // User struct represents a user document
 type Blog struct {
+	ID       string   `bson:"_id,omitempty"`
 	Title    string   `bson:"title"`
 	Images   []string `bson:"images"`
 	Audios   []string `bson:"audios"`

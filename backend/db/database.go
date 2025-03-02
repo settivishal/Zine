@@ -225,3 +225,38 @@ func RemoveTag(UserID string, Text string, Date string) error {
 
 	return err
 }
+
+// GetTags retrieves all tags for a given user
+func GetTags(Email string) ([]models.Tag, error) {
+	collection := client.Database("zine").Collection("tags")
+
+	var tags []models.Tag
+
+	var user models.User
+	err := client.Database("zine").Collection("users").FindOne(context.TODO(), bson.M{"email": Email}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	user_id := user.ID
+
+	cursor, err := collection.Find(context.TODO(), bson.M{"user_id": user_id})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	for cursor.Next(context.TODO()) {
+		var tag models.Tag
+		err := cursor.Decode(&tag)
+		if err != nil {
+			return nil, err
+		}
+		tags = append(tags, tag)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return tags, nil
+}

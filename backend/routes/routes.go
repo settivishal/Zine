@@ -33,6 +33,7 @@ func Routes(router *mux.Router) {
 	api.HandleFunc("/tag/delete", controllers.DeleteTag).Methods("POST")
 	api.HandleFunc("/tag/set", controllers.SetTag).Methods("POST")
 	api.HandleFunc("/tag/remove", controllers.RemoveTag).Methods("POST")
+	api.HandleFunc("/tags", controllers.GetTags).Methods("GET")
 }
 
 func SwaggerRoutes(router *mux.Router) {
