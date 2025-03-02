@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"time"
 	"testing"
+	"time"
 )
 
 func TestGenerateJWT(t *testing.T) {
@@ -58,11 +58,35 @@ func TestGenerateJWT(t *testing.T) {
 			}
 
 			// Check if the expiration time is correct
-			if expirationTime.Before(time.Now()) && expirationTime.Add(time.Millisecond * 500).Before(time.Now()) {
+			if expirationTime.Before(time.Now()) && expirationTime.Add(time.Millisecond*500).Before(time.Now()) {
 				t.Fatalf("Expected expiration time to be in the future, got: %v", expirationTime)
 			}
 
 			t.Logf("Success, Generated JWT for email: %s, subject: %s, expiry: %v", tt.email, tt.subject, tt.expiry)
 		})
+	}
+}
+
+func TestValidateJWT(t *testing.T) {
+	email := "test@example.com"
+	subject := "user123"
+	expiry := time.Hour
+
+	token, _, err := GenerateJWT(email, subject, expiry)
+	if err != nil {
+		t.Fatalf("Failed to generate token: %v", err)
+	}
+
+	claims, err := ValidateJWT(token)
+	if err != nil {
+		t.Fatalf("ValidateJWT() returned an error: %v", err)
+	}
+
+	if claims.Email != email {
+		t.Fatalf("Expected email %s, got %s", email, claims.Email)
+	}
+
+	if claims.Subject != subject {
+		t.Fatalf("Expected subject %s, got %s", subject, claims.Subject)
 	}
 }
