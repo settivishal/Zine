@@ -37,7 +37,7 @@ func Config() {
 	s3Client := s3.NewFromConfig(cfg)
 
 	// Upload file to S3
-	fileName := "example.txt"
+	fileName := "example1.txt"
 	err = uploadFileToS3(s3Client, S3_BUCKET_NAME, fileName, strings.NewReader("Hello, World!"))
 	if err != nil {
 		log.Fatalf("Failed to upload file: %v", err)
