@@ -2,7 +2,8 @@ package utils
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -21,6 +22,18 @@ func TestSendErrorResponse(t *testing.T) {
 			err:        nil,
 			statusCode: http.StatusBadRequest,
 		},
+		{
+			name:       "Error response with error message",
+			message:    "Something went wrong",
+			err:        errors.New("database connection failed"),
+			statusCode: http.StatusInternalServerError,
+		},
+		{
+			name:       "Error response with empty message",
+			message:    "",
+			err:        errors.New("missing parameters"),
+			statusCode: http.StatusUnprocessableEntity,
+		},
 	}
 
 	for _, tt := range tests {
@@ -32,7 +45,7 @@ func TestSendErrorResponse(t *testing.T) {
 				t.Fatalf("Expected status %d, got %d", tt.statusCode, recorder.Code)
 			}
 
-			body, _ := ioutil.ReadAll(recorder.Body)
+			body, _ := io.ReadAll(recorder.Body)
 			var response map[string]interface{}
 			json.Unmarshal(body, &response)
 
@@ -56,6 +69,11 @@ func TestSendResponse(t *testing.T) {
 			message:    "Success",
 			statusCode: http.StatusOK,
 		},
+		{
+			name:       "Empty message response",
+			message:    "",
+			statusCode: http.StatusNoContent,
+		},
 	}
 
 	for _, tt := range tests {
@@ -67,7 +85,7 @@ func TestSendResponse(t *testing.T) {
 				t.Fatalf("Expected status %d, got %d", tt.statusCode, recorder.Code)
 			}
 
-			body, _ := ioutil.ReadAll(recorder.Body)
+			body, _ := io.ReadAll(recorder.Body)
 			var response map[string]interface{}
 			json.Unmarshal(body, &response)
 
@@ -93,6 +111,11 @@ func TestSendJSONResponse(t *testing.T) {
 			},
 			statusCode: http.StatusOK,
 		},
+		{
+			name:       "Empty JSON response",
+			response:   map[string]string{},
+			statusCode: http.StatusNoContent,
+		},
 	}
 
 	for _, tt := range tests {
@@ -104,15 +127,15 @@ func TestSendJSONResponse(t *testing.T) {
 				t.Fatalf("Expected status %d, got %d", tt.statusCode, recorder.Code)
 			}
 
-			body, _ := ioutil.ReadAll(recorder.Body)
+			body, _ := io.ReadAll(recorder.Body)
 			var response map[string]string
 			json.Unmarshal(body, &response)
 
-			if response["message"] != tt.response["message"] {
+			if len(tt.response) > 0 && response["message"] != tt.response["message"] {
 				t.Fatalf("Expected message '%s', got '%s'", tt.response["message"], response["message"])
 			}
 
-			t.Logf("Success, received expected JSON message: %s", tt.response["message"])
+			t.Logf("Success, received expected JSON response")
 		})
 	}
 }
