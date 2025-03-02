@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"net/http"
 
 	"backend/utils"
@@ -20,13 +20,13 @@ func GoogleLogin(w http.ResponseWriter, r *http.Request) {
 	url, err := services.GetGoogleAuthURL()
 
 	if err != nil {
-		utils.SendErrorResponse(w, "Encryption error", err, http.StatusInternalServerError)
+		utils.SendErrorResponse(w, "Failed to generate random state", err, http.StatusInternalServerError)
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"auth_url": url,
-	})
+	response := map[string]string{"auth_url": url}
+
+	utils.SendJSONResponse(w, response, http.StatusOK)
 }
 
 // GoogleCallback handles the callback from Google OAuth2
@@ -38,5 +38,4 @@ func GoogleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.SendJSONResponse(w, response, http.StatusOK)
-	
 }

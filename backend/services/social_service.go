@@ -2,10 +2,13 @@ package services
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
+	"fmt"
 
 	"backend/config"
 	"backend/db"
@@ -17,12 +20,31 @@ import (
 
 // GetGoogleAuthURL returns the encrypted Google OAuth URL
 func GetGoogleAuthURL() (string, error) {
-	encryptionKey := []byte(config.Env("AES_GCM_SECRET_KEY"))
-	url := config.GoogleOauthConfig.AuthCodeURL("randomstate")
+	state, err := generateRandomState()
+	if err != nil {
+		return "", fmt.Errorf("failed to generate random state: %w", err)
+	}
 
-	return utils.Encrypt(url, encryptionKey)
+	url := config.GoogleOauthConfig.AuthCodeURL(state)
+
+	return url, err
 }
 
+// generateRandomState creates a secure random string for the OAuth state
+func generateRandomState() (string, error) {
+	// Generate 16 random bytes (128 bits)
+	bytes := make([]byte, 16)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "", err
+	}
+
+	// Encode the bytes to a URL-safe base64 string
+	state := base64.URLEncoding.EncodeToString(bytes)
+	return state, nil
+}
+
+// HandleGoogleCallback handles the callback from Google OAuth2
 func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) (*utils.LoginResponse, error) {
 	if err := r.URL.Query().Get("error"); err != "" {
 		return nil, errors.New("Google authentication error: " + err)
