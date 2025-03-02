@@ -12,7 +12,7 @@ export default function CalendarLayout() {
   };
 
   return (
-    <div className="flex flex-col p-4 min-h-screen bg-white">
+    <div className="relative flex flex-col p-4 min-h-screen bg-white">
       {/* Navbar */}
       <Navbar />
       

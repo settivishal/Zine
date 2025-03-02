@@ -46,7 +46,7 @@ export default function LoginPage() {
         // Store tokens and redirect or update UI as needed
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("refreshToken", data.refreshToken);
-        window.location.href = "/profile"; // Redirect upon success
+        window.location.href = "/home"; // Redirect upon success
       } catch (error) {
         console.error("Error during login:", error);
         setErrorMessage("An error occurred. Please try again.");
