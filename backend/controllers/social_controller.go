@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	// "encoding/json"
 	"net/http"
 
 	"backend/utils"
