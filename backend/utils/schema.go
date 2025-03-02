@@ -22,6 +22,13 @@ type RegisterResponse struct {
 	Email   string `json:"email"`
 	Name    string `json:"name"`
 }
+type UserInfoResponse struct {
+	Message string `json:"message"`
+	Email   string `json:"email"`
+	Name    string `json:"name"`
+	Image   string `json:"image"`
+	Bio     string `json:"bio"`
+}
 
 type LoginResponse struct {
 	Message      string    `json:"message"`
@@ -56,4 +63,20 @@ type ChangePasswordCredentials struct {
 
 type ChangePasswordResponse struct {
 	Message string `json:"message"`
+}
+
+type Tag struct {
+	UserID string `json:"user_id"`
+	Text   string `json:"text"`
+	Color  string `json:"color"`
+}
+
+type TagResponse struct {
+	Message string `json:"message"`
+}
+
+type SetTag struct {
+	UserID string `json:"user_id"`
+	Text   string `json:"text"`
+	Date   string `json:"date"`
 }
