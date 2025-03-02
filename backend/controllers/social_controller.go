@@ -31,11 +31,11 @@ func GoogleLogin(w http.ResponseWriter, r *http.Request) {
 
 // GoogleCallback handles the callback from Google OAuth2
 func GoogleCallback(w http.ResponseWriter, r *http.Request) {
-	response, err := services.HandleGoogleCallback(w, r)
+	response, status, err := services.HandleGoogleCallback(w, r)
 	if err != nil {
-		utils.SendErrorResponse(w, "Google authentication failed", err, http.StatusInternalServerError)
+		utils.SendErrorResponse(w, "Google authentication failed", err, status)
 		return
 	}
 
-	utils.SendJSONResponse(w, response, http.StatusOK)
+	utils.SendJSONResponse(w, response, status)
 }

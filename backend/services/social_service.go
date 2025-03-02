@@ -45,37 +45,37 @@ func generateRandomState() (string, error) {
 }
 
 // HandleGoogleCallback handles the callback from Google OAuth2
-func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) (*utils.LoginResponse, error) {
+func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) (*utils.LoginResponse, int, error) {
 	if err := r.URL.Query().Get("error"); err != "" {
-		return nil, errors.New("Google authentication error: " + err)
+		return nil, http.StatusBadRequest, errors.New("Google authentication error: " + err)
 	}
 	code := r.URL.Query().Get("code")
 
 	if code == "" {
-		return nil, errors.New("No code found")
+		return nil, http.StatusBadRequest, errors.New("No code found in request")
 	}
 
 	token, err := config.GoogleOauthConfig.Exchange(context.Background(), code)
 	if err != nil {
-		return nil, err
+		return nil, http.StatusInternalServerError, err
 	}
 
 	client := config.GoogleOauthConfig.Client(context.Background(), token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
-		return nil, err
+		return nil, http.StatusInternalServerError, err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, http.StatusInternalServerError, err
 	}
 
 	var user utils.GoogleUser
 	err = json.Unmarshal(body, &user)
 	if err != nil {
-		return nil, err
+		return nil, http.StatusInternalServerError, err
 	}
 
 	// Update ot Create User Data
@@ -87,7 +87,7 @@ func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) (*utils.LoginR
 	}
 
 	if err := database.UpsertUser("users", bson.M{"email": user.Email}, updateData); err != nil {
-		return nil, err
+		return nil, http.StatusInternalServerError, err
 	}
 
 	// Generate Access and Refresh Tokens
@@ -97,7 +97,7 @@ func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) (*utils.LoginR
 	}
 	accessToken, accessExpiry, refreshToken := GenerateTokens(credentials, w)
 
-	http.Redirect(w, r, "http://localhost:3000/home", http.StatusSeeOther)
+	// http.Redirect(w, r, "http://localhost:3000/home", http.StatusSeeOther)
 
 	// Return structured response
 	return &utils.LoginResponse{
@@ -107,5 +107,5 @@ func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) (*utils.LoginR
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		ExpiresAt:    accessExpiry,
-	}, nil
+	}, http.StatusOK, nil
 }
