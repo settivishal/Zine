@@ -1,14 +1,14 @@
 package services
 
 import (
-	"net/http"
 	"errors"
+	"net/http"
 
+	database "backend/db"
 	"backend/utils"
-	"backend/db"
 )
 
-func HandleProfile(w http.ResponseWriter, r *http.Request) (*utils.RegisterResponse, error, int) {
+func HandleProfile(w http.ResponseWriter, r *http.Request) (*utils.UserInfoResponse, error, int) {
 	Email, ok := r.Context().Value("email").(string)
 
 	if !ok {
@@ -18,12 +18,14 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) (*utils.RegisterRespo
 	user, err := database.GetUser(Email)
 
 	if err != nil {
-		return nil, errors.New("Error getting user with email: "+Email), http.StatusBadRequest
+		return nil, errors.New("Error getting user with email: " + Email), http.StatusBadRequest
 	}
 
-	return &utils.RegisterResponse{
+	return &utils.UserInfoResponse{
 		Message: "Welcome, " + user.Name,
 		Name:    user.Name,
 		Email:   user.Email,
+		Image:   user.Image,
+		Bio:     user.Bio,
 	}, nil, http.StatusOK
 }
