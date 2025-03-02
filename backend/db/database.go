@@ -199,3 +199,29 @@ func SetTag(UserID string, Text string, Date string) error {
 
 	return err
 }
+
+// remove tag from a specific date
+func RemoveTag(UserID string, Text string, Date string) error {
+	collection := client.Database("zine").Collection("tags")
+
+	// Check if the tag exists
+	filter := bson.M{"text": Text, "user_id": UserID}
+	var tag models.Tag
+	if err := collection.FindOne(context.TODO(), filter).Decode(&tag); err != nil {
+		return errors.New("tag not found")
+	}
+
+	// Remove the date from the tag
+	for i, date := range tag.Dates {
+		if date == Date {
+			tag.Dates = append(tag.Dates[:i], tag.Dates[i+1:]...)
+			break
+		}
+	}
+
+	// Update the tag in the database
+	update := bson.M{"$set": bson.M{"dates": tag.Dates}}
+	_, err := collection.UpdateOne(context.TODO(), filter, update)
+
+	return err
+}

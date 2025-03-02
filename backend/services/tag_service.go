@@ -65,3 +65,22 @@ func HandleSetTag(w http.ResponseWriter, r *http.Request) (*utils.TagResponse, e
 		Message: "Tag set successfully",
 	}, nil, http.StatusOK
 }
+
+// HandleRemoveTag removes a tag from a specific date
+func HandleRemoveTag(w http.ResponseWriter, r *http.Request) (*utils.TagResponse, error, int) {
+	// Parse request body
+	var tag utils.SetTag
+	if err := json.NewDecoder(r.Body).Decode(&tag); err != nil {
+		return nil, errors.New(err.Error() + ": Invalid request format"), http.StatusBadRequest
+	}
+
+	// Remove tag from database
+	if err := database.RemoveTag(tag.UserID, tag.Text, tag.Date); err != nil {
+		return nil, errors.New("error removing tag"), http.StatusInternalServerError
+	}
+
+	// Return structured response
+	return &utils.TagResponse{
+		Message: "Tag removed successfully",
+	}, nil, http.StatusOK
+}

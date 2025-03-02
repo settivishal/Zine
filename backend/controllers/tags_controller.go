@@ -76,3 +76,26 @@ func SetTag(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendJSONResponse(w, response, status)
 }
+
+// remove tag from a specific date
+// @Summary Remove Tag
+// @Description Remove a tag from a specific date
+// @Tags tags
+// @Accept json
+// @Produce json
+// @Param request body object{user_id=string,text=string,date=string} true "Tag details"
+// @Success 200 {object} utils.TagResponse
+// @Failure 400 {object} utils.ErrorResponse "Invalid request format"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 500 {object} utils.ErrorResponse "Error removing tag"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /api/tags/remove [POST]
+func RemoveTag(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleRemoveTag(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error removing tag", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+}
