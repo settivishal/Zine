@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"strings"
 
 	"os"
 
@@ -22,8 +21,8 @@ func Config() {
 	AWS_ACCESS_KEY := os.Getenv("AWS_ACCESS_KEY")
 	AWS_SECRET_ACCESS_KEY := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	AWS_REGION := os.Getenv("AWS_REGION")
-	S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
-	CLOUDFRONT_DOMAIN := os.Getenv("CLOUDFRONT_DOMAIN")
+	// S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
+	// CLOUDFRONT_DOMAIN := os.Getenv("CLOUDFRONT_DOMAIN")
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithRegion(AWS_REGION),
@@ -33,19 +32,24 @@ func Config() {
 		log.Fatalf("Unable to load SDK config, %v", err)
 	}
 
-	// Initialize S3 and CloudFront clients
-	s3Client := s3.NewFromConfig(cfg)
+	log.Println("AWS SDK configuration loaded successfully")
+	log.Println(cfg)
 
-	// Upload file to S3
-	fileName := "example1.txt"
-	err = uploadFileToS3(s3Client, S3_BUCKET_NAME, fileName, strings.NewReader("Hello, World!"))
-	if err != nil {
-		log.Fatalf("Failed to upload file: %v", err)
-	}
+	// // Uncomment the following lines to test the AWS SDK configuration
 
-	// Generate CloudFront URL
-	cloudfrontURL := getCloudFrontURL(CLOUDFRONT_DOMAIN, fileName)
-	fmt.Printf("File available at: %s\n", cloudfrontURL)
+	// // Initialize S3 and CloudFront clients
+	// s3Client := s3.NewFromConfig(cfg)
+
+	// // Upload file to S3
+	// fileName := "example1.txt"
+	// err = uploadFileToS3(s3Client, S3_BUCKET_NAME, fileName, strings.NewReader("Hello, World!"))
+	// if err != nil {
+	// 	log.Fatalf("Failed to upload file: %v", err)
+	// }
+
+	// // Generate CloudFront URL
+	// cloudfrontURL := getCloudFrontURL(CLOUDFRONT_DOMAIN, fileName)
+	// fmt.Printf("File available at: %s\n", cloudfrontURL)
 }
 
 // Helper function to Upload a file to S3
