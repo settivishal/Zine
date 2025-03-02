@@ -3,7 +3,6 @@ package services
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -117,7 +116,6 @@ func HandleLogout(r *http.Request) (error, int) {
 	}
 
 	token := tokenParts[1]
-	log.Println("Logging out user with token:", token)
 
 	// Invalidate JWT Token
 	err := utils.InvalidateJWT(token)
