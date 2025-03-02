@@ -66,9 +66,8 @@ type ChangePasswordResponse struct {
 }
 
 type Tag struct {
-	UserID string `json:"user_id"`
-	Text   string `json:"text"`
-	Color  string `json:"color"`
+	Text  string `json:"text"`
+	Color string `json:"color"`
 }
 
 type TagResponse struct {
@@ -76,7 +75,6 @@ type TagResponse struct {
 }
 
 type SetTag struct {
-	UserID string `json:"user_id"`
-	Text   string `json:"text"`
-	Date   string `json:"date"`
+	Text string `json:"text"`
+	Date string `json:"date"`
 }

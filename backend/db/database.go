@@ -141,35 +141,56 @@ func UpdatePassword(email string, hashedPassword string) error {
 }
 
 // InsertTag saves a new tag in MongoDB
-func InsertTag(UserID string, Text string, Color string) error {
+func InsertTag(Email string, Text string, Color string) error {
 	collection := client.Database("zine").Collection("tags")
 
-	_, err := collection.InsertOne(context.TODO(), bson.M{"user_id": UserID, "text": Text, "color": Color})
+	var user models.User
+	err := client.Database("zine").Collection("users").FindOne(context.TODO(), bson.M{"email": Email}).Decode(&user)
+	if err != nil {
+		return err
+	}
+	user_id := user.ID
+
+	_, err = collection.InsertOne(context.TODO(), bson.M{"user_id": user_id, "text": Text, "color": Color})
 	return err
 }
 
 // DeleteTag removes a tag from MongoDB
-func DeleteTag(UserID string, Text string) error {
+func DeleteTag(Email string, Text string) error {
 	collection := client.Database("zine").Collection("tags")
 
+	var user models.User
+	err := client.Database("zine").Collection("users").FindOne(context.TODO(), bson.M{"email": Email}).Decode(&user)
+	if err != nil {
+		return err
+	}
+	user_id := user.ID
+
 	// Check if the tag exists
-	filter := bson.M{"text": Text, "user_id": UserID}
+	filter := bson.M{"text": Text, "user_id": user_id}
 	var tag models.Tag
 	if err := collection.FindOne(context.TODO(), filter).Decode(&tag); err != nil {
 		return errors.New("tag not found")
 	}
 
-	_, err := collection.DeleteOne(context.TODO(), filter)
+	_, err = collection.DeleteOne(context.TODO(), filter)
 
 	return err
 }
 
 // Set tags in MongoDB
-func SetTag(UserID string, Text string, Date string) error {
+func SetTag(Email string, Text string, Date string) error {
 	collection := client.Database("zine").Collection("tags")
 
+	var user models.User
+	err := client.Database("zine").Collection("users").FindOne(context.TODO(), bson.M{"email": Email}).Decode(&user)
+	if err != nil {
+		return err
+	}
+	user_id := user.ID
+
 	// Check if the tag exists
-	filter := bson.M{"text": Text, "user_id": UserID}
+	filter := bson.M{"text": Text, "user_id": user_id}
 	var tag models.Tag
 	if err := collection.FindOne(context.TODO(), filter).Decode(&tag); err != nil {
 		return errors.New("tag not found")
@@ -180,32 +201,24 @@ func SetTag(UserID string, Text string, Date string) error {
 
 	// Update the tag in the database
 	update := bson.M{"$set": bson.M{"dates": tag.Dates}}
-	_, err := collection.UpdateOne(context.TODO(), filter, update)
-
-	// // Add the tagID to the calendar find by userID
-	// // Get the tag's object ID then in tagsDict of the calendar, have date as the key and add the tag ID to the array
-	// tagID := newTag.UpsertedID.(primitive.ObjectID).Hex()
-	// filter = bson.M{"user_id": UserID}
-	// var calender models.Calender
-	// if err := client.Database("zine").Collection("calender").FindOne(context.TODO(), filter).Decode(&calender); err != nil {
-	// 	return errors.New("calendar not found")
-	// }
-	// calender.TagDict[Date] = append(calender.TagDict[Date], tagID)
-
-	// // Add the tagID to the blog find by userID and Date
-	// filter = bson.M{"user_id": UserID, "date": Date}
-	// update = bson.M{"$addToSet": bson.M{"tag_ids": tagID}}
-	// _, err = client.Database("zine").Collection("blogs").UpdateOne(context.TODO(), filter, update)
+	_, err = collection.UpdateOne(context.TODO(), filter, update)
 
 	return err
 }
 
 // remove tag from a specific date
-func RemoveTag(UserID string, Text string, Date string) error {
+func RemoveTag(Email string, Text string, Date string) error {
 	collection := client.Database("zine").Collection("tags")
 
+	var user models.User
+	err := client.Database("zine").Collection("users").FindOne(context.TODO(), bson.M{"email": Email}).Decode(&user)
+	if err != nil {
+		return err
+	}
+	user_id := user.ID
+
 	// Check if the tag exists
-	filter := bson.M{"text": Text, "user_id": UserID}
+	filter := bson.M{"text": Text, "user_id": user_id}
 	var tag models.Tag
 	if err := collection.FindOne(context.TODO(), filter).Decode(&tag); err != nil {
 		return errors.New("tag not found")
@@ -221,7 +234,7 @@ func RemoveTag(UserID string, Text string, Date string) error {
 
 	// Update the tag in the database
 	update := bson.M{"$set": bson.M{"dates": tag.Dates}}
-	_, err := collection.UpdateOne(context.TODO(), filter, update)
+	_, err = collection.UpdateOne(context.TODO(), filter, update)
 
 	return err
 }
