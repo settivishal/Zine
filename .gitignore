@@ -1,3 +1,7 @@
 *.exe
-.env
-**/coverage*
+.env*
+*/coverage
+!.env.project
+!.env.vault
+!.env.example
+.flaskenv*
