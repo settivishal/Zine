@@ -33,23 +33,6 @@ func Config() {
 	}
 
 	log.Println("AWS SDK configuration loaded successfully")
-	// log.Println(cfg)
-
-	// // Uncomment the following lines to test the AWS SDK configuration
-
-	// // Initialize S3 and CloudFront clients
-	// s3Client := s3.NewFromConfig(cfg)
-
-	// // Upload file to S3
-	// fileName := "example1.txt"
-	// err = uploadFileToS3(s3Client, S3_BUCKET_NAME, fileName, strings.NewReader("Hello, World!"))
-	// if err != nil {
-	// 	log.Fatalf("Failed to upload file: %v", err)
-	// }
-
-	// // Generate CloudFront URL
-	// cloudfrontURL := getCloudFrontURL(CLOUDFRONT_DOMAIN, fileName)
-	// fmt.Printf("File available at: %s\n", cloudfrontURL)
 }
 
 // Helper function to Upload a file to S3
