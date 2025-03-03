@@ -6,6 +6,16 @@ definitions:
       message:
         type: string
     type: object
+  utils.ForgotPasswordRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  utils.ForgotPasswordResponse:
+    properties:
+      message:
+        type: string
+    type: object
   utils.LoginResponse:
     properties:
       access_token:
@@ -35,9 +45,61 @@ definitions:
       name:
         type: string
     type: object
+  utils.ResetPasswordRequest:
+    properties:
+      password:
+        type: string
+      token:
+        type: string
+    type: object
+  utils.Tag:
+    properties:
+      color:
+        type: string
+      text:
+        type: string
+    type: object
+  utils.TagResponse:
+    properties:
+      message:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
+  /api/image/update:
+    post:
+      consumes:
+      - application/json
+      description: Update image of a user
+      parameters:
+      - description: Image file
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.RegisterResponse'
+        "400":
+          description: Invalid request format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Update Image
+      tags:
+      - users
   /api/profile:
     get:
       description: Get deatils of a user
@@ -51,6 +113,185 @@ paths:
       summary: Get Profile
       tags:
       - users
+  /api/tags:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a tag
+      parameters:
+      - description: Tag details
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            tag:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.TagResponse'
+        "400":
+          description: Invalid request format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Delete Tag
+      tags:
+      - tags
+    get:
+      consumes:
+      - application/json
+      description: Get all tags
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/utils.Tag'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get Tags
+      tags:
+      - tags
+    post:
+      consumes:
+      - application/json
+      description: Create a new tag
+      parameters:
+      - description: Tag details
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            tag:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.TagResponse'
+        "400":
+          description: Invalid request format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Create Tag
+      tags:
+      - tags
+  /api/tags/remove:
+    post:
+      consumes:
+      - application/json
+      description: Remove a tag from a specific date
+      parameters:
+      - description: Tag details
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            date:
+              type: string
+            text:
+              type: string
+            user_id:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.TagResponse'
+        "400":
+          description: Invalid request format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Remove Tag
+      tags:
+      - tags
+  /api/tags/set:
+    post:
+      consumes:
+      - application/json
+      description: Set a tag to a specific date
+      parameters:
+      - description: Tag details
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            date:
+              type: string
+            text:
+              type: string
+            user_id:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.TagResponse'
+        "400":
+          description: Invalid request format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Set Tag
+      tags:
+      - tags
   /api/v1/hello:
     get:
       consumes:
@@ -75,6 +316,36 @@ paths:
         "200":
           description: OK
       summary: Google Login
+      tags:
+      - users
+  /consumer/forgot_password:
+    post:
+      consumes:
+      - application/json
+      description: Sends a password reset link to the user's email
+      parameters:
+      - description: Forgot Password Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/utils.ForgotPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password reset link sent
+          schema:
+            $ref: '#/definitions/utils.ForgotPasswordResponse'
+        "400":
+          description: Error resetting password
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Forgot Password
       tags:
       - users
   /consumer/login:
@@ -189,6 +460,36 @@ paths:
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
       summary: User Login
+      tags:
+      - users
+  /consumer/reset_password:
+    post:
+      consumes:
+      - application/json
+      description: Resets the user's password using the provided token
+      parameters:
+      - description: Reset Password Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/utils.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password has been reset successfully
+          schema:
+            $ref: '#/definitions/utils.ForgotPasswordResponse'
+        "400":
+          description: Invalid or expired token
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Reset Password
       tags:
       - users
 swagger: "2.0"
