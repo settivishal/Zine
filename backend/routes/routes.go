@@ -18,6 +18,7 @@ func Routes(router *mux.Router) {
 	userRouter.HandleFunc("/login", controllers.Login).Methods("POST")
 	userRouter.HandleFunc("/register", controllers.Register).Methods("POST")
 	userRouter.HandleFunc("/logout", controllers.Logout).Methods("POST")
+	userRouter.HandleFunc("/forgot_password", controllers.ForgotPassword).Methods("POST")
 
 	// Google
 	authRouter := router.PathPrefix("/auth").Subrouter()

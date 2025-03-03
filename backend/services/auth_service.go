@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"crypto/rand"
+	"encoding/hex"
 
 	"backend/db"
 	"backend/models"
@@ -158,4 +160,38 @@ func HandleChangePassword(w http.ResponseWriter, r *http.Request) (error, int) {
 	}
 
 	return nil, http.StatusOK
+}
+
+func InitiatePasswordReset(email string) error {
+	// Find user by email
+	user, err := database.GetUser(email)
+	if err != nil {
+		// We don't reveal if the email exists
+		return nil
+	}
+	
+	// Generate a secure random token
+	token, err := generateRandomToken(32)
+	if err != nil {
+		return err
+	}
+	
+	// Store token in database
+	err = database.CreatePasswordResetToken(user.ID, token)
+	if err != nil {
+		return err
+	}
+	
+	// Send reset email
+	resetURL := "https://yourapp.com/reset-password?token=" + token
+	return SendPasswordResetEmail(user.Email, user.Name, resetURL)
+}
+
+// Generate a random token
+func generateRandomToken(length int) (string, error) {
+	bytes := make([]byte, length)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
 }

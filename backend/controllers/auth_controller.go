@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"encoding/json"
 
 	"backend/config"
 	"backend/services"
@@ -9,6 +10,10 @@ import (
 )
 
 var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOXbP"))
+
+type ForgotPasswordRequest struct {
+	Email string `json:"email"`
+}
 
 // Login handles user authentication
 
@@ -85,4 +90,34 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.SendJSONResponse(w, response, status)
+}
+
+// ForgotPassword handles forgot password requests
+func ForgotPassword(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req ForgotPasswordRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		utils.SendErrorResponse(w, "Invalid request", err, http.StatusBadRequest)
+		return
+	}
+
+	if req.Email == "" {
+		utils.SendResponse(w, "Email is required", http.StatusBadRequest)
+		return
+	}
+
+	// Process forgot password request
+	err = services.InitiatePasswordReset(req.Email)
+
+	response := utils.LogoutResponse{
+		Message: "A password reset link has been sent",
+	}
+
+	// Always return the same message to prevent email enumeration
+	utils.SendJSONResponse(w, response, http.StatusOK)
 }
