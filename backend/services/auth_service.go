@@ -1,17 +1,20 @@
 package services
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 	"time"
-	"crypto/rand"
-	"encoding/hex"
 
 	"backend/db"
 	"backend/models"
 	"backend/utils"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Return Access and Refesh Tokens
@@ -185,6 +188,31 @@ func InitiatePasswordReset(email string) error {
 	// Send reset email
 	resetURL := "https://yourapp.com/reset-password?token=" + token
 	return SendPasswordResetEmail(user.Email, user.Name, resetURL)
+}
+
+func ResetPassword(token, newPassword string) error {
+	// Validate the token
+	resetToken, err := database.GetValidToken(token)
+	if err != nil {
+		return errors.New("invalid or expired token")
+	}
+	
+	// Hash the new password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	log.Println("resetToken.UserID: ", resetToken.UserID)
+	
+	// Update user's password
+	err = database.UpdateUserPassword(resetToken.UserID, string(hashedPassword))
+	if err != nil {
+		return err
+	}
+	
+	// Mark token as used
+	return database.MarkTokenAsUsed(resetToken.ID)
 }
 
 // Generate a random token

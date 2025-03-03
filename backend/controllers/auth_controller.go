@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 
 	"backend/config"
 	"backend/services"
@@ -13,6 +13,19 @@ var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOX
 
 type ForgotPasswordRequest struct {
 	Email string `json:"email"`
+}
+
+// ResetPasswordRequest defines the request body
+type ResetPasswordRequest struct {
+	Token    string `json:"token"`
+	Password string `json:"password"`
+}
+
+// Response defines a standard API response
+type Response struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+	Error   string `json:"error,omitempty"`
 }
 
 // Login handles user authentication
@@ -95,7 +108,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 // ForgotPassword handles forgot password requests
 func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		utils.SendResponse(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -119,5 +132,44 @@ func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Always return the same message to prevent email enumeration
+	utils.SendJSONResponse(w, response, http.StatusOK)
+}
+
+// ResetPasswordHandler handles password reset requests
+func ResetPassword(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.SendResponse(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req ResetPasswordRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		utils.SendErrorResponse(w, "Invalid request", err, http.StatusBadRequest)
+		return
+	}
+
+	if req.Token == "" || req.Password == "" {
+		utils.SendResponse(w, "Token and password are required", http.StatusBadRequest)
+		return
+	}
+
+	// Password complexity validation could be added here
+	if len(req.Password) < 8 {
+		utils.SendResponse(w, "Password must be at least 8 characters", http.StatusBadRequest)
+		return
+	}
+
+	// Process password reset
+	err = services.ResetPassword(req.Token, req.Password)
+	if err != nil {
+		utils.SendErrorResponse(w, "Invalid or expired token", err, http.StatusBadRequest)
+		return
+	}
+
+	response := utils.LogoutResponse{
+		Message: "Password has been reset successfully",
+	}
+
 	utils.SendJSONResponse(w, response, http.StatusOK)
 }
