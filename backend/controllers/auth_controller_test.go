@@ -22,7 +22,11 @@ type MockHandleLogout struct {
 	mock.Mock
 }
 
-type MockHanldeForgotPassword struct {
+type MockHandleForgotPassword struct {
+	mock.Mock
+}
+
+type MockHandleResetPassword struct {
 	mock.Mock
 }
 
@@ -44,9 +48,14 @@ func (m *MockHandleLogout) MockHandleLogout(r *http.Request) (interface{}, error
 	return args.Get(0), args.Error(1), args.Int(2)
 }
 
-func (m *MockHanldeForgotPassword) MockHandleForgotPassword(r *http.Request) (interface{}, error, int) {
+func (m *MockHandleForgotPassword) MockHandleForgotPassword(r *http.Request) (error) {
 	args := m.Called(r)	
-	return args.Get(0), args.Error(1), args.Int(2)
+	return args.Error(0)
+}
+
+func (m *MockHandleResetPassword) MockHandleResetPassword(r *http.Request) (error) {
+	args := m.Called(r)	
+	return args.Error(0)
 }
 
 // Mock for utils.SendErrorResponse
@@ -285,6 +294,118 @@ func TestLogout(t *testing.T) {
 		assert.Nil(t, response)
 		assert.EqualError(t, err, "invalid token format")
 		assert.Equal(t, 401, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+}
+
+func TestForgotPassword(t *testing.T) {
+	// Test case 1: Successful forgot password	
+	t.Run("Successful forgot password", func(t *testing.T) {
+		mockSuccessHandler := new(MockHandleForgotPassword)
+
+		req := httptest.NewRequest(http.MethodPost, "/forgot_password", nil)
+
+		mockSuccessHandler.On("MockHandleForgotPassword", req).Return(nil)
+
+		// Call the mock method
+		err := mockSuccessHandler.MockHandleForgotPassword(req)	
+
+		// Assertions
+		assert.NoError(t, err)
+	
+		// Verify that the expected call was made
+		mockSuccessHandler.AssertExpectations(t)
+	})
+
+	// Test case 2: Error resetting password
+	t.Run("Error resetting password", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleForgotPassword)
+
+		req := httptest.NewRequest(http.MethodPost, "/forgot_password", nil)
+
+		mockFailureHandler.On("MockHandleForgotPassword", req).Return(errors.New("Error resetting password"))
+
+		// Call the mock method
+		err := mockFailureHandler.MockHandleForgotPassword(req)
+
+		// Assertions
+		assert.EqualError(t, err, "Error resetting password")
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+
+	// Test case 3: Method not allowed
+	t.Run("Method not allowed", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleForgotPassword)
+
+		req := httptest.NewRequest(http.MethodGet, "/forgot_password", nil)
+
+		mockFailureHandler.On("MockHandleForgotPassword", req).Return(errors.New("Method not allowed"))
+
+		// Call the mock method	
+		err := mockFailureHandler.MockHandleForgotPassword(req)
+
+		// Assertions	
+		assert.EqualError(t, err, "Method not allowed")
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+}
+
+func TestResetPassword(t *testing.T) {
+	// Test case 1: Successful reset password
+	t.Run("Successful reset password", func(t *testing.T) {
+		mockSuccessHandler := new(MockHandleResetPassword)
+
+		req := httptest.NewRequest(http.MethodPost, "/reset_password", nil)
+
+		mockSuccessHandler.On("MockHandleResetPassword", req).Return(nil)
+
+		// Call the mock method	
+		err := mockSuccessHandler.MockHandleResetPassword(req)
+
+		// Assertions	
+		assert.NoError(t, err)			
+
+		// Verify that the expected call was made
+		mockSuccessHandler.AssertExpectations(t)
+	})
+
+	// Test case 2: Token and password are required
+	t.Run("Token and password are required", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleResetPassword)	
+
+		req := httptest.NewRequest(http.MethodPost, "/reset_password", nil)
+
+		mockFailureHandler.On("MockHandleResetPassword", req).Return(errors.New("Token and password are required"))
+
+		// Call the mock method
+		err := mockFailureHandler.MockHandleResetPassword(req)
+
+		// Assertions
+		assert.EqualError(t, err, "Token and password are required")
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+
+	// Test case 3: Invalid or expired token
+	t.Run("Invalid or expired token", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleResetPassword)
+
+		req := httptest.NewRequest(http.MethodPost, "/reset_password", nil)
+
+		mockFailureHandler.On("MockHandleResetPassword", req).Return(errors.New("Invalid or expired token"))
+
+		// Call the mock method
+		err := mockFailureHandler.MockHandleResetPassword(req)
+
+		// Assertions
+		assert.EqualError(t, err, "Invalid or expired token")
 
 		// Verify that the expected call was made
 		mockFailureHandler.AssertExpectations(t)
