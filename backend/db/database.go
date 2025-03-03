@@ -140,6 +140,17 @@ func UpdatePassword(email string, hashedPassword string) error {
 	return err
 }
 
+// update image url in user
+func UpdateImage(Email string, image string) error {
+	collection := client.Database("zine").Collection("users")
+
+	filter := bson.M{"email": Email}
+	update := bson.M{"$set": bson.M{"image": image}}
+
+	_, err := collection.UpdateOne(context.TODO(), filter, update)
+	return err
+}
+
 // InsertTag saves a new tag in MongoDB
 func InsertTag(Email string, Text string, Color string) error {
 	collection := client.Database("zine").Collection("tags")

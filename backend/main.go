@@ -7,7 +7,7 @@ import (
 	"backend/config"
 	database "backend/db"
 	"backend/routes"
-	"backend/services/aws"
+	"backend/services/awsservice"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors" // Added import for CORS
@@ -24,7 +24,7 @@ func main() {
 	defer database.DisconnectDB()
 
 	// Connect to AWS
-	aws.Config()
+	awsservice.Config()
 
 	// Initialize the router
 	router := mux.NewRouter()
