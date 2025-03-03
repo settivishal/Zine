@@ -1,6 +1,6 @@
 *.exe
 .env*
-*/coverage
+**/coverage*
 !.env.project
 !.env.vault
 !.env.example
