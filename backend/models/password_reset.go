@@ -1,4 +1,3 @@
-// backend/models/password_reset.go
 package models
 
 import (
@@ -6,7 +5,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// PasswordResetToken struct represents a password reset token document
 type PasswordResetToken struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
 	UserID    string             `bson:"user_id"`
