@@ -80,7 +80,7 @@ func TestGetProfile(t *testing.T) {
 		mockFailureHandler.AssertExpectations(t)
 	})
 
-	t.Run("Get profile failed", func(t *testing.T) {
+	t.Run("Error getting email", func(t *testing.T) {
 		// Mock dependencies	
 		mockFailureHandler := new(MockHandleProfile)	
 
