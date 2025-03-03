@@ -14,7 +14,7 @@ const CalendarWidget = () => {
         //padding: '0.5rem', // Adds padding for better spacing
         backgroundColor: '#ffffff', // Matches sidebar background
         color: '#111111', // Matches text color in dark mode
-        height: '285px', // Adjusted hght to fill the screen
+        height: '320px', // Adjusted hght to fill the screen
       }}
     >
       <LocalizationProvider dateAdapter={AdapterDateFns}>

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import myImg from '../zine.png';
 import { useState } from 'react';
 import decryptAuthURL from '../../../helpers/decrypt';
-import GoogleLoginButton from '../../../components/googleLoginButton';
+import GoogleLoginButton from '../../components/googleLoginButton';
 
 export default function LoginPage() {
     // State variables for form inputs
@@ -46,7 +46,7 @@ export default function LoginPage() {
         // Store tokens and redirect or update UI as needed
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("refreshToken", data.refreshToken);
-        window.location.href = "/profile"; // Redirect upon success
+        window.location.href = "/home"; // Redirect upon success
       } catch (error) {
         console.error("Error during login:", error);
         setErrorMessage("An error occurred. Please try again.");
