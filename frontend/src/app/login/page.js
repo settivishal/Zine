@@ -32,6 +32,7 @@ export default function LoginPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            
           },
           body: JSON.stringify(payload),
         });
@@ -99,6 +100,7 @@ export default function LoginPage() {
           </div>
           <form>
             <input
+              data-testid="email-input"
               type="text"
               placeholder="Email"
               className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400"
@@ -106,6 +108,7 @@ export default function LoginPage() {
               onChange={(e) => setIdentifier(e.target.value)}
             />
             <input
+              data-testid="password-input"
               type="password"
               placeholder="Password"
               className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400"
@@ -113,7 +116,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
             {errorMessage && (
-              <div className="mb-4 flex items-center justify-between bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-sm">
+              <div data-testid="error-message" className=" mb-4 flex items-center justify-between bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-sm">
                 <span>{errorMessage}</span>
                 <button
                   onClick={() => setErrorMessage('')}
@@ -126,6 +129,7 @@ export default function LoginPage() {
 
             <button
               type="button"
+              data-testid="login-button"
               className="w-full bg-blue-500 text-white py-2 rounded font-semibold text-sm hover:bg-blue-600 transition"
               onClick={handleLogin} // Call handleLogin function on click
             >
@@ -140,7 +144,7 @@ export default function LoginPage() {
 
           </form>
           <div className="mt-6 text-center">
-            <a href="/forgot" className="text-sm text-blue-600 font-semibold">
+            <a data-testid="forgot-password-link" href="/forgot" className="text-sm text-blue-600 font-semibold">
               Forgot password?
             </a>
           </div>
