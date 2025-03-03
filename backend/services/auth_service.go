@@ -165,7 +165,8 @@ func HandleChangePassword(w http.ResponseWriter, r *http.Request) (error, int) {
 	return nil, http.StatusOK
 }
 
-func InitiatePasswordReset(email string) error {
+// HandleForgotPassword handles forgot password requests
+func HandleForgotPassword(email string) error {
 	// Find user by email
 	user, err := database.GetUser(email)
 	if err != nil {
@@ -190,7 +191,8 @@ func InitiatePasswordReset(email string) error {
 	return SendPasswordResetEmail(user.Email, user.Name, resetURL)
 }
 
-func ResetPassword(token, newPassword string) error {
+// HandleResetPassword resets a user's password
+func HandleResetPassword(token, newPassword string) error {
 	// Validate the token
 	resetToken, err := database.GetValidToken(token)
 	if err != nil {

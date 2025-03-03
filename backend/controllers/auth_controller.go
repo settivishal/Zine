@@ -11,23 +11,6 @@ import (
 
 var jwtKey = []byte(config.Env("JWT_SECRET_KEY", "2qqnlsrkKIxTP8dZtsJb1Ept2nbeOXbP"))
 
-type ForgotPasswordRequest struct {
-	Email string `json:"email"`
-}
-
-// ResetPasswordRequest defines the request body
-type ResetPasswordRequest struct {
-	Token    string `json:"token"`
-	Password string `json:"password"`
-}
-
-// Response defines a standard API response
-type Response struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
-	Error   string `json:"error,omitempty"`
-}
-
 // Login handles user authentication
 
 // @Summary User Login
@@ -105,14 +88,26 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, response, status)
 }
 
-// ForgotPassword handles forgot password requests
+// ForgotPassword function to handle password reset requests
+
+// @Summary Forgot Password
+// @Description Sends a password reset link to the user's email
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body utils.ForgotPasswordRequest true "Forgot Password Request"
+// @Success 200 {object} utils.ForgotPasswordResponse "Password reset link sent"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request or email required"
+// @Failure 400 {object} utils.ErrorResponse "Error resetting password"
+// @Failure 405 {object} utils.ErrorResponse "Method not allowed"
+// @Router /consumer/forgot_password [POST]
 func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.SendResponse(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var req ForgotPasswordRequest
+	var req utils.ForgotPasswordRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		utils.SendErrorResponse(w, "Invalid request", err, http.StatusBadRequest)
@@ -125,9 +120,13 @@ func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Process forgot password request
-	err = services.InitiatePasswordReset(req.Email)
+	err = services.HandleForgotPassword(req.Email)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error resetting password", err, http.StatusBadRequest)
+		return
+	}
 
-	response := utils.LogoutResponse{
+	response := utils.ForgotPasswordResponse{
 		Message: "A password reset link has been sent",
 	}
 
@@ -135,14 +134,26 @@ func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, response, http.StatusOK)
 }
 
-// ResetPasswordHandler handles password reset requests
+// ResetPassword function to handle password reset
+
+// @Summary Reset Password
+// @Description Resets the user's password using the provided token
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body utils.ResetPasswordRequest true "Reset Password Request"
+// @Success 200 {object} utils.ForgotPasswordResponse "Password has been reset successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request or missing token/password"
+// @Failure 400 {object} utils.ErrorResponse "Invalid or expired token"
+// @Failure 405 {object} utils.ErrorResponse "Method not allowed"
+// @Router /consumer/reset_password [POST]
 func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.SendResponse(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var req ResetPasswordRequest
+	var req utils.ResetPasswordRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		utils.SendErrorResponse(w, "Invalid request", err, http.StatusBadRequest)
@@ -154,20 +165,14 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Password complexity validation could be added here
-	if len(req.Password) < 8 {
-		utils.SendResponse(w, "Password must be at least 8 characters", http.StatusBadRequest)
-		return
-	}
-
 	// Process password reset
-	err = services.ResetPassword(req.Token, req.Password)
+	err = services.HandleResetPassword(req.Token, req.Password)
 	if err != nil {
 		utils.SendErrorResponse(w, "Invalid or expired token", err, http.StatusBadRequest)
 		return
 	}
 
-	response := utils.LogoutResponse{
+	response := utils.ForgotPasswordResponse{
 		Message: "Password has been reset successfully",
 	}
 
