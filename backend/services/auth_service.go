@@ -204,8 +204,6 @@ func HandleResetPassword(token, newPassword string) error {
 	if err != nil {
 		return err
 	}
-
-	log.Println("resetToken.UserID: ", resetToken.UserID)
 	
 	// Update user's password
 	err = database.UpdateUserPassword(resetToken.UserID, string(hashedPassword))
