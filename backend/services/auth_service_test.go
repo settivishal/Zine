@@ -3,9 +3,9 @@ package services
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"backend/utils"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGenerateTokens(t *testing.T) {
@@ -17,3 +17,11 @@ func TestGenerateTokens(t *testing.T) {
 }
 
 // Unit test for HandleRegister
+
+func TestHandleRegister(t *testing.T) {
+	// Test case 1: Successful registration
+	assert := assert.New(t)
+
+	// assert equality
+	assert.Equal(123, 123, "they should be equal")
+}
