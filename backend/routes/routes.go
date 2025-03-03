@@ -6,7 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	// "github.com/rs/cors"
-	"github.com/swaggo/http-swagger"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func Routes(router *mux.Router) {
@@ -27,8 +27,18 @@ func Routes(router *mux.Router) {
 	// Protected Routes
 	api := router.PathPrefix("/api").Subrouter()
 	api.Use(middleware.JWTAuthMiddleware)
+
+	// User Routes
 	api.HandleFunc("/profile", controllers.GetProfile).Methods("GET")
 	api.HandleFunc("/change_password", controllers.ChangePassword).Methods("POST")
+	api.HandleFunc("/image/update", controllers.UpdateImage).Methods("POST")
+
+	// Tag Routes
+	api.HandleFunc("/tag/create", controllers.CreateTag).Methods("POST")
+	api.HandleFunc("/tag/delete", controllers.DeleteTag).Methods("POST")
+	api.HandleFunc("/tag/set", controllers.SetTag).Methods("POST")
+	api.HandleFunc("/tag/remove", controllers.RemoveTag).Methods("POST")
+	api.HandleFunc("/tags", controllers.GetTags).Methods("GET")
 }
 
 func SwaggerRoutes(router *mux.Router) {
