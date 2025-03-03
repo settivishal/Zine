@@ -186,7 +186,7 @@ func InitiatePasswordReset(email string) error {
 	}
 	
 	// Send reset email
-	resetURL := "https://yourapp.com/reset-password?token=" + token
+	resetURL := "http://localhost:3000/reset-password?token=" + token
 	return SendPasswordResetEmail(user.Email, user.Name, resetURL)
 }
 
