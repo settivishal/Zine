@@ -1,10 +1,10 @@
 package controllers // Replace with your actual package name
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"errors"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -18,6 +18,14 @@ type MockHandleRegister struct {
 	mock.Mock
 }
 
+type MockHandleLogout struct {
+	mock.Mock
+}
+
+type MockHanldeForgotPassword struct {
+	mock.Mock
+}
+
 // Mock for services.HandleLogin
 func (m *MockHandleLogin) MockHandleLogin(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
@@ -27,6 +35,17 @@ func (m *MockHandleLogin) MockHandleLogin(w http.ResponseWriter, r *http.Request
 // Mock for services.HandleRegister
 func (m *MockHandleRegister) MockHandleRegister(r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+// Mock for services.HandleLogout
+func (m *MockHandleLogout) MockHandleLogout(r *http.Request) (interface{}, error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHanldeForgotPassword) MockHandleForgotPassword(r *http.Request) (interface{}, error, int) {
+	args := m.Called(r)	
 	return args.Get(0), args.Error(1), args.Int(2)
 }
 
@@ -48,20 +67,20 @@ func TestLogin(t *testing.T) {
 		// Mock dependencies
 		mockSuccessHandler := new(MockHandleLogin)
 
-		req := httptest.NewRequest(http.MethodPost, "/register", nil)
+		req := httptest.NewRequest(http.MethodPost, "/login", nil)
 
-		mockSuccessHandler.On("MockHandleLogin", req).Return("Authentication successful", nil, http.StatusOK)	
+		mockSuccessHandler.On("MockHandleLogin", req).Return("Authentication successful", nil, http.StatusOK)
 
-		// Call the mock method		
+		// Call the mock method
 		w := httptest.NewRecorder()
 		response, err, statusCode := mockSuccessHandler.MockHandleLogin(w, req)
 
 		// Assertions
 		assert.Equal(t, "Authentication successful", response)
-		assert.NoError(t, err)		
+		assert.NoError(t, err)
 		assert.Equal(t, 200, statusCode)
 
-		// Verify that the expected call was made		
+		// Verify that the expected call was made
 		mockSuccessHandler.AssertExpectations(t)
 	})
 
@@ -69,7 +88,7 @@ func TestLogin(t *testing.T) {
 	t.Run("Invalid Request Format", func(t *testing.T) {
 		mockFailureHandler := new(MockHandleLogin)
 
-		req := httptest.NewRequest(http.MethodPost, "/register", nil)
+		req := httptest.NewRequest(http.MethodPost, "/login", nil)
 
 		mockFailureHandler.On("MockHandleLogin", req).Return(nil, errors.New("invalid request format"), http.StatusBadRequest)
 
@@ -79,7 +98,7 @@ func TestLogin(t *testing.T) {
 
 		// Assertions
 		assert.Nil(t, response)
-		assert.EqualError(t, err,"invalid request format")
+		assert.EqualError(t, err, "invalid request format")
 		assert.Equal(t, 400, statusCode)
 
 		// Verify that the expected call was made
@@ -90,7 +109,7 @@ func TestLogin(t *testing.T) {
 	t.Run("Invalid Credentials", func(t *testing.T) {
 		mockFailureHandler := new(MockHandleLogin)
 
-		req := httptest.NewRequest(http.MethodPost, "/register", nil)
+		req := httptest.NewRequest(http.MethodPost, "/login", nil)
 
 		mockFailureHandler.On("MockHandleLogin", req).Return(nil, errors.New("invalid credentials"), http.StatusUnauthorized)
 
@@ -100,7 +119,7 @@ func TestLogin(t *testing.T) {
 
 		// Assertions
 		assert.Nil(t, response)
-		assert.EqualError(t, err,"invalid credentials")
+		assert.EqualError(t, err, "invalid credentials")
 		assert.Equal(t, 401, statusCode)
 
 		// Verify that the expected call was made
@@ -142,7 +161,7 @@ func TestRegister(t *testing.T) {
 
 		// Assertions
 		assert.Nil(t, response)
-		assert.EqualError(t, err,"Registration Failed")
+		assert.EqualError(t, err, "Registration Failed")
 		assert.Equal(t, 400, statusCode)
 
 		// Verify that the expected call was made
@@ -162,7 +181,7 @@ func TestRegister(t *testing.T) {
 
 		// Assertions
 		assert.Nil(t, response)
-		assert.EqualError(t, err,"email already exists")
+		assert.EqualError(t, err, "email already exists")
 		assert.Equal(t, 400, statusCode)
 
 		// Verify that the expected call was made
@@ -182,7 +201,7 @@ func TestRegister(t *testing.T) {
 
 		// Assertions
 		assert.Nil(t, response)
-		assert.EqualError(t, err,"Error hashing password")
+		assert.EqualError(t, err, "Error hashing password")
 		assert.Equal(t, 500, statusCode)
 
 		// Verify that the expected call was made
@@ -202,10 +221,73 @@ func TestRegister(t *testing.T) {
 
 		// Assertions
 		assert.Nil(t, response)
-		assert.EqualError(t, err,"Error saving user")
+		assert.EqualError(t, err, "Error saving user")
 		assert.Equal(t, 400, statusCode)
 
 		// Verify that the expected call was made
 		mockFailureHandler.AssertExpectations(t)
 	})
 }
+
+func TestLogout(t *testing.T) {
+	// Test case 1: Successful logout
+	t.Run("Successful Logout", func(t *testing.T) {
+		mockSuccessHandler := new(MockHandleLogout)
+
+		req := httptest.NewRequest(http.MethodPost, "/logout", nil)
+
+		mockSuccessHandler.On("MockHandleLogout", req).Return("Logout successful", nil, http.StatusOK)
+
+		// Call the mock method
+		response, err, statusCode := mockSuccessHandler.MockHandleLogout(req)
+
+		// Assertions
+		assert.Equal(t, "Logout successful", response)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		// Verify that the expected call was made
+		mockSuccessHandler.AssertExpectations(t)
+	})
+
+	// Test case 2: Failed logout
+	t.Run("Logout failed", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleLogout)
+
+		req := httptest.NewRequest(http.MethodPost, "/logout", nil)
+
+		mockFailureHandler.On("MockHandleLogout", req).Return(nil, errors.New("Failed to logout"), http.StatusUnauthorized)
+
+		// Call the mock method
+		response, err, statusCode := mockFailureHandler.MockHandleLogout(req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err, "Failed to logout")
+		assert.Equal(t, 401, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+
+	// Test case 3: Invalid token format
+	t.Run("Invalid token format", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleLogout)
+
+		req := httptest.NewRequest(http.MethodPost, "/logout", nil)
+
+		mockFailureHandler.On("MockHandleLogout", req).Return(nil, errors.New("invalid token format"), http.StatusUnauthorized)
+
+		// Call the mock method
+		response, err, statusCode := mockFailureHandler.MockHandleLogout(req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err, "invalid token format")
+		assert.Equal(t, 401, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+}
+
