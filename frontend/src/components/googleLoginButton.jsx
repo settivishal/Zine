@@ -1,4 +1,4 @@
-import handleGoogleLogin from "../helpers/handleGoogleLogin";
+import handleGoogleLogin from "../../helpers/handleGoogleLogin";
 
 export default function GoogleLoginButton({ setErrorMessage }) {
   

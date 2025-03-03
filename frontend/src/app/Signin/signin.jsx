@@ -4,7 +4,7 @@ import Image from "next/image";
 import myImg from "../zine.png";
 import { useState } from "react";
 
-import GoogleLoginButton from '../../../components/googleLoginButton';
+import GoogleLoginButton from '../../components/googleLoginButton';
 
 
 
