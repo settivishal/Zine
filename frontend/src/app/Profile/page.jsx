@@ -11,34 +11,42 @@ import UpdateBio from "../../../components/bio";
 const ProfileContext = createContext();
 
 export default function ProfilePage({children}) {
-    const [profileData, setProfileData] = useState(null);
+    const [profileData, setProfileData] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
 
     const [activityData, setActivityData] = useState([]);
     
 
-    useEffect(async () => {
-        // Fetch user data and activity data from API
-        // This would typically be an API call to your backend
-        // For demo purposes, we're using mock data
-        const response = await fetch("http://localhost:8080/api/profile", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-    
-        if (!response.ok) {
-            const errorData = await response.json();
-            setErrorMessage(errorData.message || "Failed to fetch profile data.");
-            return;
-        }
-    
-        const data = await response.json();
-        console.log(data)
-        setProfileData(data); // Set profile data (username, email, etc.)
-        // Mock activity data - array of objects with date and count
+    useEffect(() => {
+        (async () => {
+            // Fetch user data and activity data from API
+            // This would typically be an API call to your backend
+            // For demo purposes, we're using mock data
+            const response = await fetch("http://localhost:8080/api/profile", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer" + " " + localStorage.getItem("accessToken")
+                },
+            });
+        
+            if (!response.ok) {
+                const errorData = await response.json();
+                setErrorMessage(errorData.message || "Failed to fetch profile data.");
+                return;
+            }
+        
+            const data = await response.json();
+            // console.log("data" + data)
+            
+            setProfileData(data); // Set profile data (username, email, etc.)
+            // Mock activity data - array of objects with date and count
+            // const mockActivity = generateMockActivityData();
+            // setActivityData(mockActivity);
+        })()
+
         const mockActivity = generateMockActivityData();
+        console.log(mockActivity)
         setActivityData(mockActivity);
     }, []);
 
@@ -90,7 +98,7 @@ export default function ProfilePage({children}) {
                         <UpdateBio currentBio={profileData?.bio} />
                     </div>
                     {/* Activity grid */}
-                    <div className="bg-white p-6 rounded-lg shadow h-96">
+                    <div className="container mx-auto px-4 py-8 bg-white p-6 rounded-lg shadow h-96">
                         <h2 className="text-slate-600 text-xl font-semibold mb-4">
                             Your Activity
                         </h2>

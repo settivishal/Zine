@@ -34,7 +34,7 @@ export default function SignIn() {
                 },
                 body: JSON.stringify(payload),
             });
-        
+         
             if (!response.ok) {
                 const errorData = await response.json();
                 setErrorMessage(errorData.message || "Login failed.");
@@ -45,7 +45,7 @@ export default function SignIn() {
             // Store tokens and redirect or update UI as needed
             localStorage.setItem("accessToken", data.accessToken);
             localStorage.setItem("refreshToken", data.refreshToken);
-            window.location.href = "/profile"; // Redirect upon success
+            window.location.href = "/Profile"; // Redirect upon success
         } catch (error) {
             console.error("Error during login:", error);
             setErrorMessage("An error occurred. Please try again.");

@@ -26,7 +26,7 @@ function ProfileIcon({ className = "" }) {
     );
 }
 
-export default function ProfilePicture({ currentPicture, onUpdate }) {
+export default function ProfilePicture({ currentPicture}) {
     const [isHovering, setIsHovering] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
@@ -69,7 +69,7 @@ export default function ProfilePicture({ currentPicture, onUpdate }) {
     return (
         <div className="flex flex-col items-center">
             <div
-                className="relative w-64 h-64 overflow-hidden rounded-full"
+                className="relative w-32 h-32 overflow-hidden rounded-full"
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}>
                 {currentPicture ? (
@@ -81,7 +81,7 @@ export default function ProfilePicture({ currentPicture, onUpdate }) {
                         className="object-cover"
                     />
                 ) : (
-                    <ProfileIcon className="w-32 h-32" />
+                    <ProfileIcon className="w-full h-full" />
                 )}
 
                 {isHovering && (
@@ -112,6 +112,18 @@ export default function ProfilePicture({ currentPicture, onUpdate }) {
         </div>
     );
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // export default function ProfilePic({ currentPic, onUpdate }) {
 //     const [isHovering, setIsHovering] = useState(false);

@@ -33,7 +33,7 @@ export default function UpdateBio({ currentBio}) {
                 headers: {
                 "Content-Type": "application/json",
                 },
-                body: JSON.stringify({bio}),
+                body:JSON.stringify({bio}),
             });
         
             if (!response.ok) {
@@ -71,7 +71,7 @@ export default function UpdateBio({ currentBio}) {
                             cols="50"
                             placeholder="Tell us about yourself..."
                             disabled={isSubmitting}
-                            class="w-full p-2 text-black border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full p-2 text-black border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         {/* <input
                             type="text"

@@ -96,25 +96,25 @@ export default function ActivityGrid({ activityData }) {
       activityData.reduce((sum, item) => sum + item.count, 0) : 0;
     
     return (
-        <div className="h-auto w-full bg-slate-900">
+        <div className="bg-white p-6 rounded-lg">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold">
                     <span className="text-white">{totalSubmissions}</span> 
-                    <span className="text-gray-400"> submissions in the past one year</span>
+                    <span className="text-gray-400"> submissions in the past one year </span>
                     <span className="text-gray-400 text-sm ml-1 cursor-help">ⓘ</span>
                 </h2>
-                <div className="flex gap-2">
+                <div className="flex gap-2 space-x-6">
                     <div className="flex items-center">
                         <span className="text-gray-400 mr-2">Total active days:</span>
-                        <span className="text-white">{totalActiveDays}</span>
+                        <span className="text-black">{totalActiveDays}</span>
                     </div>
                     <div className="flex items-center">
                         <span className="text-gray-400 mr-2">Max streak:</span>
-                        <span className="text-white">2</span>
+                        <span className="text-black">2</span>
                     </div>
                     <div className="flex items-center">
                         <span className="text-gray-400 mr-2">Current</span>
-                        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                     </div>
@@ -123,16 +123,15 @@ export default function ActivityGrid({ activityData }) {
             
             <div className="flex space-x-4 overflow-x-auto pb-4">
                 {monthGrids.map((month, index) => (
-                    <div key={index} className="h-full w-full flex flex-col justify-center items-center">
-                        <div className="grid grid-cols-7 w-full h-full gap-1">
+                    <div key={index} className="flex flex-col items-center min-w-[80px]">
+                        <div className="grid grid-cols-7 gap-1">
                             {month.grid.map((day, dayIndex) => (
                                 <div
                                     key={dayIndex}
-                                    className={` ${getCellColor(day?.count)}`}
+                                    className={`w-3 h-3 rounded-sm ${getCellColor(day?.count)}`}
                                     title={day ? `${day.date}: ${day.count} submissions` : ''}
                                 ></div>
-                            ))}
-                            
+                            ))}   
                         </div>
                         <div className="text-gray-400 text-xs mt-2 text-center">{month.name}</div>
                     </div>
