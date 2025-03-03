@@ -187,7 +187,7 @@ func TestDeleteTag(t *testing.T) {
 	})
 }
 
-func TestSetTags(t *testing.T) {
+func TestSetTag(t *testing.T) {
 	// Test case 1: tags set successfully
 	t.Run("Successful SetTags Response", func(t *testing.T) {
 		// Mock dependencies
@@ -253,7 +253,7 @@ func TestSetTags(t *testing.T) {
 	})
 }
 
-func TestRemoveTags(t *testing.T) {
+func TestRemoveTag(t *testing.T) {
 	// Test case 1: tags removed successfully
 	t.Run("Successful RemoveTags Response", func(t *testing.T) {
 		// Mock dependencies
