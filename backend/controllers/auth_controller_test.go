@@ -10,11 +10,21 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// Mock for services.HandleRegister
+type MockHandleLogin struct {
+	mock.Mock
+}
+
 type MockHandleRegister struct {
 	mock.Mock
 }
 
+// Mock for services.HandleLogin
+func (m *MockHandleLogin) MockHandleLogin(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+// Mock for services.HandleRegister
 func (m *MockHandleRegister) MockHandleRegister(r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
@@ -30,6 +40,72 @@ func MockSendErrorResponse(w http.ResponseWriter, message string, err error, sta
 func MockSendJSONResponse(w http.ResponseWriter, response interface{}, status int) {
 	w.WriteHeader(status)
 	w.Write([]byte("Success"))
+}
+
+func TestLogin(t *testing.T) {
+	// Test case 1: Successful login
+	t.Run("Successful Login", func(t *testing.T) {
+		// Mock dependencies
+		mockSuccessHandler := new(MockHandleLogin)
+
+		req := httptest.NewRequest(http.MethodPost, "/register", nil)
+
+		mockSuccessHandler.On("MockHandleLogin", req).Return("Authentication successful", nil, http.StatusOK)	
+
+		// Call the mock method		
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockSuccessHandler.MockHandleLogin(w, req)
+
+		// Assertions
+		assert.Equal(t, "Authentication successful", response)
+		assert.NoError(t, err)		
+		assert.Equal(t, 200, statusCode)
+
+		// Verify that the expected call was made		
+		mockSuccessHandler.AssertExpectations(t)
+	})
+
+	// Test case 2: Invalid request format
+	t.Run("Invalid Request Format", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleLogin)
+
+		req := httptest.NewRequest(http.MethodPost, "/register", nil)
+
+		mockFailureHandler.On("MockHandleLogin", req).Return(nil, errors.New("invalid request format"), http.StatusBadRequest)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockFailureHandler.MockHandleLogin(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err,"invalid request format")
+		assert.Equal(t, 400, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+
+	// Test case 3: Invalid credentials
+	t.Run("Invalid Credentials", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleLogin)
+
+		req := httptest.NewRequest(http.MethodPost, "/register", nil)
+
+		mockFailureHandler.On("MockHandleLogin", req).Return(nil, errors.New("invalid credentials"), http.StatusUnauthorized)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockFailureHandler.MockHandleLogin(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err,"invalid credentials")
+		assert.Equal(t, 401, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
 }
 
 func TestRegister(t *testing.T) {
