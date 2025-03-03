@@ -6,12 +6,12 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
-	"fmt"
 
 	"backend/config"
-	"backend/db"
+	"backend/database"
 	"backend/models"
 	"backend/utils"
 

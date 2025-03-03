@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	database "backend/db"
+	"backend/database"
 	"backend/models"
 	"backend/utils"
 )
