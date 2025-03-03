@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"backend/db"
+	"backend/database"
 	"backend/models"
 	"backend/utils"
 )
