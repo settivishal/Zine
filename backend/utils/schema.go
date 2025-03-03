@@ -78,3 +78,8 @@ type SetTag struct {
 	Text string `json:"text"`
 	Date string `json:"date"`
 }
+
+type UpdateImageResponse struct {
+	Message string `json:"message"`
+	Image   string `json:"image"`
+}

@@ -54,3 +54,27 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendJSONResponse(w, response, status)
 }
+
+// Update Image of an user, received as a file
+
+// @Summary Update Image
+// @Description Update image of a user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param image formData file true "Image file"
+// @Success 200 {object} utils.RegisterResponse
+// @Failure 400 {object} utils.ErrorResponse "Invalid request format"
+// @Failure 401 {object} utils.ErrorResponse "Invalid credentials"
+// @Failure 500 {object} utils.ErrorResponse "Error updating image"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /api/image/update [POST]
+func UpdateImage(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleUpdateImage(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error updating image", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+}

@@ -1,4 +1,4 @@
-package aws
+package awsservice
 
 import (
 	"context"
@@ -24,7 +24,7 @@ func Config() {
 	// S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
 	// CLOUDFRONT_DOMAIN := os.Getenv("CLOUDFRONT_DOMAIN")
 
-	cfg, err := config.LoadDefaultConfig(context.TODO(),
+	_, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithRegion(AWS_REGION),
 		config.WithCredentialsProvider(aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, ""))),
 	)
@@ -33,7 +33,7 @@ func Config() {
 	}
 
 	log.Println("AWS SDK configuration loaded successfully")
-	log.Println(cfg)
+	// log.Println(cfg)
 
 	// // Uncomment the following lines to test the AWS SDK configuration
 
@@ -53,7 +53,7 @@ func Config() {
 }
 
 // Helper function to Upload a file to S3
-func uploadFileToS3(s3Client *s3.Client, bucket, key string, file io.Reader) error {
+func UploadFileToS3(s3Client *s3.Client, bucket, key string, file io.Reader) error {
 	uploader := manager.NewUploader(s3Client)
 	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(bucket),
@@ -64,6 +64,6 @@ func uploadFileToS3(s3Client *s3.Client, bucket, key string, file io.Reader) err
 }
 
 // Helper function to get the CloudFront URL for an object
-func getCloudFrontURL(distributionDomain, objectKey string) string {
+func GetCloudFrontURL(distributionDomain, objectKey string) string {
 	return fmt.Sprintf("%s/%s", distributionDomain, objectKey)
 }
