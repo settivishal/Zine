@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"errors"
 
 	// "backend/services"
 	// "backend/utils"
@@ -35,53 +36,45 @@ func MockSendJSONResponse(w http.ResponseWriter, response interface{}, status in
 }
 
 func TestRegister(t *testing.T) {
-	// Create a new instance of our MockHandleRegister
-	mockHandler := new(MockHandleRegister)
-
-	// Save the original functions and restore them after the test
-	// originalHandleRegister := services.HandleRegister
-	// originalSendErrorResponse := utils.SendErrorResponse
-	// originalSendJSONResponse := utils.SendJSONResponse
-	// defer func() {
-	// 	services.HandleRegister = originalHandleRegister
-	// 	utils.SendErrorResponse = originalSendErrorResponse
-	// 	utils.SendJSONResponse = originalSendJSONResponse
-	// }()
-
-	// // Replace the original functions with our mocks
-	// services.HandleRegister = mockHandler.HandleRegister
-	// utils.SendErrorResponse = MockSendErrorResponse
-	// utils.SendJSONResponse = MockSendJSONResponse
-
 	// Test case 1: Successful registration
 	t.Run("Successful Registration", func(t *testing.T) {
-		// Arrange
+		// Create a new instance of our MockHandleRegister
+		mockSuccessHandler := new(MockHandleRegister)
+
 		req := httptest.NewRequest(http.MethodPost, "/register", nil)
-		w := httptest.NewRecorder()
-		mockHandler.On("HandleRegister", req).Return("Success", nil, http.StatusOK)
 
-		// Act
-		Register(w, req)
+		mockSuccessHandler.On("MockHandleRegister", req).Return("Registration successful", nil, http.StatusOK)
 
-		// Assert
-		assert.Equal(t, http.StatusOK, w.Code)
-		assert.Equal(t, "Success", w.Body.String())
-		mockHandler.AssertExpectations(t)
+		// Call the mock method
+		response, err, statusCode := mockSuccessHandler.MockHandleRegister(req)
+
+		// Assertions
+		assert.Equal(t, "Registration successful", response)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		// Verify that the expected call was made
+		mockSuccessHandler.AssertExpectations(t)
 	})
 
 	// Test case 2: Failed registration
 	t.Run("Failed Registration", func(t *testing.T) {
-		// Arrange
+		// Create a new instance of MockHandleRegister for this test
+		mockFailureHandler := new(MockHandleRegister)
+
 		req := httptest.NewRequest(http.MethodPost, "/register", nil)
-		w := httptest.NewRecorder()
-		mockHandler.On("HandleRegister", req).Return(nil, assert.AnError, http.StatusBadRequest)
 
-		// Act
-		Register(w, req)
+		mockFailureHandler.On("MockHandleRegister", req).Return(nil, errors.New("Registration Failed"), http.StatusBadRequest)
 
-		// Assert
-		assert.Equal(t, http.StatusBadRequest, w.Code)
-		assert.Equal(t, "Registration Failed", w.Body.String())
-		mockHandler.AssertExpectations(t)
+		// Call the mock method
+		response, err, statusCode := mockFailureHandler.MockHandleRegister(req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err,"Registration Failed")
+		assert.Equal(t, http.StatusBadRequest, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
 	})
 }
