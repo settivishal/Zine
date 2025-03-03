@@ -51,12 +51,12 @@ export default function UpdatePassword() {
                 headers: {
                 "Content-Type": "application/json",
                 },
-                body: JSON.stringify(payload),
+                body: JSON.stringify({ currentPassword, newPassword }),
             });
         
             if (!response.ok) {
                 const errorData = await response.json();
-                setErrorMessage(errorData.message || "Login failed.");
+                setErrorMessage(errorData.message || "Failed to update password.");
                 return;
             }
         

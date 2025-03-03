@@ -1,26 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext } from "react";
 import ActivityGrid from "../../../components/ActivityGrid";
 import UpdateUsername from "../../../components/UpdateUsername";
 import UpdatePassword from "../../../components/UpdatePassword";
 import ProfilePicture from "../../../components/ProfilePic";
+import UpdateBio from "../../../components/bio";
 
 
-// const AuthContext = createContext();
+const ProfileContext = createContext();
 
 export default function ProfilePage({children}) {
-    const [user, setUser] = useState(null); // Store user data
+    const [profileData, setProfileData] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
-
-    // const [user, setUser] = useState({
-    //     username: "JohnDoe",
-    //     email: "john@example.com",
-    //     profilePicture: "/default-avatar.png",
-    //     password : "ldldfvef"
-    // });
-
-    const [newPassword, setNewPassword] = useState([]);
 
     const [activityData, setActivityData] = useState([]);
     
@@ -38,34 +30,28 @@ export default function ProfilePage({children}) {
     
         if (!response.ok) {
             const errorData = await response.json();
-            setErrorMessage(errorData.message || "Failed to fetch the data.");
+            setErrorMessage(errorData.message || "Failed to fetch profile data.");
             return;
         }
     
         const data = await response.json();
-        setUser(data);
         console.log(data)
+        setProfileData(data); // Set profile data (username, email, etc.)
         // Mock activity data - array of objects with date and count
         const mockActivity = generateMockActivityData();
         setActivityData(mockActivity);
     }, []);
 
-    const handleUsernameUpdate = (newUsername) => {
-        setUser({ ...user, username: newUsername });
-        // In a real app, you would save this to your backend
-    };
+    // const handleUsernameUpdate = (newUsername) => {
+    //     setUser({ ...user, username: newUsername });
+    //     // In a real app, you would save this to your backend
+    // };
 
-    const handleProfilePictureUpdate = (newPictureUrl) => {
-        setUser({ ...user, profilePicture: newPictureUrl });
-        // In a real app, you would upload the image and save the URL
-    };
+    // const handleProfilePictureUpdate = (newPictureUrl) => {
+    //     setUser({ ...user, profilePicture: newPictureUrl });
+    //     // In a real app, you would upload the image and save the URL
+    // };
 
-    const updatePassword = (newPassword) => {
-        setUser((prevUser) => ({
-          ...prevUser,
-          password: newPassword,
-        }));
-    };
 
     return (
         <main className="container bg-zinc-600 mx-auto px-2 py-8 max-w-full">
@@ -77,14 +63,14 @@ export default function ProfilePage({children}) {
                     <div className="bg-slate-900 p-20 rounded-lg shadow">
                         <ProfilePicture
                             currentPicture={""}
-                            onUpdate={handleProfilePictureUpdate}
+                            // onUpdate={handleProfilePictureUpdate}
                         />
 
                         <div className="mt-4">
                             <h2 className="text-gray-500 text-2xl font-semibold">
-                                {user.username}
+                                {profileData?.name}
                             </h2>
-                            <p className="text-2xl text-gray-600">{user.email}</p>
+                            <p className="text-2xl text-gray-600">{profileData?.email}</p>
                         </div>
                     </div>
                 </div>
@@ -101,15 +87,7 @@ export default function ProfilePage({children}) {
                             className="block text-lg font-medium text-gray-700">
                             About
                         </label>
-                        <textarea
-                            id="paragraphInput"
-                            name="paragraphInput"
-                            
-                            rows="5"
-                            cols="50"
-                            placeholder="Tell us about yourself..."
-                            class="w-full p-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
+                        <UpdateBio currentBio={profileData?.bio} />
                     </div>
                     {/* Activity grid */}
                     <div className="bg-white p-6 rounded-lg shadow h-96">
@@ -124,8 +102,8 @@ export default function ProfilePage({children}) {
                             Update Username
                         </h2>
                         <UpdateUsername
-                            currentUsername={user.username}
-                            onUpdate={handleUsernameUpdate}
+                            currentUsername={profileData?.name}
+                            // onUpdate={handleUsernameUpdate}
                         />
                     </div>
                     {/* Update password section */}

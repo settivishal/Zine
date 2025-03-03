@@ -30,17 +30,35 @@ export default function ProfilePicture({ currentPicture, onUpdate }) {
     const [isHovering, setIsHovering] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
-    const handleFileChange = async (e) => {
+
+    const handleUpdatePicture = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
+        const formData = new FormData();
+        formData.append("profilePicture", file);
         // Validation checks...
         setIsUploading(true);
 
         try {
             // In a real app, you would upload the file to your server
-            const imageUrl = URL.createObjectURL(file);
-            onUpdate(imageUrl);
+            const response = await fetch("http://localhost:8080/api/image/update", {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json",
+                },
+                body: formData,
+            });
+        
+            if (!response.ok) {
+                const errorData = await response.json();
+                setErrorMessage(errorData.message || "Failed to upload picture");
+                return;
+            }
+        
+            const data = await response.json();
+            setSuccessMessage("Profile picture updated successfully!"); // Show
+            // const imageUrl = URL.createObjectURL(file);
+            // onUpdate(imageUrl);
         } catch (error) {
             console.error("Error uploading image:", error);
         } finally {
@@ -87,7 +105,7 @@ export default function ProfilePicture({ currentPicture, onUpdate }) {
                     ref={fileInputRef}
                     className="w-1 "
                     accept="image/*"
-                    onChange={handleFileChange}
+                    onChange={handleUpdatePicture}
                 />
                 Update Profile Picture
             </button>
