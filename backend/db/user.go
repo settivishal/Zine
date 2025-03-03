@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"backend/models"
 )
@@ -101,5 +103,65 @@ func UpdateImage(Email string, image string) error {
 	update := bson.M{"$set": bson.M{"image": image}}
 
 	_, err := collection.UpdateOne(context.TODO(), filter, update)
+	return err
+}
+
+func CreatePasswordResetToken(userID, token string) error {
+	collection := client.Database("zine").Collection("password_reset_tokens")
+	
+	resetToken := models.PasswordResetToken{
+		UserID:    userID,
+		Token:     token,
+		CreatedAt: time.Now(),
+		ExpiresAt: time.Now().Add(15 * time.Minute),
+		Used:      false,
+	}
+	
+	_, err := collection.InsertOne(context.Background(), resetToken)
+	return err
+}
+
+func GetValidToken(token string) (*models.PasswordResetToken, error) {
+	collection := client.Database("zine").Collection("password_reset_tokens")
+	
+	var resetToken models.PasswordResetToken
+	filter := bson.M{
+		"token":      token,
+		"expires_at": bson.M{"$gt": time.Now()},
+		"used":       false,
+	}
+	
+	err := collection.FindOne(context.Background(), filter).Decode(&resetToken)
+	if err != nil {
+		return nil, err
+	}
+	
+	return &resetToken, nil
+}
+
+// MarkTokenAsUsed marks a token as used
+func MarkTokenAsUsed(tokenID primitive.ObjectID) error {
+	collection := client.Database("zine").Collection("password_reset_tokens")
+	
+	filter := bson.M{"_id": tokenID}
+	update := bson.M{"$set": bson.M{"used": true}}
+	
+	_, err := collection.UpdateOne(context.Background(), filter, update)
+	return err
+}
+
+// UpdateUserPassword updates a user's password
+func UpdateUserPassword(userID, hashedPassword string) error {
+	collection := client.Database("zine").Collection("users")
+
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objID}
+	update := bson.M{"$set": bson.M{"password": hashedPassword}}
+	
+	_, err = collection.UpdateOne(context.Background(), filter, update)
 	return err
 }
