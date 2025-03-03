@@ -2,9 +2,10 @@ package services
 
 import (
 	"fmt"
-
 	"log"
 	"net/smtp"
+
+	"backend/config"
 )
 
 func SendMailSimple(subject string, html string, to []string) {
@@ -22,4 +23,41 @@ func SendMailSimple(subject string, html string, to []string) {
 	} else {
 		fmt.Println("Email sent successfully!")
 	}
+}
+
+// SendPasswordResetEmail sends a password reset email
+func SendPasswordResetEmail(email, name, resetURL string) error {
+	from 		:= config.Env("EMAIL_FROM")
+	password 	:= config.Env("EMAIL_PASSWORD")
+	smtpHost 	:= config.Env("SMTP_HOST")
+	smtpPort 	:= config.Env("SMTP_PORT")
+
+	subject := "Password Reset Request"
+
+	// Create email body
+	body := fmt.Sprintf(`
+	<html>
+	<body>
+		<h2>Hello %s,</h2>
+		<p>We received a request to reset your password. If you didn't make this request, you can ignore this email.</p>
+		<p>To reset your password, please click the link below:</p>
+		<p><a href="%s">Reset Your Password</a></p>
+		<p>This link will expire in 15 minutes.</p>
+		<p>Thank you,<br>The Team</p>
+	</body>
+	</html>
+	`, name, resetURL)
+
+	// Construct message
+	message := fmt.Sprintf("To: %s\r\n"+
+		"Subject: %s\r\n"+
+		"Content-Type: text/html; charset=UTF-8\r\n"+
+		"\r\n"+
+		"%s", email, subject, body)
+
+	// Authentication
+	auth := smtp.PlainAuth("", from, password, smtpHost)
+
+	// Send email
+	return smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{email}, []byte(message))
 }

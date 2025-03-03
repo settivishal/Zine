@@ -83,3 +83,16 @@ type UpdateImageResponse struct {
 	Message string `json:"message"`
 	Image   string `json:"image"`
 }
+
+type ForgotPasswordRequest struct {
+	Email string `json:"email"`
+}
+
+type ResetPasswordRequest struct {
+	Token    string `json:"token"`
+	Password string `json:"password"`
+}
+
+type ForgotPasswordResponse struct {
+	Message string `json:"message"`
+}
