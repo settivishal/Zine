@@ -7,6 +7,7 @@ import (
 	"backend/config"
 	database "backend/db"
 	"backend/routes"
+	"backend/services/awsservice"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors" // Added import for CORS
@@ -21,6 +22,9 @@ func main() {
 	// Connect to the MongoDB
 	database.ConnectDB()
 	defer database.DisconnectDB()
+
+	// Connect to AWS
+	awsservice.Config()
 
 	// Initialize the router
 	router := mux.NewRouter()
@@ -38,12 +42,11 @@ func main() {
 		AllowedHeaders: []string{"Content-Type", "Authorization"},
 	})
 
-    // Use the CORS middleware
-    handler := c.Handler(router)
+	// Use the CORS middleware
+	handler := c.Handler(router)
 
 	port := config.Env("PORT", "8080")
 	log.Println("Server running on port", port, "...")
 	log.Println("Swagger UI available at http://localhost:" + port + "/swagger/index.html")
-    log.Fatal(http.ListenAndServe(":8080", handler))
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }
-
