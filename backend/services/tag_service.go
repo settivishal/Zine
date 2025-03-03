@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	database "backend/db"
+	"backend/database"
 	"backend/models"
 	"backend/utils"
 )
@@ -18,8 +18,10 @@ func HandleCreateTag(w http.ResponseWriter, r *http.Request) (*utils.TagResponse
 		return nil, errors.New(err.Error() + ": Invalid request format"), http.StatusBadRequest
 	}
 
+	Email := r.Context().Value("email").(string)
+
 	// Create tag in database
-	if err := database.InsertTag(tag.UserID, tag.Text, tag.Color); err != nil {
+	if err := database.InsertTag(Email, tag.Text, tag.Color); err != nil {
 		return nil, errors.New("error creating tag"), http.StatusInternalServerError
 	}
 
@@ -37,8 +39,10 @@ func HandleDeleteTag(w http.ResponseWriter, r *http.Request) (*utils.TagResponse
 		return nil, errors.New(err.Error() + ": Invalid request format"), http.StatusBadRequest
 	}
 
+	Email := r.Context().Value("email").(string)
+
 	// Delete tag from database
-	if err := database.DeleteTag(tag.UserID, tag.Text); err != nil {
+	if err := database.DeleteTag(Email, tag.Text); err != nil {
 		return nil, errors.New("error deleting tag"), http.StatusInternalServerError
 	}
 
@@ -56,8 +60,10 @@ func HandleSetTag(w http.ResponseWriter, r *http.Request) (*utils.TagResponse, e
 		return nil, errors.New(err.Error() + ": Invalid request format"), http.StatusBadRequest
 	}
 
+	Email := r.Context().Value("email").(string)
+
 	// Set tag in database
-	if err := database.SetTag(tag.UserID, tag.Text, tag.Date); err != nil {
+	if err := database.SetTag(Email, tag.Text, tag.Date); err != nil {
 		return nil, errors.New("error setting tag"), http.StatusInternalServerError
 	}
 
@@ -75,8 +81,10 @@ func HandleRemoveTag(w http.ResponseWriter, r *http.Request) (*utils.TagResponse
 		return nil, errors.New(err.Error() + ": Invalid request format"), http.StatusBadRequest
 	}
 
+	Email := r.Context().Value("email").(string)
+
 	// Remove tag from database
-	if err := database.RemoveTag(tag.UserID, tag.Text, tag.Date); err != nil {
+	if err := database.RemoveTag(Email, tag.Text, tag.Date); err != nil {
 		return nil, errors.New("error removing tag"), http.StatusInternalServerError
 	}
 

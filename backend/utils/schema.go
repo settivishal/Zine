@@ -66,9 +66,8 @@ type ChangePasswordResponse struct {
 }
 
 type Tag struct {
-	UserID string `json:"user_id"`
-	Text   string `json:"text"`
-	Color  string `json:"color"`
+	Text  string `json:"text"`
+	Color string `json:"color"`
 }
 
 type TagResponse struct {
@@ -76,7 +75,24 @@ type TagResponse struct {
 }
 
 type SetTag struct {
-	UserID string `json:"user_id"`
-	Text   string `json:"text"`
-	Date   string `json:"date"`
+	Text string `json:"text"`
+	Date string `json:"date"`
+}
+
+type UpdateImageResponse struct {
+	Message string `json:"message"`
+	Image   string `json:"image"`
+}
+
+type ForgotPasswordRequest struct {
+	Email string `json:"email"`
+}
+
+type ResetPasswordRequest struct {
+	Token    string `json:"token"`
+	Password string `json:"password"`
+}
+
+type ForgotPasswordResponse struct {
+	Message string `json:"message"`
 }

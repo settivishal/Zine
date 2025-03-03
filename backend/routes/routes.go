@@ -18,6 +18,8 @@ func Routes(router *mux.Router) {
 	userRouter.HandleFunc("/login", controllers.Login).Methods("POST")
 	userRouter.HandleFunc("/register", controllers.Register).Methods("POST")
 	userRouter.HandleFunc("/logout", controllers.Logout).Methods("POST")
+	userRouter.HandleFunc("/forgot_password", controllers.ForgotPassword).Methods("POST")
+	userRouter.HandleFunc("/reset_password", controllers.ResetPassword).Methods("POST")
 
 	// Google
 	authRouter := router.PathPrefix("/auth").Subrouter()
@@ -27,8 +29,13 @@ func Routes(router *mux.Router) {
 	// Protected Routes
 	api := router.PathPrefix("/api").Subrouter()
 	api.Use(middleware.JWTAuthMiddleware)
+
+	// User Routes
 	api.HandleFunc("/profile", controllers.GetProfile).Methods("GET")
 	api.HandleFunc("/change_password", controllers.ChangePassword).Methods("POST")
+	api.HandleFunc("/image/update", controllers.UpdateImage).Methods("POST")
+
+	// Tag Routes
 	api.HandleFunc("/tag/create", controllers.CreateTag).Methods("POST")
 	api.HandleFunc("/tag/delete", controllers.DeleteTag).Methods("POST")
 	api.HandleFunc("/tag/set", controllers.SetTag).Methods("POST")
