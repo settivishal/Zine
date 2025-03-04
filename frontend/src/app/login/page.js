@@ -147,7 +147,7 @@ export default function LoginPage() {
 
           </form>
           <div className="mt-6 text-center">
-            <a data-testid="forgot-password-link" href="/forgot" className="text-sm text-blue-600 font-semibold">
+            <a data-testid="forgot-password-link" href="/Forgot" className="text-sm text-blue-600 font-semibold">
               Forgot password?
             </a>
           </div>
