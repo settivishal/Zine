@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"backend/config"
-	database "backend/db"
+	"backend/database"
 	"backend/routes"
 	"backend/services/awsservice"
 

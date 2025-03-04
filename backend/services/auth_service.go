@@ -1,15 +1,19 @@
 package services
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"strings"
 	"time"
 
-	"backend/db"
+	"backend/database"
 	"backend/models"
 	"backend/utils"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Return Access and Refesh Tokens
@@ -158,4 +162,63 @@ func HandleChangePassword(w http.ResponseWriter, r *http.Request) (error, int) {
 	}
 
 	return nil, http.StatusOK
+}
+
+// HandleForgotPassword handles forgot password requests
+func HandleForgotPassword(email string) error {
+	// Find user by email
+	user, err := database.GetUser(email)
+	if err != nil {
+		// We don't reveal if the email exists
+		return nil
+	}
+	
+	// Generate a secure random token
+	token, err := generateRandomToken(32)
+	if err != nil {
+		return err
+	}
+	
+	// Store token in database
+	err = database.CreatePasswordResetToken(user.ID, token)
+	if err != nil {
+		return err
+	}
+	
+	// Send reset email
+	resetURL := "http://localhost:3000/reset-password?token=" + token
+	return SendPasswordResetEmail(user.Email, user.Name, resetURL)
+}
+
+// HandleResetPassword resets a user's password
+func HandleResetPassword(token, newPassword string) error {
+	// Validate the token
+	resetToken, err := database.GetValidToken(token)
+	if err != nil {
+		return errors.New("invalid or expired token")
+	}
+	
+	// Hash the new password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	
+	// Update user's password
+	err = database.UpdateUserPassword(resetToken.UserID, string(hashedPassword))
+	if err != nil {
+		return err
+	}
+	
+	// Mark token as used
+	return database.MarkTokenAsUsed(resetToken.ID)
+}
+
+// Generate a random token
+func generateRandomToken(length int) (string, error) {
+	bytes := make([]byte, length)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
 }
