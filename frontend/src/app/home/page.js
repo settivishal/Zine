@@ -18,7 +18,7 @@ export default function CalendarLayout() {
       <Navbar />
       
       {/* Main Content */}
-      <div className="flex flex-row gap-4 h-[calc(100vh-80px)]">
+      <div className="flex flex-row gap-4 h-[calc(100vh-80px)] overflow-y-auto">
         {/* Sidebar */}
         <div className="flex-shrink-0 space-y-4">
           {/* Calendar Widget */}
