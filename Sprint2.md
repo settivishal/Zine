@@ -104,7 +104,7 @@ Unit tests are written for each controller to ensure API functionality.
     - Endpoint: `POST /consumer/login`
 
     - Request Body:
-    ```
+    ```json
     {
         "Email": "dummy@gmail.com",
         "Password": "Password"
@@ -112,7 +112,7 @@ Unit tests are written for each controller to ensure API functionality.
     ```
 
     - Response:
-    ```
+    ```json
     {
         "message": "Authentication successful",
         "name": "Dummy",
@@ -127,7 +127,7 @@ Unit tests are written for each controller to ensure API functionality.
     - Endpoint: `POST /consumer/register`
 
     - Request Body:
-    ```
+    ```json
     {
         "Name": "Dummy",
         "Password": "Password",
@@ -136,7 +136,7 @@ Unit tests are written for each controller to ensure API functionality.
     ```
 
     - Response:
-    ```
+    ```json
     {
         "message": "Registration successful",
         "email": "dummy@gmail.com",
@@ -148,7 +148,7 @@ Unit tests are written for each controller to ensure API functionality.
     - Endpoint: `POST /consumer/register`
     - Headers: `Authorization: Bearer <token>`
     - Repsone:
-    ```
+    ```json
     {
         "message": "Logout successful"
     }
@@ -162,14 +162,14 @@ Unit tests are written for each controller to ensure API functionality.
 
     - Request Body:
 
-    ```
+    ```json
     {
         "email"  :  "dummy@gmail.com"
     }
     ```
 
     - Reponse:
-    ```
+    ```json
     {
         "message": "A password reset link has been sent"
     }
@@ -182,7 +182,7 @@ Unit tests are written for each controller to ensure API functionality.
 
     - Request Body:
 
-    ```
+    ```json
     {
         "token" : "0b661899759f949ec9c6de71e54e97569a28e0158ca57477911cd89387628735",
         "password" : "Password1"
@@ -190,7 +190,7 @@ Unit tests are written for each controller to ensure API functionality.
     ```
 
     Reponse:
-    ```
+    ```json
     {
         "message": "Password has been reset successfully"
     }
@@ -200,7 +200,7 @@ Unit tests are written for each controller to ensure API functionality.
     - Endpoint: `GET /auth/google`
 
     - Response:
-    ```
+    ```json
     {
         "auth_url": "https://accounts.google.com/o/oauth2/auth?client_id=377234163527-vvjh1763shbli0m4rhnqtok95cq54j29.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauth%2Fgoogle%2Fcallback&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&state=DEdsfmLXalUmU3z8rkfvoA%3D%3D"
     }
@@ -215,7 +215,7 @@ Unit tests are written for each controller to ensure API functionality.
     - Params: `prompt: consent`
 
     - Response:
-    ```
+    ```json
     {
         "message": "Registration successful",
         "name": "Vishal K Setti",
@@ -232,7 +232,7 @@ Unit tests are written for each controller to ensure API functionality.
     - Headers: `Authorization: Bearer <token>`
 
     - Response:
-    ```
+    ```json
     {
         "message": "Welcome, Dummy",
         "email": "dummy@gmail.com",
@@ -248,7 +248,7 @@ Unit tests are written for each controller to ensure API functionality.
     - Headers: `Authorization: Bearer <token>`
 
     - Request Body:
-    ```
+    ```json
     {
         "Email": "vishalsetti@gmail.com",
         "Password": "Password2",
@@ -265,7 +265,7 @@ Unit tests are written for each controller to ensure API functionality.
         - image (file) – The image file to be uploaded.
 
     - Response:
-    ```
+    ```json
     {
         "message": "Image updated successfully",
         "image": "https://d9amksc9hkkpj.cloudfront.net/7931917.jpg"
@@ -277,98 +277,96 @@ Unit tests are written for each controller to ensure API functionality.
 	- Endpoint: `POST /api/tag/create`
 	- Headers: `Authorization: Bearer <token>`
 	- Request Body:
-	```
-    {
-        "text":  "holiday1",
-        "color":  "#ffffff"
-    }
+	```json
+	    {
+	        "text":  "holiday1",
+	        "color":  "#ffffff"
+	    }
 	```
 
     - Response:
-    ```
+    ```json
     {
         "message": "Tag created successfully"
     }
     ```
 
-12.  **Delete Tag**
+12. **Delete Tag**
     - Endpoint: `POST /api/tag/delete`
-
+    
     - Headers: `Authorization: Bearer <token>`
-
+    
     - Request Body:
-
-    ```
-    {
-        "text":  "holiday1"
-    }
-    ```
-
+      ```json
+      {
+	  "text": "holiday1"
+      }
+      ```
     - Response:
-    ```
-    {
-        "message": "Tag deleted successfully"
-    }
-    ```
+      ```json
+      {
+	  "message": "Tag deleted successfully"
+      }
+      ```
 
 13.  **Set Tag**
-    - Endpoint: `POST /api/tag/set`
+	    - Endpoint: `POST /api/tag/set`
+	
+	    - Headers: `Authorization: Bearer <token>`
+	
+	    - Request Body:
 
-    - Headers: `Authorization: Bearer <token>`
+	    ```json
+            {
+			"text":  "holiday1",
+			"date":  "12/11/2025"
+		    }
+	    ```
 
-    - Request Body:
-
-    ```
-    {
-        "text":  "holiday1",
-        "date":  "12/11/2025"
-    }
-    ```
-
-    - Response:
-    ```
-    {
-        "message": "Tag set successfully"
-    }
-    ```
+	    - Response:
+	    ```json
+	    {
+	        "message": "Tag set successfully"
+	    }
+	    ```
 
 14.  **Remove Tag**
-    - Endpoint: `POST /api/tag/remove`
-
-    - Headers: `Authorization: Bearer <token>`
-
-    - Request Body:
-
-    ```
-    {
-        "text":  "holiday",
-        "date":  "9/11/2025"
-    }
-    ```
-
-    - Response:
-    ```
-    {
-        "message": "Tag removed successfully"
-    }
-    ```
+	    - Endpoint: `POST /api/tag/remove`
+	
+	    - Headers: `Authorization: Bearer <token>`
+	
+	    - Request Body:
+	
+	    ```json
+	    {
+	        "text":  "holiday",
+	        "date":  "9/11/2025"
+	    }
+	    ```
+	
+	    - Response:
+	    ```json
+	    {
+	        "message": "Tag removed successfully"
+	    }
+	    ```
 
 15.  **Get Tag**
-    - Endpoint: `GET /api/tags`
-
-    - Headers: `Authorization: Bearer <token>`
-
-    - Response:
-    ```
-    [
-        {
-            "ID": "67c65b6089cb4d6119d137e9",
-            "user_id": "",
-            "text": "holiday1",
-            "color": "#ffffff",
-            "dates": [
-                "12/11/2025"
-            ]
-        }
-    ]
-    ```
+	    - Endpoint: `GET /api/tags`
+	
+	    - Headers: `Authorization: Bearer <token>`
+	
+	    - Response:
+	    ```json
+	    [
+	        {
+	            "ID": "67c65b6089cb4d6119d137e9",
+	            "user_id": "",
+	            "text": "holiday1",
+	            "color": "#ffffff",
+	            "dates": [
+	                "12/11/2025"
+	            ]
+	        }
+	    ]
+	    ```
