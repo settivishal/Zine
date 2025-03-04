@@ -53,7 +53,7 @@ export default function SignUp (){
             }
         
             const data = await response.json();
-            window.location.href = "/profile";
+            window.location.href = "/Profile";
         } catch (error) {
             console.error("Error during register:", error);
             setErrorMessage("An error occurred. Please try again.");

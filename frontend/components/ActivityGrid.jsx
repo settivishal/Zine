@@ -123,7 +123,7 @@ export default function ActivityGrid({ activityData }) {
             
             <div className="flex space-x-4 overflow-x-auto pb-4">
                 {monthGrids.map((month, index) => (
-                    <div key={index} className="flex flex-col items-center min-w-[80px]">
+                    <div key={index} className="flex flex-col items-center">
                         <div className="grid grid-cols-7 gap-1">
                             {month.grid.map((day, dayIndex) => (
                                 <div

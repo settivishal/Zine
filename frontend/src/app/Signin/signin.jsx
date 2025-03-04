@@ -45,7 +45,7 @@ export default function SignIn() {
             // Store tokens and redirect or update UI as needed
             localStorage.setItem("accessToken", data.accessToken);
             localStorage.setItem("refreshToken", data.refreshToken);
-            window.location.href = "/Profile"; // Redirect upon success
+            window.location.href = "/home"; // Redirect upon success
         } catch (error) {
             console.error("Error during login:", error);
             setErrorMessage("An error occurred. Please try again.");
@@ -84,7 +84,7 @@ export default function SignIn() {
                         className="w-full bg-blue-500 text-white py-2 rounded font-semibold text-sm hover:bg-blue-600 transition"
                         onClick={handleLogin} // Call handleLogin function on click
                     >
-                        Sign In
+                        Log in
                     </button>
                     <div className="text-center text-sm text-gray-500 my-4">
                         OR

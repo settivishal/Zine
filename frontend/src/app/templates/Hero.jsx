@@ -23,7 +23,7 @@ const Hero = () => {
                 <Image src={myImg} width={70} height={70} alt="Zine" />
 
                 <div className="flex gap-2 items-center justify-between">
-                        <Link href="../">
+                        <Link href="../home">
                             {/* <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
                                 Home
                             </button> */}
