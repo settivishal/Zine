@@ -3,6 +3,7 @@ import { useState } from 'react';
 import CalendarComponent from '../../components/CalendarComponent';
 import CalendarWidget from '../../components/CalendarWidget';
 import Navbar from '../../components/navbar';
+import TagsComponent from '../../components/tags'; // Import the new component
 
 export default function CalendarLayout() {
   const [calendarView, setCalendarView] = useState('dayGridMonth');
@@ -16,11 +17,15 @@ export default function CalendarLayout() {
       {/* Navbar */}
       <Navbar />
       
-      {/* Calendar Content */}
+      {/* Main Content */}
       <div className="flex flex-row gap-4 h-[calc(100vh-80px)]">
-        {/* Calendar Widget */}
-        <div className="flex-shrink-0">
+        {/* Sidebar */}
+        <div className="flex-shrink-0 space-y-4">
+          {/* Calendar Widget */}
           <CalendarWidget />
+
+          {/* Tags Component */}
+          <TagsComponent />
         </div>
 
         {/* Full Calendar */}

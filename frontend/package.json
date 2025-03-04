@@ -25,12 +25,16 @@
     "lucide-react": "^0.477.0",
     "next": "15.1.6",
     "react": "^19.0.0",
+    "react-color": "^2.19.3",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "22.13.1",
+<<<<<<< HEAD
     "autoprefixer": "^10.4.20",
+=======
+>>>>>>> 32fa1a1dadbd38c28c97114c5740db5fe7e48c8f
     "cypress": "^14.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
