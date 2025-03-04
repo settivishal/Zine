@@ -32,7 +32,7 @@ export default function LoginPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            
+
           },
           body: JSON.stringify(payload),
         });
@@ -45,8 +45,11 @@ export default function LoginPage() {
     
         const data = await response.json();
         // Store tokens and redirect or update UI as needed
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
+        console.log(data);
+        localStorage.setItem("accessToken", data.access_token);
+        localStorage.setItem("refreshToken", data.refresh_token);
+        localStorage.setItem("expires_at", data.expires_at);
+        console.log(localStorage.getItem("accessToken"));
         window.location.href = "/home"; // Redirect upon success
       } catch (error) {
         console.error("Error during login:", error);
