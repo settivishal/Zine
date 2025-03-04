@@ -15,18 +15,7 @@ describe("Landing Page", () => {
     cy.contains("Sign in").should("be.visible");
   });
 
-  // it("should open the Sign in modal when clicking the 'Sign in' button", () => {
-  //   // Click the 'Sign in' button
-  //   cy.contains("Sign in").click();
-
-  //   // Check if the modal is visible
-  //   cy.get("[role='dialog']").should("be.visible");
-
-  //   // Close the modal
-  //   cy.get("[role='dialog'] .close-button").click(); // Replace `.close-button` with your modal's close button selector
-  //   cy.get("[role='dialog']").should("not.exist");
-  // });
-
+  
   it("should navigate to Home when clicking the 'Home' button", () => {
     // Click the 'Home' button
     cy.contains("Home").click();
