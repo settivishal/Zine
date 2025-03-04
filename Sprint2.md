@@ -8,9 +8,7 @@ https://github.com/settivishal/Zine
 
 ## Video Links
 
-Frontend: [Frontend]
-
-Backend: [Backend]
+Video Demo: [Demo Link](https://drive.google.com/file/d/1lhmBcRF8qusndiRR1nen4dKiXXxj3g11/view?usp=sharing)
 
 ## Authors
 
@@ -41,10 +39,30 @@ On the frontend, the focus will be on developing the profile page and the calend
 **Frontend:**
 
 - Calendar Page
+    - Month Grid
+    - Week Grid
+    - Navigation Buttons
+- Profile Page
+    - Bio
+    - Profile Pic Update
+    - Update Username
+    - Change Password
 
-- Forgot Password flow
+- Yearly Activity grid in Profile Page
+
 
 - Adding, Setting and Deleting Tags in Calendar page
+
+- API endpoints Integration
+    - Forgot Password
+    - Profile Page Components
+        - Change Password
+        - Upload/Update Profile Picture
+    - Create Tag
+    - Set Tag
+    - Delete Tag
+    - Remove Tag
+    - Get all Tags
 
 ## Unit Tests for Backend
 
@@ -86,6 +104,78 @@ Unit tests are written for each controller to ensure API functionality.
 | `response_utils.go`        | `response_utils_test.go`         | Tests utility functions for handling and formatting HTTP responses. |
 | `token_utils.go`        | `token_utils_test.go`               | Tests utility functions for generating reset token. |
 
+## Test for Frontend
+
+### Cypress
+
+1.  **Landing Page**
+        - Checks for the display of the landing page with logo and buttons.
+        - Checks for the navigations points of all the buttons.
+
+2.  **Sign in**
+        - Checks if Sign in button on Landing Page opens the AuthModal for the Sign in and Sign up tabs.
+        - Verifies that the Sign In tab in the Modal is active by default, once opened.
+        - Verifies that the Sign In form fields are visible.
+        - Sends Mock API request for successful login.
+        - Verifies redirection to profile page upon succesful Login.
+        - Verifies that the auth tokens are stored in localStorage.
+        - Verifies that an error message is displayed upon submission of invalid login creds.
+
+3. **Sign up**
+        - Verifies that the Sign Up form in the Modal is visible upon clicking the Sign up tab.
+        - Verifies all the form entries are visible.
+        - Verifies that the Sign Up button is visible.
+        - Checks whether an error is thrown upon submitting empty fields.
+        - Checks whether an error is thrown when the Password and Confirm Password don't match.
+        - Verifies redirection to profile page upon Signing up.
+
+4. **Modal**
+        - Verifies the Modal shows both the Sign in and Sign up tabs.
+        - Verifies the Modal Closes successfully upon clicking the "close button".
+    
+### Unit Tests
+
+
+1. **ActivityGrid**
+        - processes activity data and creates month grids
+
+2. **Bio**
+        - renders current bio when not editing
+        - switches to edit mode when Edit button is clicked
+        - cancels editing and reverts to original bio
+        - does not submit if bio is unchanged
+        - submits new bio when Save is clicked
+
+3. **Navbar**
+        - renders the ProfileDropdown component
+
+4. **ProfileDropDown**
+        - renders the ProfileDropdown component
+        - renders the profile image
+        - toggles dropdown menu on click
+        - renders all dropdown options
+        - closes dropdown after clicking an option
+        - navigates to profile page when Profile option is clicked
+
+5. **ProfilePic**
+        - renders the profile picture if currentPicture is provided
+
+6. **Tags**
+        - renders the component with initial state
+        - shows input fields when "Create New Tag" is clicked
+        - hides input fields when "Cancel" is clicked
+        - fetches tags when JWT token is available
+
+7. **UpdatePassword**
+        - shows error message if current password is not provided
+        - shows error message if new password is not provided
+
+8. **UpdateUsername**
+        - shows input fields when "Edit" button is clicked
+        - hides input fields when "Cancel" button is clicked
+        - shows error message if username is empty
+        - does not call onUpdate if username is unchanged
+        - renders the component with the current username
 
 ## API Documentation
 
