@@ -4,7 +4,7 @@ import Image from 'next/image';
 import myImg from '../zine.png';
 import { useState } from 'react';
 import decryptAuthURL from '../../../helpers/decrypt';
-import GoogleLoginButton from '../../../components/googleLoginButton';
+import GoogleLoginButton from '../../components/googleLoginButton';
 
 export default function LoginPage() {
     // State variables for form inputs
@@ -32,6 +32,7 @@ export default function LoginPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+
           },
           body: JSON.stringify(payload),
         });
@@ -44,9 +45,12 @@ export default function LoginPage() {
     
         const data = await response.json();
         // Store tokens and redirect or update UI as needed
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
-        window.location.href = "/profile"; // Redirect upon success
+        console.log(data);
+        localStorage.setItem("accessToken", data.access_token);
+        localStorage.setItem("refreshToken", data.refresh_token);
+        localStorage.setItem("expires_at", data.expires_at);
+        console.log(localStorage.getItem("accessToken"));
+        window.location.href = "/home"; // Redirect upon success
       } catch (error) {
         console.error("Error during login:", error);
         setErrorMessage("An error occurred. Please try again.");
@@ -99,6 +103,7 @@ export default function LoginPage() {
           </div>
           <form>
             <input
+              data-testid="email-input"
               type="text"
               placeholder="Email"
               className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400"
@@ -106,6 +111,7 @@ export default function LoginPage() {
               onChange={(e) => setIdentifier(e.target.value)}
             />
             <input
+              data-testid="password-input"
               type="password"
               placeholder="Password"
               className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400"
@@ -113,7 +119,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
             {errorMessage && (
-              <div className="mb-4 flex items-center justify-between bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-sm">
+              <div data-testid="error-message" className=" mb-4 flex items-center justify-between bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-sm">
                 <span>{errorMessage}</span>
                 <button
                   onClick={() => setErrorMessage('')}
@@ -126,6 +132,7 @@ export default function LoginPage() {
 
             <button
               type="button"
+              data-testid="login-button"
               className="w-full bg-blue-500 text-white py-2 rounded font-semibold text-sm hover:bg-blue-600 transition"
               onClick={handleLogin} // Call handleLogin function on click
             >
@@ -140,7 +147,7 @@ export default function LoginPage() {
 
           </form>
           <div className="mt-6 text-center">
-            <a href="/forgot" className="text-sm text-blue-600 font-semibold">
+            <a data-testid="forgot-password-link" href="/Forgot" className="text-sm text-blue-600 font-semibold">
               Forgot password?
             </a>
           </div>

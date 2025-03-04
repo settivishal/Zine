@@ -1,13 +1,13 @@
 import Link from "next/link";
 import React from "react";
 
-// import { Button } from "./Components/Button";
+import Button from "./Components/Button";
 import HeroOneButton from "./Components/HeroOneButton";
 import Section from "../layout/Section";
 // import NavbarTwoColumns from "./Components/NavbarTwoColumns";
 
 import Image from "next/image";
-import myImg from "../zine.png"
+import myImg from "../zine.png";
 // import Logo from "./Logo";
 
 
@@ -23,17 +23,19 @@ const Hero = () => {
                 <Image src={myImg} width={70} height={70} alt="Zine" />
 
                 <div className="flex gap-2 items-center justify-between">
-                        <Link href="../">
-                            <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                        <Link href="../home">
+                            {/* <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
                                 Home
-                            </button>
+                            </button> */}
+                            <Button>Home</Button>
                         </Link>
 
-                        <button
+                        {/* <button
                             onClick={() => setIsModalOpen(true)}
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
                             Sign in
-                        </button>
+                        </button> */}
+                        <Button onClick={() => setIsModalOpen(true)}>Sign in</Button>
 
                         {/* Auth Modal */}
                         <AuthModal

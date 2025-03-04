@@ -8,12 +8,13 @@ import (
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+    "github.com/dotenv-org/godotenvvault"
 )
 
 var GoogleOauthConfig *oauth2.Config
 
 func LoadConfig() error {
-	err := godotenv.Load(".env")
+	err := godotenvvault.Load()
 	if err != nil {
 		return fmt.Errorf("error loading .env file: %w", err)
 	}

@@ -1,15 +1,21 @@
 // import className from 'classnames';
 
 const Button = (props) => {
-  const btnClass = className({
-    btn: true,
-    'btn-xl': props.xl,
-    'btn-base': !props.xl,
-    'btn-primary': true,
-  });
+  const btnClass ="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+  // const btnClass = className({
+  //   btn: true,
+  //   'btn-xl': props.xl,
+  //   'btn-base': !props.xl,
+  //   'btn-primary': true,
+  // });
 
+  const combinedClass = `${btnClass} ${props.className || ''}${props.disabled ? 'opacity-50 cursor-not-allowed' : ''}`;
+  const { onClick, children, disabled, ...restProps } = props;
   return (
-    <div className={btnClass}>
+    <button className={combinedClass} onClick= {onClick}
+      {...(disabled !== undefined ? { disabled } : {})}
+      {...restProps}
+    > 
       {props.children}
 
       <style jsx>
@@ -35,7 +41,7 @@ const Button = (props) => {
           }
         `}
       </style>
-    </div>
+    </button>
   );
 };
 
