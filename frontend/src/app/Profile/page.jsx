@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect, createContext } from "react";
-import ActivityGrid from "../../../components/ActivityGrid";
-import UpdateUsername from "../../../components/UpdateUsername";
-import UpdatePassword from "../../../components/UpdatePassword";
-import ProfilePicture from "../../../components/ProfilePic";
-import UpdateBio from "../../../components/bio";
+import ActivityGrid from "../../components/ActivityGrid";
+import UpdateUsername from "../../components/UpdateUsername";
+import UpdatePassword from "../../components/UpdatePassword";
+import ProfilePicture from "../../components/ProfilePic";
+import UpdateBio from "../../components/bio";
 
 
 const ProfileContext = createContext();

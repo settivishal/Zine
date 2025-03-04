@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import Button from "../src/app/templates/Components/Button";
+import Button from "../app/templates/Components/Button";
 
 export default function UpdateUsername({ currentUsername, onUpdate }) {
     const [username, setUsername] = useState(currentUsername);
@@ -28,8 +28,6 @@ export default function UpdateUsername({ currentUsername, onUpdate }) {
         setIsSubmitting(true);
 
         try {
-            // In a real app, you would send this to your API
-            // For this example, we'll just update the state
             await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API call
 
             onUpdate(username);
@@ -47,11 +45,6 @@ export default function UpdateUsername({ currentUsername, onUpdate }) {
             {isEditing ? (
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        {/* <label
-                            htmlFor="username"
-                            className="block text-sm font-medium text-gray-700">
-                            Username
-                        </label> */}
                         <input
                             type="text"
                             id="username"
@@ -87,9 +80,6 @@ export default function UpdateUsername({ currentUsername, onUpdate }) {
             ) : (
                 <div className="flex justify-between items-center">
                     <div>
-                        {/* <h3 className="text-sm font-medium text-gray-700">
-                            Username
-                        </h3> */}
                         <p className="mt-1 text-4xl text-gray-900">
                             {currentUsername}
                         </p>

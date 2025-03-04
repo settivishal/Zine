@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import Button from "../src/app/templates/Components/Button";
+import Button from "../app/templates/Components/Button";
 
 export default function UpdatePassword() {
     const [currentPassword, setCurrentPassword] = useState("");
@@ -106,17 +106,6 @@ export default function UpdatePassword() {
                         className="mb-3 w-full py-2 border border-gray-600 rounded  text-sm text-black focus:outline-none focus:ring-1 focus:bor focus:ring-blue-500"
                         disabled={isSubmitting}
                     />
-                    {/* <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
-                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                >
-                    {showCurrentPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                    ) : (
-                    <Eye className="h-5 w-5" />
-                    )}
-                </button> */}
                 </div>
             </div>
 

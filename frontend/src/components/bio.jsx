@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import Button from "../src/app/templates/Components/Button";
+import Button from "../app/templates/Components/Button";
 
 export default function UpdateBio({ currentBio}) {
     const [bio, setBio] = useState(currentBio);
@@ -12,12 +12,6 @@ export default function UpdateBio({ currentBio}) {
 
     const handleBio = async (e) => {
         e.preventDefault();
-
-        // Validate username
-        // if (!username.trim()) {
-        //     setError("Bio");
-        //     return;
-        // }
 
         if (bio.trim() === currentBio) {
             setIsEditing(false);
@@ -44,8 +38,6 @@ export default function UpdateBio({ currentBio}) {
         
             const data = await response.json();
 
-            // Reset form
-            // setBio("");
             setSuccess("Bio updated successfully");
 
             
@@ -73,15 +65,6 @@ export default function UpdateBio({ currentBio}) {
                             disabled={isSubmitting}
                             className="w-full p-2 text-black border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
-                        {/* <input
-                            type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className="text-black mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Enter new username"
-                            disabled={isSubmitting}
-                        /> */}
                         {error && (
                             <p className="mt-1 text-sm text-red-600">{error}</p>
                         )}
@@ -108,9 +91,6 @@ export default function UpdateBio({ currentBio}) {
             ) : (
                 <div className="flex justify-between items-center">
                     <div>
-                        {/* <h3 className="text-sm font-medium text-gray-700">
-                            Username
-                        </h3> */}
                         <p className="mt-1 text-4xl text-gray-900">
                             {currentBio}
                         </p>

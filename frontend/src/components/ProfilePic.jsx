@@ -7,8 +7,6 @@ import Image from "next/image";
 import { UserIcon } from "@heroicons/react/24/outline";
 
 const DynamicHeroIcon = ({ icon, ...props }) => {
-    // This is a simplified version that just returns a UserIcon
-    // For a truly dynamic version, you would need to import all icons
     return <UserIcon {...props} />;
 };
 
@@ -40,7 +38,6 @@ export default function ProfilePicture({ currentPicture}) {
         setIsUploading(true);
 
         try {
-            // In a real app, you would upload the file to your server
             const response = await fetch("http://localhost:8080/api/image/update", {
                 method: "POST",
                 headers: {
@@ -57,8 +54,6 @@ export default function ProfilePicture({ currentPicture}) {
         
             const data = await response.json();
             setSuccessMessage("Profile picture updated successfully!"); // Show
-            // const imageUrl = URL.createObjectURL(file);
-            // onUpdate(imageUrl);
         } catch (error) {
             console.error("Error uploading image:", error);
         } finally {
