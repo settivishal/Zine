@@ -84,6 +84,7 @@ Unit tests are written for each controller to ensure API functionality.
 | `hash_utils.go`            | `hash_utils_test.go`             | Tests utility functions for hashing passwords and other sensitive data. |
 | `jwt_utils.go`             | `jwt_utils_test.go`              | Tests utility functions for generating, validating, and parsing JWT tokens. |
 | `response_utils.go`        | `response_utils_test.go`         | Tests utility functions for handling and formatting HTTP responses. |
+| `token_utils.go`        | `token_utils_test.go`               | Tests utility functions for generating reset token. |
 
 
 ## API Documentation
