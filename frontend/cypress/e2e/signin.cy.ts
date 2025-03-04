@@ -24,7 +24,7 @@ describe("Sign In Button Functionality", () => {
     cy.intercept(
       "POST",
       "http://localhost:8080/consumer/login",
-      { statusCode: 200, body: { accessToken: "mockAccessToken", refreshToken: "mockRefreshToken" } }
+      { statusCode: 200, body: { access_token: "mockAccessToken", refresh_token: "mockRefreshToken" } }
     );
 
     // Open the modal by clicking 'Sign in'
@@ -40,8 +40,8 @@ describe("Sign In Button Functionality", () => {
 
     // Verify that tokens are stored in localStorage
     cy.window().then((win) => {
-      expect(win.localStorage.getItem("accessToken")).to.eq("mockAccessToken");
-      expect(win.localStorage.getItem("refreshToken")).to.eq("mockRefreshToken");
+      expect(win.localStorage.getItem("access_token")).to.eq("mockAccessToken");
+      expect(win.localStorage.getItem("refresh_token")).to.eq("mockRefreshToken");
     });
   });
 

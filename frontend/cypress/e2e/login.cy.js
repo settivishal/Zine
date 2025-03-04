@@ -44,7 +44,7 @@ describe('Login Page', () => {
   
     it('navigates to forgot password page', () => {
       cy.contains('Forgot password?').click()
-      cy.url().should('include', '/forgot')
+      cy.url().should('include', '/Forgot')
     })
   })
   
