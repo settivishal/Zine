@@ -15,7 +15,7 @@ const ProfileDropdown = () => {
 
   const handleOptionClick = (option) => {
     if(option === "Profile") {
-      window.location.href = "/profile";
+      window.location.href = "/Profile";
     }
     // Add your logic here for each option
     setToggle(false); // Close the dropdown after clicking an option
