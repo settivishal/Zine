@@ -43,8 +43,9 @@ export default function SignIn() {
         
             const data = await response.json();
             // Store tokens and redirect or update UI as needed
-            localStorage.setItem("accessToken", data.accessToken);
-            localStorage.setItem("refreshToken", data.refreshToken);
+            localStorage.setItem("accessToken", data.access_token);
+            localStorage.setItem("refreshToken", data.refresh_token);
+            localStorage.setItem("expires_at", data.expires_at);
             window.location.href = "/home"; // Redirect upon success
         } catch (error) {
             console.error("Error during login:", error);
