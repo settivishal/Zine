@@ -7,11 +7,19 @@ import { User, Gear, Question, SignOut } from "@phosphor-icons/react";
 const ProfileDropdown = () => {
   const [toggle, setToggle] = useState(false);
   const options = [
-    { label: "Profile", icon: <User size={16} className="mr-2" /> },
-    { label: "Settings", icon: <Gear size={16} className="mr-2" /> },
-    { label: "Help", icon: <Question size={16} className="mr-2" /> },
-    { label: "Logout", icon: <SignOut size={16} className="mr-2 text-red-500" /> }
+    { label: "Profile", icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick("Profile") },
+    { label: "Settings", icon: <Gear size={16} className="mr-2" />, onClick: () => handleOptionClick("Settings") },
+    { label: "Help", icon: <Question size={16} className="mr-2" />, onClick: () => handleOptionClick("Help") },
+    { label: "Logout", icon: <SignOut size={16} className="mr-2 text-red-500" />, onClick: () => handleOptionClick("Logout") }
   ];
+
+  const handleOptionClick = (option) => {
+    if(option === "Profile") {
+      window.location.href = "/Profile";
+    }
+    // Add your logic here for each option
+    setToggle(false); // Close the dropdown after clicking an option
+  };
 
   return (
     <div className="relative">
@@ -37,6 +45,7 @@ const ProfileDropdown = () => {
             <div
               key={index}
               className="px-4 py-3 hover:bg-blue-500 hover:text-white text-black transition-all cursor-pointer flex items-center"
+              onClick={option.onClick}
             >
               {option.icon} {option.label}
             </div>
