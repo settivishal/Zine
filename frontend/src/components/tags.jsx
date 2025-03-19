@@ -32,7 +32,9 @@ export default function TagsComponent() {
     
         if (response.ok) {
           const data = await response.json();
-          setTags(data);
+          if(data){
+            setTags(data.tags);
+          }
         } else {
           console.error('Failed to fetch tags');
         }
