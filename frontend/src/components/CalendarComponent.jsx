@@ -1,31 +1,47 @@
 'use client';
 import { useState } from 'react';
-import { Button, Card, CardContent, Typography, Box } from '@mui/material';
+import { Button, Card, CardContent, Typography, Box, Chip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Image from 'next/image';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 const BlogList = () => {
     const [blogs, setBlogs] = useState([
         // Sample blog data - replace with actual API call
         {
             id: 1,
-            title: 'Getting Started with Next.js',
-            excerpt: 'Learn how to build modern web applications with Next.js...',
+            title: 'Majestic peaks and breathtaking views in the heart of the Swiss Alps! 🏔️✨',
+            excerpt: 'Snow-capped mountains, crystal-clear lakes, and charming alpine villages...',
             date: '2024-03-19',
-            image: '/images/alps.jpg'
+            image: '/images/alps.jpg',
+            tags: [
+                { text: 'Travel', color: '#2196f3' },
+                { text: 'Nature', color: '#4caf50' },
+                { text: 'Adventure', color: '#ff9800' }
+            ]
         },
         {
             id: 2,
-            title: 'Understanding React Hooks',
-            excerpt: 'Deep dive into React Hooks and their practical applications...',
+            title: 'Sun, sand, and endless vibes at Miami Beach! ☀️🌊✨',
+            excerpt: 'Golden sands, turquoise waters, and vibrant nightlife ...',
             date: '2024-03-18',
-            image: '/images/beach.jpg'
+            image: '/images/beach.jpg',
+            tags: [
+                { text: 'Beach', color: '#00bcd4' },
+                { text: 'Summer', color: '#f44336' },
+                { text: 'Vacation', color: '#9c27b0' }
+            ]
         }
     ]);
 
     const handleCreateBlog = () => {
         // Implement navigation to blog creation page
         console.log('Navigate to create blog page');
+    };
+
+    const handleTagClick = (tag) => {
+        // Implement tag click functionality
+        console.log(`Tag clicked: ${tag}`);
     };
 
     return (
@@ -68,6 +84,39 @@ const BlogList = () => {
                                 style={{ objectFit: 'cover' }}
                                 priority={blog.id === 1} // Priority loading for first image
                             />
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    top: 10,
+                                    left: 10,
+                                    zIndex: 1,
+                                    display: 'flex',
+                                    gap: 1,
+                                    flexWrap: 'wrap'
+                                }}
+                            >
+                                {blog.tags.map((tag, index) => (
+                                    <Chip
+                                        key={index}
+                                        label={tag.text}
+                                        size="small"
+                                        onClick={() => handleTagClick(tag.text)}
+                                        sx={{
+                                            backgroundColor: tag.color,
+                                            color: 'white',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            '&:hover': {
+                                                transform: 'translateY(-2px)',
+                                                boxShadow: 2
+                                            },
+                                            '&:active': {
+                                                transform: 'translateY(0)'
+                                            }
+                                        }}
+                                    />
+                                ))}
+                            </Box>
                         </div>
                         <CardContent>
                             <Typography variant="h6" component="h3" className="mb-2">
