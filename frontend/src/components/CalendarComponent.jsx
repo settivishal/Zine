@@ -1,110 +1,97 @@
-'use client'
-import { Card, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import { useRef, useEffect } from 'react';
+'use client';
+import { useState } from 'react';
+import { Button, Card, CardContent, CardMedia, Typography, Box } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
-const AppFullCalendar = styled('div')(({ theme }) => ({
-  position: 'relative',
-  '& .fc': {
-    padding: '0.5rem',
-    backgroundColor: theme.palette.background.paper,
-  },
-  '& .fc-toolbar': {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginBottom: '0.5rem',
-    position: 'relative',
-  },
-  '& .fc-button': {
-    backgroundColor: '#1a73e8',
-    color: 'white',
-    borderRadius: '4px',
-    '&:hover': {
-      backgroundColor: '#1558b0',
-    },
-  },
-  '& .fc-daygrid-day': {
-    border: '1px solid #e0e0e0',
-  },
-  '& .fc-daygrid-day-number': {
-    color: '#1a73e8',
-  },
-  '& .fc-event': {
-    backgroundColor: '#1a73e8',
-    color: 'white',
-    borderRadius: '4px',
-    padding: '2px 4px',
-    
-  },
-  '& .view-toggle-container': {
-    position: 'absolute',
-    top: '30px',
-    right: '50px',
-    transform: 'translateY(-50%)',
-    zIndex: 10,
-  },
-}));
+const BlogList = () => {
+    const [blogs, setBlogs] = useState([
+        // Sample blog data - replace with actual API call
+        {
+            id: 1,
+            title: 'Getting Started with Next.js',
+            excerpt: 'Learn how to build modern web applications with Next.js...',
+            date: '2024-03-19',
+            author: 'John Doe',
+            image: '/images/alps.jpg'
+        },
+        {
+            id: 2,
+            title: 'Understanding React Hooks',
+            excerpt: 'Deep dive into React Hooks and their practical applications...',
+            date: '2024-03-18',
+            author: 'Jane Smith',
+            image: '/images/beach.jpg'
+        }
+    ]);
 
-const CalendarComponent = ({ view = 'dayGridMonth', onViewChange }) => {
-  const calendarRef = useRef(null);
-  const mappedView = view === 'timeGridWeek' ? 'dayGridWeek' : view;
-  
-  const handleViewChange = (event, newView) => {
-    if (newView !== null) {
-      onViewChange(newView);
-    }
-  };
-  
-  useEffect(() => {
-    // Insert view toggle buttons into the header
-    if (calendarRef.current) {
-      const headerEl = calendarRef.current.querySelector('.fc-toolbar-chunk:nth-child(3)');
-      if (headerEl) {
-        const toggleContainer = document.createElement('div');
-        toggleContainer.className = 'view-toggle-container';
-        headerEl.appendChild(toggleContainer);
-        
-        // The actual buttons will be rendered by React in the component below
-      }
-    }
-  }, []);
+    const handleCreateBlog = () => {
+        // Implement navigation to blog creation page
+        console.log('Navigate to create blog page');
+    };
 
-  return (
-    <Card sx={{ height: 'calc(100vh - 4rem)', overflow: 'auto' }}>
-      <AppFullCalendar className='app-calendar' ref={calendarRef}>
-        <div className="view-toggle-container">
-          <ToggleButtonGroup
-            value={view}
-            exclusive
-            onChange={handleViewChange}
-            aria-label="calendar view"
-            size="small"
-          >
-            <ToggleButton value="dayGridMonth" aria-label="month view">
-              Month
-            </ToggleButton>
-            <ToggleButton value="dayGridWeek" aria-label="week view">
-              Week
-            </ToggleButton>
-          </ToggleButtonGroup>
+    return (
+        <div className="h-full flex flex-col gap-4">
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold">My Blogs</h2>
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={handleCreateBlog}
+                    sx={{
+                        backgroundColor: '#1a73e8',
+                        '&:hover': {
+                            backgroundColor: '#1557b0'
+                        }
+                    }}
+                >
+                    Create New Blog
+                </Button>
+            </div>
+
+            <div className="overflow-y-auto">
+                {blogs.map((blog) => (
+                    <Card
+                        key={blog.id}
+                        className="mb-4 hover:shadow-lg transition-shadow"
+                        sx={{
+                            cursor: 'pointer',
+                            '&:hover': {
+                                transform: 'translateY(-2px)',
+                                transition: 'transform 0.2s ease-in-out'
+                            }
+                        }}
+                    >
+                        <CardMedia
+                            component="img"
+                            height="200"
+                            image={blog.image}
+                            alt={blog.title}
+                            sx={{
+                                height: 200,
+                                objectFit: 'cover'
+                            }}
+                        />
+                        <CardContent>
+                            <Typography variant="h6" component="h3" className="mb-2">
+                                {blog.title}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" className="mb-2">
+                                {blog.excerpt}
+                            </Typography>
+                            <Box className="flex justify-between items-center text-sm text-gray-500">
+                                <Typography variant="caption">
+                                    By {blog.author}
+                                </Typography>
+                                <Typography variant="caption">
+                                    {new Date(blog.date).toLocaleDateString()}
+                                </Typography>
+                            </Box>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
         </div>
-        <FullCalendar
-          plugins={[dayGridPlugin]}
-          initialView={mappedView}
-          headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: ''
-          }}
-          events={[
-            { title: 'Blog Post 1', date: '2025-02-20' }
-          ]}
-        />
-      </AppFullCalendar>
-    </Card>
-  );
+    );
 };
 
-export default CalendarComponent;
+export default BlogList;
