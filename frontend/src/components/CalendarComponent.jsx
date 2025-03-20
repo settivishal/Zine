@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
-import { Button, Card, CardContent, CardMedia, Typography, Box } from '@mui/material';
+import { Button, Card, CardContent, Typography, Box } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import Image from 'next/image';
 
 const BlogList = () => {
     const [blogs, setBlogs] = useState([
@@ -11,7 +12,6 @@ const BlogList = () => {
             title: 'Getting Started with Next.js',
             excerpt: 'Learn how to build modern web applications with Next.js...',
             date: '2024-03-19',
-            author: 'John Doe',
             image: '/images/alps.jpg'
         },
         {
@@ -19,7 +19,6 @@ const BlogList = () => {
             title: 'Understanding React Hooks',
             excerpt: 'Deep dive into React Hooks and their practical applications...',
             date: '2024-03-18',
-            author: 'Jane Smith',
             image: '/images/beach.jpg'
         }
     ]);
@@ -32,7 +31,7 @@ const BlogList = () => {
     return (
         <div className="h-full flex flex-col gap-4">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">My Blogs</h2>
+                <h2 className="text-xl font-semibold text-black">My Blogs</h2>
                 <Button
                     variant="contained"
                     startIcon={<AddIcon />}
@@ -61,16 +60,15 @@ const BlogList = () => {
                             }
                         }}
                     >
-                        <CardMedia
-                            component="img"
-                            height="200"
-                            image={blog.image}
-                            alt={blog.title}
-                            sx={{
-                                height: 200,
-                                objectFit: 'cover'
-                            }}
-                        />
+                        <div style={{ position: 'relative', width: '100%', height: '200px' }}>
+                            <Image
+                                src={blog.image}
+                                alt={blog.title}
+                                fill
+                                style={{ objectFit: 'cover' }}
+                                priority={blog.id === 1} // Priority loading for first image
+                            />
+                        </div>
                         <CardContent>
                             <Typography variant="h6" component="h3" className="mb-2">
                                 {blog.title}
@@ -78,10 +76,7 @@ const BlogList = () => {
                             <Typography variant="body2" color="text.secondary" className="mb-2">
                                 {blog.excerpt}
                             </Typography>
-                            <Box className="flex justify-between items-center text-sm text-gray-500">
-                                <Typography variant="caption">
-                                    By {blog.author}
-                                </Typography>
+                            <Box className="flex justify-end text-sm text-gray-500">
                                 <Typography variant="caption">
                                     {new Date(blog.date).toLocaleDateString()}
                                 </Typography>
