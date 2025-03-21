@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
-import profileImage from './profile2.jpg';
+import profileImage from '../../public/profile2.jpg';
 import { User, Gear, Question, SignOut } from "@phosphor-icons/react";
 
 const ProfileDropDown = () => {
