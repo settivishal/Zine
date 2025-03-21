@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import ProfileDropdown from './ProfileDropDown';
+import ProfileDropdown from '../components/ProfileDropDown';
 import '@testing-library/jest-dom';
 
 // Mock the Next.js Image component

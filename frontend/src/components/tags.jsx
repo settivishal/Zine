@@ -1,66 +1,70 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { SketchPicker } from 'react-color';
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { SketchPicker } from "react-color";
 
 export default function Tags() {
-    const [tags, setTags] = useState([]);
-    const [newTag, setNewTag] = useState('');
-    const [color, setColor] = useState('#000000');
-    const [showInput, setShowInput] = useState(false);
-    const [jwt_token, setJwtToken] = useState(null);
-    
-    // Fetch JWT token first, then fetch tags when token is available
-    useEffect(() => {
-      const token = localStorage.getItem("accessToken");
-      if (token) {
-        setJwtToken(token); // Update state
+  const [tags, setTags] = useState([]);
+  const [newTag, setNewTag] = useState("");
+  const [color, setColor] = useState("#000000");
+  const [showInput, setShowInput] = useState(false);
+  const [jwt_token, setJwtToken] = useState(null);
+
+  // Fetch JWT token first, then fetch tags when token is available
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      setJwtToken(token); // Update state
+    }
+  }, []);
+
+  useEffect(() => {
+    if (jwt_token) {
+      fetchTags();
+    }
+  }, [jwt_token]); // Runs when jwt_token is updated
+
+  const fetchTags = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/tags", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${jwt_token}` },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTags(data);
+      } else {
+        console.error("Failed to fetch tags");
       }
-    }, []);
-    
-    useEffect(() => {
-      if (jwt_token) {
-        fetchTags();
-      }
-    }, [jwt_token]); // Runs when jwt_token is updated
-    
-    const fetchTags = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/api/tags', {
-          method: 'GET',
-          headers: { 'Authorization': `Bearer ${jwt_token}` },
-        });
-    
-        if (response.ok) {
-          const data = await response.json();
-          setTags(data);
-        } else {
-          console.error('Failed to fetch tags');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const handleAddTag = async () => {
     if (newTag.trim()) {
       const payload = { text: newTag, color: color };
       try {
-        const response = await fetch('http://localhost:8080/api/tag/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt_token}` },
+        const response = await fetch("http://localhost:8080/api/tag/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${jwt_token}`,
+          },
           body: JSON.stringify(payload),
         });
 
         if (response.ok) {
           fetchTags(); // Fetch updated tags after creating a new one
-          setNewTag('');
-          setColor('#000000');
+          setNewTag("");
+          setColor("#000000");
           setShowInput(false);
         } else {
-          console.error('Failed to create tag');
+          console.error("Failed to create tag");
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
       }
     }
   };
@@ -68,7 +72,7 @@ export default function Tags() {
   return (
     <div className="p-4 bg-white border rounded shadow-md">
       <h2 className="text-lg text-black font-semibold mb-2">Tags</h2>
-      
+
       {!showInput && (
         <button
           onClick={() => setShowInput(true)}
@@ -109,18 +113,17 @@ export default function Tags() {
         </div>
       )}
 
-        <div className="flex flex-wrap max-w-[200px] gap-2 ">
+      <div className="flex flex-wrap max-w-[200px] gap-2 ">
         {tags.map((tag, index) => (
-            <span
+          <span
             key={index}
             style={{ backgroundColor: tag.color }}
             className="inline-block px-3 py-1 text-sm text-white rounded-full shadow-md"
-            >
+          >
             {tag.text}
-            </span>
+          </span>
         ))}
-        </div>
-
+      </div>
     </div>
   );
 }

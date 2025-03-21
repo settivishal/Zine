@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import ProfilePicture from './ProfilePicture';
+import ProfilePicture from '../components/ProfilePicture';
 import '@testing-library/jest-dom';
 
 jest.mock('next/image', () => ({
