@@ -4,7 +4,7 @@ import Image from 'next/image';
 import myImg from '../zine.png';
 import { useState } from 'react';
 import decryptAuthURL from '../../../helpers/decrypt';
-import GoogleLoginButton from '../../components/googleLoginButton';
+import GoogleLoginButton from '../../components/GoogleLoginButton';
 
 export default function LoginPage() {
     // State variables for form inputs

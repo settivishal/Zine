@@ -4,7 +4,7 @@ import Image from 'next/image';
 import profileImage from './profile2.jpg';
 import { User, Gear, Question, SignOut } from "@phosphor-icons/react";
 
-const ProfileDropdown = () => {
+const ProfileDropDown = () => {
   const [toggle, setToggle] = useState(false);
   const options = [
     { label: "Profile", icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick("Profile") },
@@ -56,4 +56,4 @@ const ProfileDropdown = () => {
   );
 };
 
-export default ProfileDropdown;
+export default ProfileDropDown;

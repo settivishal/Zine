@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { SketchPicker } from 'react-color';
 
-export default function TagsComponent() {
+export default function Tags() {
     const [tags, setTags] = useState([]);
     const [newTag, setNewTag] = useState('');
     const [color, setColor] = useState('#000000');

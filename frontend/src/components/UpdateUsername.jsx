@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import Button from "../app/templates/Components/Button";
+import Button from "./Button";
 
 export default function UpdateUsername({ currentUsername, onUpdate }) {
     const [username, setUsername] = useState(currentUsername);

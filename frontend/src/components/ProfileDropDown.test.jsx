@@ -17,7 +17,7 @@ describe('ProfileDropdown Component', () => {
   });
 
   test('toggles dropdown menu on click', () => {
-    render(<ProfileDropdown />);
+    render(<ProfileDropDown />);
     const profileButton = screen.getByAltText('Profile');
 
     // Initially, dropdown should not be visible
@@ -33,7 +33,7 @@ describe('ProfileDropdown Component', () => {
   });
 
   test('renders all dropdown options', () => {
-    render(<ProfileDropdown />);
+    render(<ProfileDropDown />);
     fireEvent.click(screen.getByAltText('Profile'));
 
     expect(screen.getByText('Profile')).toBeInTheDocument();
@@ -43,7 +43,7 @@ describe('ProfileDropdown Component', () => {
   });
 
   test('closes dropdown after clicking an option', () => {
-    render(<ProfileDropdown />);
+    render(<ProfileDropDown />);
     fireEvent.click(screen.getByAltText('Profile'));
 
     fireEvent.click(screen.getByText('Settings'));
@@ -54,7 +54,7 @@ describe('ProfileDropdown Component', () => {
     delete window.location;
     window.location = { href: '' };
 
-    render(<ProfileDropdown />);
+    render(<ProfileDropDown />);
     fireEvent.click(screen.getByAltText('Profile'));
     fireEvent.click(screen.getByText('Profile'));
 

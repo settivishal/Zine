@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import UpdateBio from './bio';
+import UpdateBio from './UpdateBio';
 
 // Mock the fetch function
 global.fetch = jest.fn();
