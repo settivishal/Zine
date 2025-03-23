@@ -1,17 +1,17 @@
 import Link from "next/link";
 import React from "react";
 
-import Button from "./Components/Button";
-import HeroOneButton from "./Components/HeroOneButton";
-import Section from "../layout/Section";
+import Button from "./Button";
+import HeroOneButton from "./HeroOneButton";
+import Section from "./Section";
 // import NavbarTwoColumns from "./Components/NavbarTwoColumns";
 
 import Image from "next/image";
-import myImg from "../zine.png";
+import myImg from "../../public/zine.png";
 // import Logo from "./Logo";
 
 
-import AuthModal from "../Modal/page";
+import AuthModal from "../app/Modal/page";
 
 
 const Hero = () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import ActivityGrid from './ActivityGrid';
+import ActivityGrid from '../components/ActivityGrid';
 
 describe('ActivityGrid Component', () => {
   const mockActivityData = [

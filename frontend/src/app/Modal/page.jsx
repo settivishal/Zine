@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import SignUp from "../Signin/signup";
-import SignIn from "../Signin/signin";
+import SignUp from "../signin/signup";
+import SignIn from "../signin/signin";
 
 
 export default function AuthModal({ isOpen, onClose }) {

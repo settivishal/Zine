@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import myImg from "../zine.png";
+import myImg from "../../../public/zine.png";
 import { useState } from "react";
 
-import GoogleLoginButton from '../../components/googleLoginButton';
+import GoogleLoginButton from '../../components/GoogleLoginButton';
 
 export default function SignIn() {
     

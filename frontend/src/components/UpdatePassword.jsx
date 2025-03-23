@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import Button from "../app/templates/Components/Button";
+import Button from "./Button";
 
 export default function UpdatePassword() {
     const [currentPassword, setCurrentPassword] = useState("");
