@@ -47,7 +47,7 @@ const AppFullCalendar = styled('div')(({ theme }) => ({
   },
 }));
 
-const CalendarComponent = ({ view = 'dayGridMonth', onViewChange }) => {
+const Calendar = ({ view = 'dayGridMonth', onViewChange }) => {
   const calendarRef = useRef(null);
   const mappedView = view === 'timeGridWeek' ? 'dayGridWeek' : view;
   
@@ -107,4 +107,4 @@ const CalendarComponent = ({ view = 'dayGridMonth', onViewChange }) => {
   );
 };
 
-export default CalendarComponent;
+export default Calendar;

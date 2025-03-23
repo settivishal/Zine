@@ -1,10 +1,10 @@
 "use client";
 
 import Image from 'next/image';
-import myImg from '../zine.png';
+import myImg from '../../../public/zine.png';
 import { useState } from 'react';
 import decryptAuthURL from '../../../helpers/decrypt';
-import GoogleLoginButton from '../../components/googleLoginButton';
+import GoogleLoginButton from '../../components/GoogleLoginButton';
 
 export default function LoginPage() {
     // State variables for form inputs
@@ -154,7 +154,7 @@ export default function LoginPage() {
         </div>
         {/* Sign Up Card */}
         <div className="w-full max-w-xs bg-white border border-gray-300 rounded-lg p-4 text-center text-sm">
-          <span className="text-gray-700">Don't have an account?</span>{' '}
+          <span className="text-gray-700">Don&apos;t have an account?</span>{' '}
           <a href="#" className="text-blue-600 font-semibold">
             Sign up
           </a>

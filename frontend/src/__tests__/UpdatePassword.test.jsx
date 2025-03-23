@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import UpdatePassword from './UpdatePassword';
+import UpdatePassword from '../components/UpdatePassword';
 import '@testing-library/jest-dom';
 
 // Mock the fetch function

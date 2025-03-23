@@ -3,7 +3,7 @@
 
 import * as React from "react";
 
-import Base from "../templates/Base"
+import Base from "../../components/Base.jsx";
 // import AuthModal from "../Modal/page";
 
 const style = {

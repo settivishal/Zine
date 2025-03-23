@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Navbar from './Navbar';
+import Navbar from '../components/Navbar';
 
 // Mock ProfileDropdown to avoid testing its implementation
 jest.mock('./ProfileDropDown', () => () => <div data-testid="profile-dropdown">Mock ProfileDropdown</div>);

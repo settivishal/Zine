@@ -2,8 +2,8 @@
 // import { useRouter } from 'next/router';
 // import axiosInstance from "../../../helpers/axiosInstance";
 import Image from "next/image";
-import myImg from "../zine.png";
-import GoogleLoginButton from '../../components/googleLoginButton';
+import myImg from "../../../public/zine.png";
+import GoogleLoginButton from '../../components/GoogleLoginButton';
 
 
 
