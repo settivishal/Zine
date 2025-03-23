@@ -120,7 +120,7 @@ console.log(token); // d9f25de6a94be14c8c63c9a8a98f4ae85d21a7d290c600eef605a0be9
         </div>
       </div>
 
-      <a href="/login" className="text-sm text-blue-600 font-semibold hover:underline">
+      <a href="/landing" className="text-sm text-blue-600 font-semibold hover:underline">
         Back to login
       </a>
     </div>

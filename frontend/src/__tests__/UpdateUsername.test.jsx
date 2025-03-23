@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import UpdateUsername from './UpdateUsername';
+import UpdateUsername from '../components/UpdateUsername';
 import '@testing-library/jest-dom';
 
 describe('UpdateUsername Component', () => {

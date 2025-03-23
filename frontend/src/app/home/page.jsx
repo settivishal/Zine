@@ -1,9 +1,9 @@
 'use client';
 import { useState } from 'react';
-import CalendarComponent from '../../components/CalendarComponent';
+import CalendarComponent from '../../components/Calendar';
 import CalendarWidget from '../../components/CalendarWidget';
-import Navbar from '../../components/navbar';
-import TagsComponent from '../../components/tags'; // Import the new component
+import Navbar from '../../components/Navbar';
+import TagsComponent from '../../components/Tags'; // Import the new component
 
 export default function CalendarLayout() {
   const [calendarView, setCalendarView] = useState('dayGridMonth');

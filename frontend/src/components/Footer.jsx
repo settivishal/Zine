@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import CenteredFooter from "./Components/footer/CenteredFooter";
-import Section from "../layout/Section";
+import CenteredFooter from "./CenteredFooter";
+import Section from "./Section";
 // import Logo from "./Logo";
 import React from "react";
 
