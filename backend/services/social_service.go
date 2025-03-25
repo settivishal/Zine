@@ -78,7 +78,7 @@ func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) (*utils.LoginR
 		return nil, http.StatusInternalServerError, err
 	}
 
-	// Update ot Create User Data
+	// Update or Create User Data
 	updateData := models.User{
 		Email:      user.Email,
 		Name:       user.Name,
