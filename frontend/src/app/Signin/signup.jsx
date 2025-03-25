@@ -17,6 +17,12 @@ export default function SignUp({ onTabChange }) {
     const [errorMessage, setErrorMessage] = useState(""); // Error message state
     const [successMessage, setSuccessMessage] = useState(""); // Add success message state
 
+    // Email validation regex
+    const validateEmail = (email) => {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
+    };
+
     // Handle form submission from Login Button
     const handleRegister = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
@@ -28,6 +34,13 @@ export default function SignUp({ onTabChange }) {
             setErrorMessage("Please enter both email/username and password.");
             return;
         }
+
+        // Check if email is valid
+        if (!validateEmail(email)) {
+            setErrorMessage("Please enter a valid email address.");
+            return;
+        }
+
         if (!confirmPassword || password != confirmPassword) {
             setErrorMessage("Password does not match!");
             return;
