@@ -28,6 +28,8 @@ type UserInfoResponse struct {
 	Name    string `json:"name"`
 	Image   string `json:"image"`
 	Bio     string `json:"bio"`
+	Age     int64  `json:"age"`
+	Gender  string `json:"gender"`
 }
 
 type LoginResponse struct {

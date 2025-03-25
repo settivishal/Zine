@@ -39,6 +39,8 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) (*utils.UserInfoRespo
 		Email:   user.Email,
 		Image:   user.Image,
 		Bio:     user.Bio,
+		Age:     user.Age,
+		Gender:  user.Gender,
 	}, nil, http.StatusOK
 }
 
