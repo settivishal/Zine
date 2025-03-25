@@ -34,6 +34,7 @@ func Routes(router *mux.Router) {
 	api.HandleFunc("/profile", controllers.GetProfile).Methods("GET")
 	api.HandleFunc("/change_password", controllers.ChangePassword).Methods("POST")
 	api.HandleFunc("/image/update", controllers.UpdateImage).Methods("POST")
+	api.HandleFunc("/profile/update", controllers.UpdateProfile).Methods("POST")
 
 	// Tag Routes
 	api.HandleFunc("/tag/create", controllers.CreateTag).Methods("POST")
