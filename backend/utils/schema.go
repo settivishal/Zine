@@ -109,3 +109,11 @@ type UpdateProfileRequest struct {
 type UpdateProfileResponse struct {
 	Message string `json:"message"`
 }
+
+type UpdateProfileHobbiesRequest struct {
+	Hobbies []string `json:"hobbies"`
+}
+
+type UpdateProfileHobbiesResponse struct {
+	Message string `json:"message"`
+}

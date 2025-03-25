@@ -103,3 +103,28 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, response, status)
 
 }
+
+// Update Hobbies of an user
+
+// @Summary Update Hobbies
+// @Description Update hobbies of a user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body object{hobbies=[]string} true "Hobbies details"
+// @Success 200 {object} utils.RegisterResponse
+// @Failure 400 {object} utils.ErrorResponse "Invalid request format"
+// @Failure 401 {object} utils.ErrorResponse "Invalid credentials"
+// @Failure 500 {object} utils.ErrorResponse "Error updating hobbies"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /api/hobbies/update [POST]
+func UpdateHobbies(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleUpdateHobbies(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error updating hobbies", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+
+}
