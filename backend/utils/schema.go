@@ -117,3 +117,14 @@ type UpdateProfileHobbiesRequest struct {
 type UpdateProfileHobbiesResponse struct {
 	Message string `json:"message"`
 }
+
+type UpdateProfileSocialsRequest struct {
+	InstagramUrl *string `json:"instagram_url,omitempty"`
+	TwitterUrl   *string `json:"twitter_url,omitempty"`
+	RedditUrl    *string `json:"reddit_url,omitempty"`
+	LinkedinUrl  *string `json:"linkedin_url,omitempty"`
+}
+
+type UpdateProfileSocialsResponse struct {
+	Message string `json:"message"`
+}

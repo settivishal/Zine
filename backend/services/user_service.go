@@ -141,3 +141,27 @@ func HandleUpdateHobbies(w http.ResponseWriter, r *http.Request) (*utils.UpdateP
 
 	return &utils.UpdateProfileHobbiesResponse{Message: "Hobbies updated successfully"}, nil, http.StatusOK
 }
+
+func HandleUpdateSocials(w http.ResponseWriter, r *http.Request) (*utils.UpdateProfileSocialsResponse, error, int) {
+	Email, ok := r.Context().Value("email").(string)
+
+	if !ok {
+		return nil, errors.New("Error getting email"), http.StatusBadRequest
+	}
+
+	var Socials utils.UpdateProfileSocialsRequest
+
+	err := json.NewDecoder(r.Body).Decode(&Socials)
+	if err != nil {
+		return nil, errors.New("Error decoding request body"), http.StatusBadRequest
+	}
+
+	err = database.UpdateSocials(Email, Socials)
+
+	if err != nil {
+		log.Printf("Error updating socials for email %s: %v", Email, err)
+		return nil, errors.New("Error updating socials in database"), http.StatusInternalServerError
+	}
+
+	return &utils.UpdateProfileSocialsResponse{Message: "Socials updated successfully"}, nil, http.StatusOK
+}

@@ -222,3 +222,33 @@ func UpdateHobbies(Email string, Hobbies []string) error {
 	_, err = collection.UpdateOne(context.TODO(), filter, update)
 	return err
 }
+
+func UpdateSocials(Email string, Socials utils.UpdateProfileSocialsRequest) error {
+	collection := client.Database("zine").Collection("users")
+
+	filter := bson.M{"email": Email}
+
+	// Check if the user exists
+	var user models.User
+	err := collection.FindOne(context.TODO(), filter).Decode(&user)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	// check if the fields are non empty and then add to the document
+	update := bson.M{"$set": bson.M{}}
+	if Socials.InstagramUrl != nil {
+		update["$set"].(bson.M)["instagram_url"] = Socials.InstagramUrl
+	}
+	if Socials.TwitterUrl != nil {
+		update["$set"].(bson.M)["twitter_url"] = Socials.TwitterUrl
+	}
+	if Socials.LinkedinUrl != nil {
+		update["$set"].(bson.M)["linkedin_url"] = Socials.LinkedinUrl
+	}
+	if Socials.RedditUrl != nil {
+		update["$set"].(bson.M)["reddit_url"] = Socials.RedditUrl
+	}
+	_, err = collection.UpdateOne(context.TODO(), filter, update)
+	return err
+}
