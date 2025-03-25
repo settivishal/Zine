@@ -69,6 +69,17 @@ export default function SignUp (){
                 <div className="flex justify-center mb-6">
                     <Image src={myImg} width={70} height={70} alt="Zine" />
                 </div>
+                {errorMessage && (
+                    <div data-testid="error-message" className=" mb-4 flex items-center justify-between bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-sm">
+                    <span>{errorMessage}</span>
+                    <button
+                        onClick={() => setErrorMessage('')}
+                        className="ml-4 font-bold focus:outline-none"
+                    >
+                        X
+                    </button>
+                    </div>
+                )}
                 <form>
                     <input
                         type="text"
@@ -91,11 +102,6 @@ export default function SignUp (){
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    {errorMessage && (
-                        <div className="mb-4 text-red-600 text-sm">
-                            {errorMessage}
-                        </div>
-                    )}
                     <input
                         type="password"
                         placeholder="Confirm Password"
@@ -103,11 +109,6 @@ export default function SignUp (){
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                     />
-                    {errorMessage && (
-                        <div className="mb-4 text-red-600 text-sm">
-                            {errorMessage}
-                        </div>
-                    )}
                     <button
                         type="button"
                         className="w-full bg-blue-500 text-white py-2 rounded font-semibold text-sm hover:bg-blue-600 transition"

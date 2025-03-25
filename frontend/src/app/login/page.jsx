@@ -45,7 +45,6 @@ export default function LoginPage() {
 
       const data = await response.json();
       // Store tokens and redirect or update UI as needed
-      
       document.cookie = "accessToken=" + data.access_token + "; path=/; secure; samesite=strict";
       document.cookie = "refreshToken=" + data.refresh_token + "; path=/; secure; samesite=strict";
       document.cookie = "expires_at=" + data.expires_at + "; path=/; secure; samesite=strict";

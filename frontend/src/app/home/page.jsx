@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import CalendarWidget from '../../components/CalendarWidget';
 import BlogList from '../../components/Calendar';
-// import TagsComponent from '../../components/tags'; // Import the new component
+import TagsComponent from '../../components/Tags'; // Import the new component
 
 export default function Page() {
     const [calendarView, setCalendarView] = useState('dayGridMonth');
@@ -25,7 +25,7 @@ export default function Page() {
                     <CalendarWidget />
 
                     {/* Tags Component */}
-                    {/* <TagsComponent /> */}
+                    <TagsComponent />
                 </div>
 
                 {/* Blog List */}

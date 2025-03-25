@@ -2,10 +2,6 @@ import { NextResponse } from 'next/server'
 
 export function middleware(request) {
 
-    console.log('Middleware triggered for path:', request.nextUrl.pathname)
-
-    console.log('Cookies:', request.cookies)
-
     // Get the token from cookies
     const token = request.cookies.get('accessToken')?.value
     console.log('Token found:', token)

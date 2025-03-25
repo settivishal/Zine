@@ -9,10 +9,20 @@ export default function Tags() {
   const [color, setColor] = useState("#000000");
   const [showInput, setShowInput] = useState(false);
   const [jwt_token, setJwtToken] = useState(null);
+  const [selectedTagId, setSelectedTagId] = useState(null);
 
   // Fetch JWT token first, then fetch tags when token is available
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+
+    const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    };
+
+    const token = getCookie('accessToken');
+    //const token = localStorage.getItem("accessToken");
+    console.log("Tags Token:", token);
     if (token) {
       setJwtToken(token); // Update state
     }
@@ -33,6 +43,7 @@ export default function Tags() {
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Fetched tags:", data); // See the tag structure
         setTags(data);
       } else {
         console.error("Failed to fetch tags");
@@ -66,6 +77,33 @@ export default function Tags() {
       } catch (error) {
         console.error("Error:", error);
       }
+    }
+  };
+
+  const handleTagClick = (tagId) => {
+    setSelectedTagId(selectedTagId === tagId ? null : tagId);
+  };
+
+  const handleDeleteTag = async (tagId, tagText) => {
+    try {
+      const payload = { text: tagText };
+      const response = await fetch(`http://localhost:8080/api/tag/delete`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt_token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        fetchTags(); // Refresh tags after deletion
+        setSelectedTagId(null);
+      } else {
+        console.error("Failed to delete tag");
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
 
@@ -114,14 +152,25 @@ export default function Tags() {
       )}
 
       <div className="flex flex-wrap max-w-[200px] gap-2 ">
-        {tags.map((tag, index) => (
-          <span
-            key={index}
-            style={{ backgroundColor: tag.color }}
-            className="inline-block px-3 py-1 text-sm text-white rounded-full shadow-md"
-          >
-            {tag.text}
-          </span>
+        {tags?.map((tag, index) => (
+          <div key={tag.ID || index} className="relative">
+            <span
+              onClick={() => handleTagClick(tag.ID)}
+              style={{ backgroundColor: tag.color }}
+              className="inline-block px-3 py-1 text-sm text-white rounded-full shadow-md cursor-pointer"
+            >
+              {tag.text}
+            </span>
+            {selectedTagId === tag.ID && (
+              <button
+                onClick={() => handleDeleteTag(tag.ID, tag.text)}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                title="Delete tag"
+              >
+                ×
+              </button>
+            )}
+          </div>
         ))}
       </div>
     </div>
