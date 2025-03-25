@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"net/http"
+	"fmt"
 
-	"backend/utils"
 	"backend/services"
+	"backend/utils"
 )
 
 // GoogleLogin redirects user to Google OAuth2 Login page
@@ -13,7 +14,7 @@ import (
 // @Description Google login function returns redirect url
 // @Tags users
 // @Produce json
-// @Success 200 
+// @Success 200
 // @Router /auth/google [GET]
 func GoogleLogin(w http.ResponseWriter, r *http.Request) {
 	url, err := services.GetGoogleAuthURL()
@@ -36,5 +37,16 @@ func GoogleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSONResponse(w, response, status)
+	// utils.SendJSONResponse(w, response, status)
+
+	// Redirect to frontend with tokens
+	frontendURL := "http://localhost:3000"
+	redirectURL := fmt.Sprintf(
+		"%s/auth-success?access_token=%s&refresh_token=%s", 
+		frontendURL,
+		response.AccessToken,
+		response.RefreshToken,
+	)
+
+	http.Redirect(w, r, redirectURL, http.StatusTemporaryRedirect)
 }
