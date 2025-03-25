@@ -28,6 +28,8 @@ type UserInfoResponse struct {
 	Name    string `json:"name"`
 	Image   string `json:"image"`
 	Bio     string `json:"bio"`
+	Age     int64  `json:"age"`
+	Gender  string `json:"gender"`
 }
 
 type LoginResponse struct {
@@ -94,5 +96,16 @@ type ResetPasswordRequest struct {
 }
 
 type ForgotPasswordResponse struct {
+	Message string `json:"message"`
+}
+
+type UpdateProfileRequest struct {
+	Name   *string `json:"name,omitempty"`
+	Bio    *string `json:"bio,omitempty"`
+	Age    *int64  `json:"age,omitempty"`
+	Gender *string `json:"gender,omitempty"`
+}
+
+type UpdateProfileResponse struct {
 	Message string `json:"message"`
 }
