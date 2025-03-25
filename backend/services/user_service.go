@@ -8,6 +8,7 @@ import (
 	"backend/utils"
 
 	"context"
+	"encoding/json"
 	"log"
 	"os"
 
@@ -87,4 +88,28 @@ func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateIma
 	}
 
 	return &utils.UpdateImageResponse{Message: "Image updated successfully", Image: cloudFrontURL}, nil, http.StatusOK
+}
+
+func HandleUpdateProfile(w http.ResponseWriter, r *http.Request) (*utils.UpdateProfileResponse, error, int) {
+	Email, ok := r.Context().Value("email").(string)
+
+	if !ok {
+		return nil, errors.New("Error getting email"), http.StatusBadRequest
+	}
+
+	var Profile utils.UpdateProfileRequest
+
+	err := json.NewDecoder(r.Body).Decode(&Profile)
+	if err != nil {
+		return nil, errors.New("Error decoding request body"), http.StatusBadRequest
+	}
+
+	err = database.UpdateProfile(Email, Profile)
+
+	if err != nil {
+		log.Printf("Error updating profile for email %s: %v", Email, err)
+		return nil, errors.New("Error updating profile in database"), http.StatusInternalServerError
+	}
+
+	return &utils.UpdateProfileResponse{Message: "Profile updated successfully"}, nil, http.StatusOK
 }

@@ -78,3 +78,28 @@ func UpdateImage(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendJSONResponse(w, response, status)
 }
+
+// Update Profile of an user
+
+// @Summary Update Profile
+// @Description Update profile of a user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body object{bio=string,age=string,gender=string} true "Profile details"
+// @Success 200 {object} utils.RegisterResponse
+// @Failure 400 {object} utils.ErrorResponse "Invalid request format"
+// @Failure 401 {object} utils.ErrorResponse "Invalid credentials"
+// @Failure 500 {object} utils.ErrorResponse "Error updating profile"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /api/profile/update [POST]
+func UpdateProfile(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleUpdateProfile(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error updating profile", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+
+}
