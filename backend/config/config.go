@@ -5,13 +5,15 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+    "github.com/dotenv-org/godotenvvault"
+	"github.com/go-redis/redis/v8"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-    "github.com/dotenv-org/godotenvvault"
 )
 
 var GoogleOauthConfig *oauth2.Config
+var RedisClient *redis.Client
 
 func LoadConfig() error {
 	err := godotenvvault.Load()
@@ -38,6 +40,12 @@ func LoadConfig() error {
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"},
 		Endpoint:     google.Endpoint,
 	}
+
+	RedisClient = redis.NewClient(&redis.Options{
+		Addr:     Env("REDIS_URL_NEW"),
+		Password: Env("REDIS_PASSWORD"),
+		DB:       0,
+	})
 
 	return nil
 }
