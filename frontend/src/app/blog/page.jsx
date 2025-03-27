@@ -13,19 +13,37 @@ import "@blocknote/core/fonts/inter.css";
 export default function Blog() {
     const [blocks, setBlocks] = useState([])
 
-    const editor = useCreateBlockNote({
-    initialContent: [
+    const [editorContent, setEditorContent] = useState([
         {
             type: "heading",
             content: "BlockNote Example",
         },
-        
         {
             type: "paragraph",
             content: "Welcome to this demo!",
         },
-    ],
-});
+    ]);
+
+    const editor = useCreateBlockNote({
+        initialContent: editorContent,
+    });
+
+    const fetchContentFromBackend = async () => {
+        try {
+            const response = await fetch('/api/getContent');
+            if (!response.ok) {
+                throw new Error('Failed to fetch content');
+            }
+            const data = await response.json();
+            setEditorContent(data.content); // Update the editor content with data from backend
+        } catch (error) {
+            console.error('Error fetching content:', error);
+        }
+    };
+
+    React.useEffect(() => {
+        fetchContentFromBackend(); // Fetch content when the component mounts
+    }, []);
 
     editor.uploadFile = async (file) => {
         const reader = new FileReader();
