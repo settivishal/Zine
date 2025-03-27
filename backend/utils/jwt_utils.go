@@ -15,7 +15,9 @@ var jwtKey = []byte(config.Env("JWT_SECRET_KEY"))
 // Redis client for token blacklist
 var ctx = context.Background()
 var redisClient = redis.NewClient(&redis.Options{
-	Addr: "localhost:6379", // Update with your Redis address
+	Addr:     config.Env("REDIS_URL"),
+	Password: config.Env("REDIS_PASSWORD"),
+	DB:       0,
 })
 
 // GenerateJWT creates a new JWT token with custom expiration and subject
@@ -69,7 +71,6 @@ func InvalidateJWT(tokenString string) error {
 	if err != nil {
 		return err
 	}
-
 
 	claims.ExpiresAt = jwt.NewNumericDate(time.Now())
 	return nil
