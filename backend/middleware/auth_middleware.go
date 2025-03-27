@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"backend/config"
+	// "backend/config"
 	"backend/utils"
 
 	"github.com/redis/go-redis/v9"
@@ -14,7 +14,10 @@ import (
 // Redis client for token blacklist
 var ctx = context.Background()
 var redisClient = redis.NewClient(&redis.Options{
-	Addr: config.Env("REDIS_URL"),
+	Addr:     "redis-14344.c258.us-east-1-4.ec2.redns.redis-cloud.com:14344",
+	Password: "QEitxbAHFjpdwgfmf3b6iaEYOkwxNzzN",
+	DB:       0,
+	// TLSConfig: &tls.Config{},
 })
 
 func JWTAuthMiddleware(next http.Handler) http.Handler {
