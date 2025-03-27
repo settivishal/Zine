@@ -128,3 +128,21 @@ type UpdateProfileSocialsRequest struct {
 type UpdateProfileSocialsResponse struct {
 	Message string `json:"message"`
 }
+
+type CreateBlogRequest struct {
+	Date string `json:"date"`
+}
+
+type CreateBlogResponse struct {
+	Message string `json:"message"`
+	BlogUrl string `json:"blog_url"`
+}
+
+type SaveBlogContentRequest struct {
+	BlogId  string                 `json:"blog_id"`
+	Content map[string]interface{} `json:"content"`
+}
+
+type SaveBlogContentResponse struct {
+	Message string `json:"message"`
+}

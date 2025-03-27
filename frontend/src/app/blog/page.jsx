@@ -41,9 +41,9 @@ export default function Blog() {
         }
     };
 
-    React.useEffect(() => {
-        fetchContentFromBackend(); // Fetch content when the component mounts
-    }, []);
+    // React.useEffect(() => {
+    //     fetchContentFromBackend(); // Fetch content when the component mounts
+    // }, []);
 
     editor.uploadFile = async (file) => {
         const reader = new FileReader();
@@ -77,9 +77,7 @@ export default function Blog() {
     };
 
     const handleSave = async () => {
-        const content = editor.document; // Get the current document content
-        // await saveToBackend(content); // Save the content to the backend
-        console.log(content);
+        console.log(editor);
     };
 
   return (
@@ -103,8 +101,6 @@ export default function Blog() {
         <BlockNoteView 
         editor={editor}  
         onChange={() => {
-            // Saves the document JSON to state.
-            setBlocks(editor.document);
           }}
         className='mb-5' 
         />
