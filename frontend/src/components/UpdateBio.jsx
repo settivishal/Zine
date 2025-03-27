@@ -4,11 +4,13 @@ import { useState } from "react";
 
 import Button from "./Button";
 
-export default function UpdateBio({ currentBio}) {
+export default function UpdateBio({currentBio}) {
     const [bio, setBio] = useState(currentBio);
     const [isEditing, setIsEditing] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
+
+    const [success, setSuccess] = useState("");
 
     const handleBio = async (e) => {
         e.preventDefault();
@@ -22,7 +24,7 @@ export default function UpdateBio({ currentBio}) {
         setIsSubmitting(true);
 
         try {
-            const response = await fetch("http://localhost:8080/api/bio", {
+            const response = await fetch("http://localhost:8080/api/profile/update", {
                 method: "POST",
                 headers: {
                 "Content-Type": "application/json",
@@ -32,13 +34,14 @@ export default function UpdateBio({ currentBio}) {
         
             if (!response.ok) {
                 const errorData = await response.json();
-                setErrorMessage(errorData.message || "Failed to update Bio.");
+                setError(errorData.message || "Failed to update Bio.");
                 return;
             }
         
             const data = await response.json();
 
             setSuccess("Bio updated successfully");
+            setIsEditing(false);
 
             
         } catch (error) {
@@ -76,7 +79,7 @@ export default function UpdateBio({ currentBio}) {
                         </Button>
                         
                         <Button 
-                            onClick={() => {
+                            onClick={(e) => {
                                 setBio(currentBio);
                                 setIsEditing(false);
                                 setError("");

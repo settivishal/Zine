@@ -4,18 +4,18 @@ import Image from 'next/image';
 import profileImage from '../../public/profile2.jpg';
 import { User, Gear, Question, SignOut } from "@phosphor-icons/react";
 
-const ProfileDropDown = () => {
+const ProfileDropDown = ({Page}) => {
   const [toggle, setToggle] = useState(false);
   const options = [
-    { label: "Profile", icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick("Profile") },
+    { label: Page, icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick(Page) },
     { label: "Settings", icon: <Gear size={16} className="mr-2" />, onClick: () => handleOptionClick("Settings") },
     { label: "Help", icon: <Question size={16} className="mr-2" />, onClick: () => handleOptionClick("Help") },
     { label: "Logout", icon: <SignOut size={16} className="mr-2 text-red-500" />, onClick: () => handleOptionClick("Logout") }
   ];
 
   const handleOptionClick = (option) => {
-    if(option === "Profile") {
-      window.location.href = "/Profile";
+    if(option === Page) {
+      window.location.href = "/" + Page.toLowerCase();
     }
     // Add your logic here for each option
     setToggle(false); // Close the dropdown after clicking an option

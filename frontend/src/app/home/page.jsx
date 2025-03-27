@@ -15,7 +15,7 @@ export default function CalendarLayout() {
   return (
     <div className="relative flex flex-col p-4 min-h-screen bg-white">
       {/* Navbar */}
-      <Navbar />
+      <Navbar Page={"Profile"}/>
       
       {/* Main Content */}
       <div className="flex flex-row gap-4 h-[calc(100vh-80px)] overflow-y-auto">

@@ -2,20 +2,20 @@
 
 import { useState, useEffect, createContext } from "react";
 import ActivityGrid from "../../components/ActivityGrid";
-import UpdateUsername from "../../components/UpdateUsername";
-import UpdatePassword from "../../components/UpdatePassword";
+import {
+    UpdateUsername,
+    UpdatePassword,
+} from "../../components/UpdateUserCreds";
+// import UpdatePassword from "../../components/UpdatePassword";
 import ProfilePicture from "../../components/ProfilePicture";
 import UpdateBio from "../../components/UpdateBio";
+// const ProfileContext = createContext();
 
-
-const ProfileContext = createContext();
-
-export default function ProfilePage({children}) {
+export default function ProfilePage({ children }) {
     const [profileData, setProfileData] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
 
     const [activityData, setActivityData] = useState([]);
-    
 
     useEffect(() => {
         (async () => {
@@ -26,27 +26,30 @@ export default function ProfilePage({children}) {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer" + " " + localStorage.getItem("accessToken")
+                    Authorization:
+                        "Bearer" + " " + localStorage.getItem("accessToken"),
                 },
             });
-        
+
             if (!response.ok) {
                 const errorData = await response.json();
-                setErrorMessage(errorData.message || "Failed to fetch profile data.");
+                setErrorMessage(
+                    errorData.message || "Failed to fetch profile data."
+                );
                 return;
             }
-        
+
             const data = await response.json();
             // console.log("data" + data)
-            
+
             setProfileData(data); // Set profile data (username, email, etc.)
             // Mock activity data - array of objects with date and count
             // const mockActivity = generateMockActivityData();
             // setActivityData(mockActivity);
-        })()
+        })();
 
         const mockActivity = generateMockActivityData();
-        console.log(mockActivity)
+        console.log(mockActivity);
         setActivityData(mockActivity);
     }, []);
 
@@ -59,7 +62,6 @@ export default function ProfilePage({children}) {
     //     setUser({ ...user, profilePicture: newPictureUrl });
     //     // In a real app, you would upload the image and save the URL
     // };
-
 
     return (
         <main className="container bg-zinc-600 mx-auto px-2 py-8 max-w-full">
@@ -78,7 +80,9 @@ export default function ProfilePage({children}) {
                             <h2 className="text-gray-500 text-2xl font-semibold">
                                 {profileData?.name}
                             </h2>
-                            <p className="text-2xl text-gray-600">{profileData?.email}</p>
+                            <p className="text-2xl text-gray-600">
+                                {profileData?.email}
+                            </p>
                         </div>
                     </div>
                 </div>
