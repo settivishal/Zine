@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joho/godotenv"
-    "github.com/dotenv-org/godotenvvault"
+	"github.com/dotenv-org/godotenvvault"
 	"github.com/go-redis/redis/v8"
+	"github.com/joho/godotenv"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -42,7 +42,7 @@ func LoadConfig() error {
 	}
 
 	RedisClient = redis.NewClient(&redis.Options{
-		Addr:     Env("REDIS_URL_NEW"),
+		Addr:     Env("REDIS_URL"),
 		Password: Env("REDIS_PASSWORD"),
 		DB:       0,
 	})

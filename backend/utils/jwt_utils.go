@@ -8,7 +8,6 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/golang-jwt/jwt/v5"
-	// "github.com/go-redis/redis/v8"
 )
 
 var jwtKey = []byte(config.Env("JWT_SECRET_KEY"))
