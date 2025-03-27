@@ -14,20 +14,11 @@ var jwtKey = []byte(config.Env("JWT_SECRET_KEY"))
 
 // Redis client for token blacklist
 var ctx = context.Background()
-// var rdb *redis.Client
 var redisClient = redis.NewClient(&redis.Options{
 	Addr:     "redis-14344.c258.us-east-1-4.ec2.redns.redis-cloud.com:14344",
 	Password: "QEitxbAHFjpdwgfmf3b6iaEYOkwxNzzN",
 	DB:       0,
-	// TLSConfig: &tls.Config{},
 })
-
-
-// var rdb = redis.NewClient(&redis.Options{
-// 	Addr:     "redis-14344.c258.us-east-1-4.ec2.redns.redis-cloud.com:14344",
-// 	Password: "QEitxbAHFjpdwgfmf3b6iaEYOkwxNzzN",
-// 	DB:       0,
-// })
 
 // GenerateJWT creates a new JWT token with custom expiration and subject
 func GenerateJWT(email, subject string, expiry time.Duration) (string, time.Time, error) {

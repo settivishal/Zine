@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	// "backend/config"
 	"backend/utils"
 
 	"github.com/redis/go-redis/v9"
@@ -17,7 +16,6 @@ var redisClient = redis.NewClient(&redis.Options{
 	Addr:     "redis-14344.c258.us-east-1-4.ec2.redns.redis-cloud.com:14344",
 	Password: "QEitxbAHFjpdwgfmf3b6iaEYOkwxNzzN",
 	DB:       0,
-	// TLSConfig: &tls.Config{},
 })
 
 func JWTAuthMiddleware(next http.Handler) http.Handler {

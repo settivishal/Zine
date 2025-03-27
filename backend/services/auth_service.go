@@ -134,7 +134,7 @@ func HandleLogout(r *http.Request) (error, int) {
 	// Invalidate JWT Token
 	err := utils.InvalidateJWT(token)
 	if err != nil {
-		return errors.New(err.Error() + ": Failed to logout"), http.StatusInternalServerError
+		return errors.New(err.Error()), http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK
