@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"time"
 
 	"backend/config"
@@ -15,9 +16,10 @@ var jwtKey = []byte(config.Env("JWT_SECRET_KEY"))
 // Redis client for token blacklist
 var ctx = context.Background()
 var redisClient = redis.NewClient(&redis.Options{
-	Addr:     config.Env("REDIS_URL"),
-	Password: config.Env("REDIS_PASSWORD"),
+	Addr:     "redis-14344.c258.us-east-1-4.ec2.redns.redis-cloud.com:14344",
+	Password: "QEitxbAHFjpdwgfmf3b6iaEYOkwxNzzN",
 	DB:       0,
+	// TLSConfig: &tls.Config{},
 })
 
 // GenerateJWT creates a new JWT token with custom expiration and subject
@@ -68,6 +70,7 @@ func InvalidateJWT(tokenString string) error {
 	}
 
 	err = redisClient.Set(ctx, tokenString, "blacklisted", expiration).Err()
+	fmt.Println("redis error", err)
 	if err != nil {
 		return err
 	}
