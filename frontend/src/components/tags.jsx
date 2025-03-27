@@ -9,7 +9,7 @@ export default function Tags() {
   const [color, setColor] = useState("#000000");
   const [showInput, setShowInput] = useState(false);
   const [jwt_token, setJwtToken] = useState(null);
-  const [selectedTagId, setSelectedTagId] = useState(null);
+  const [selectedTag, setSelectedTag] = useState(null);
 
   // Fetch JWT token first, then fetch tags when token is available
   useEffect(() => {
@@ -56,6 +56,9 @@ export default function Tags() {
   const handleAddTag = async () => {
     if (newTag.trim()) {
       const payload = { text: newTag, color: color };
+      console.log("Creating tag with payload:", JSON.stringify(payload));
+      console.log("Using URL:", "http://localhost:8080/api/tag/create");
+
       try {
         const response = await fetch("http://localhost:8080/api/tag/create", {
           method: "POST",
@@ -66,44 +69,42 @@ export default function Tags() {
           body: JSON.stringify(payload),
         });
 
+        console.log("Create tag response status:", response.status);
+        const responseText = await response.text();
+        console.log("Create tag response:", responseText);
+
         if (response.ok) {
           fetchTags(); // Fetch updated tags after creating a new one
           setNewTag("");
           setColor("#000000");
           setShowInput(false);
         } else {
-          console.error("Failed to create tag");
+          console.error("Failed to create tag:", response.status, responseText);
         }
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error creating tag:", error.message, error.stack);
       }
     }
   };
 
-  const handleTagClick = (tagId) => {
-    setSelectedTagId(selectedTagId === tagId ? null : tagId);
-  };
-
-  const handleDeleteTag = async (tagId, tagText) => {
+  const handleDeleteTag = async (tagText) => {
     try {
-      const payload = { text: tagText };
-      const response = await fetch(`http://localhost:8080/api/tag/delete`, {
-        method: "DELETE",
+      const response = await fetch("http://localhost:8080/api/tag/delete", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${jwt_token}`,
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ text: tagText }),
       });
 
       if (response.ok) {
-        fetchTags(); // Refresh tags after deletion
-        setSelectedTagId(null);
+        fetchTags(); // Refresh the tags list after deletion
       } else {
         console.error("Failed to delete tag");
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error deleting tag:", error);
     }
   };
 
@@ -153,19 +154,18 @@ export default function Tags() {
 
       <div className="flex flex-wrap max-w-[200px] gap-2 ">
         {tags?.map((tag, index) => (
-          <div key={tag.ID || index} className="relative">
+          <div key={index} className="relative">
             <span
-              onClick={() => handleTagClick(tag.ID)}
+              onClick={() => setSelectedTag(selectedTag === tag.text ? null : tag.text)}
               style={{ backgroundColor: tag.color }}
               className="inline-block px-3 py-1 text-sm text-white rounded-full shadow-md cursor-pointer"
             >
               {tag.text}
             </span>
-            {selectedTagId === tag.ID && (
+            {selectedTag === tag.text && (
               <button
-                onClick={() => handleDeleteTag(tag.ID, tag.text)}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
-                title="Delete tag"
+                onClick={() => handleDeleteTag(tag.text)}
+                className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center bg-red-500 text-white rounded-full text-xs hover:bg-red-700"
               >
                 ×
               </button>

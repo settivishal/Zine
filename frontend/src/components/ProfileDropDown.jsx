@@ -13,12 +13,47 @@ const ProfileDropDown = () => {
     { label: "Logout", icon: <SignOut size={16} className="mr-2 text-red-500" />, onClick: () => handleOptionClick("Logout") }
   ];
 
-  const handleOptionClick = (option) => {
-    if(option === "Profile") {
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  };
+
+  const deleteCookie = (name) => {
+    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  };
+
+  const handleOptionClick = async (option) => {
+    if (option === "Profile") {
       window.location.href = "/Profile";
+    } else if (option === "Logout") {
+      try {
+        const accessToken = getCookie('accessToken');
+        console.log('Access Token:', accessToken);
+
+        const response = await fetch('http://localhost:8080/consumer/logout', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+
+        // Debug logs
+        console.log('Response status:', response.status);
+        const responseText = await response.text();
+        console.log('Response body:', responseText);
+
+        if (response.ok) {
+          deleteCookie('accessToken');
+          window.location.href = "/";
+        } else {
+          console.error('Logout failed:', response.status, responseText);
+        }
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
     }
-    // Add your logic here for each option
-    setToggle(false); // Close the dropdown after clicking an option
+    setToggle(false);
   };
 
   return (
@@ -28,8 +63,8 @@ const ProfileDropDown = () => {
         className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-gray-200 transition-all"
         onClick={() => setToggle(!toggle)}
       >
-        <Image 
-          src={profileImage} 
+        <Image
+          src={profileImage}
           alt="Profile"
           width={32}
           height={32}

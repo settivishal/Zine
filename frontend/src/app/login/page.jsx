@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import myImg from '../../../public/zine.png';
 import { useState } from 'react';
-import decryptAuthURL from '../../../helpers/decrypt';
 import GoogleLoginButton from '../../components/GoogleLoginButton';
 
 export default function LoginPage() {
@@ -54,42 +53,6 @@ export default function LoginPage() {
       setErrorMessage("An error occurred. Please try again.");
     }
   };
-
-  const handleGoogleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:8080/auth/google", {
-        method: "GET",
-        headers: {
-          "Accept": "application/json"
-        },
-        //credentials: "include"
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to initiate Google authentication");
-      }
-
-      const data = await response.json();
-      // Redirect to Google's consent page
-      if (data.auth_url) {
-        const encryptionKey = "1sGJ7CIrKwdSRPVtC4rzJ0rO8pkGjfaX";
-        const url = await decryptAuthURL(data.auth_url, encryptionKey);
-        console.log("Decrypted URL:", url);
-        console.log("Redirecting to Google login page:", url);
-        url
-        window.location.href = url;
-      } else {
-        throw new Error("Invalid authentication URL");
-      }
-    } catch (error) {
-      console.error("Google login error:", error);
-      setErrorMessage("Failed to initiate Google login");
-    }
-  };
-
-
-
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center space-y-4">
