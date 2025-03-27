@@ -4,11 +4,7 @@ import { handleGoogleLogin } from "../../helpers/handleGoogleLogin";
 export default function GoogleLoginButton({ setErrorMessage }) {
   
   // Handle Google OAuth callback when the component mounts
-  window.onload = () => {
-    console.log("Checking callback URL...");
-    if (window.location.href.includes("/auth/google/callback")) {
-        handleGoogleCallback();
-    }
+  
 };
   return (
     <button

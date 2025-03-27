@@ -1,11 +1,13 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
-import profileImage from '../../public/profile2.jpg';
 import { User, Gear, Question, SignOut } from "@phosphor-icons/react";
+import useProfile from '../hooks/useProfile';
 
 const ProfileDropDown = () => {
   const [toggle, setToggle] = useState(false);
+  const { profileImage, loading, error } = useProfile();
+
   const options = [
     { label: "Profile", icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick("Profile") },
     { label: "Settings", icon: <Gear size={16} className="mr-2" />, onClick: () => handleOptionClick("Settings") },
@@ -63,13 +65,22 @@ const ProfileDropDown = () => {
         className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-gray-200 transition-all"
         onClick={() => setToggle(!toggle)}
       >
-        <Image
-          src={profileImage}
-          alt="Profile"
-          width={32}
-          height={32}
-          className="rounded-full object-cover"
-        />
+        {loading ? (
+          <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+        ) : error ? (
+          <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+            <User size={20} />
+          </div>
+        ) : (
+          <Image
+            src={profileImage}
+            alt="Profile"
+            width={32}
+            height={32}
+            className="rounded-full object-cover"
+            unoptimized
+          />
+        )}
       </div>
 
       {/* Dropdown Menu */}
