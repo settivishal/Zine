@@ -23,13 +23,18 @@ type RegisterResponse struct {
 	Name    string `json:"name"`
 }
 type UserInfoResponse struct {
-	Message string `json:"message"`
-	Email   string `json:"email"`
-	Name    string `json:"name"`
-	Image   string `json:"image"`
-	Bio     string `json:"bio"`
-	Age     int64  `json:"age"`
-	Gender  string `json:"gender"`
+	Message      string   `json:"message"`
+	Email        string   `json:"email"`
+	Name         string   `json:"name"`
+	Image        string   `json:"image"`
+	Bio          string   `json:"bio"`
+	Age          int64    `json:"age"`
+	Gender       string   `json:"gender"`
+	Hobbies      []string `json:"hobbies"`
+	InstagramUrl string   `json:"instagram_url"`
+	TwitterUrl   string   `json:"twitter_url"`
+	RedditUrl    string   `json:"reddit_url"`
+	LinkedinUrl  string   `json:"linkedin_url"`
 }
 
 type LoginResponse struct {
