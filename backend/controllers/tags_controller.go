@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"backend/services"
@@ -112,6 +113,7 @@ func RemoveTag(w http.ResponseWriter, r *http.Request) {
 // @Router /api/tags [GET]
 func GetTags(w http.ResponseWriter, r *http.Request) {
 	response, err, status := services.HandleGetTags(w, r)
+	fmt.Print("Response: ", response)
 	if err != nil {
 		utils.SendErrorResponse(w, "Error getting tags", err, status)
 		return

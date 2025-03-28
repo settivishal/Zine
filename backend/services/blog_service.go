@@ -137,8 +137,8 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) ([]models.Blog, erro
 
 	blogs, err := database.GetBlogs(email)
 
-	if err != nil {
-		return nil, errors.New("error getting blogs"), http.StatusInternalServerError
+	if err != nil || len(blogs) == 0 {
+		return nil, errors.New("No blogs found for this user"), http.StatusInternalServerError
 	}
 
 	return blogs, nil, http.StatusOK
