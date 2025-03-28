@@ -28,12 +28,9 @@ const useProfile = () => {
 
                 const data = await response.json();
                 if (!data.image) {
-                    // If image is null, use the avatar service
-                    const avatarResponse = await fetch('https://avatar.iran.liara.run/public');
-                    if (!avatarResponse.ok) {
-                        throw new Error('Failed to fetch avatar');
-                    }
-                    setProfileImage(avatarResponse.url);
+                    // If image is null, use the avatar service with username
+                    const avatarUrl = `https://avatar.iran.liara.run/public?username=${data.name || data.email || 'user'}`;
+                    setProfileImage(avatarUrl);
                 } else {
                     setProfileImage(data.image);
                 }

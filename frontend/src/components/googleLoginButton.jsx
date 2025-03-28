@@ -2,10 +2,6 @@
 import { handleGoogleLogin } from "../../helpers/handleGoogleLogin";
 
 export default function GoogleLoginButton({ setErrorMessage }) {
-  
-  // Handle Google OAuth callback when the component mounts
-  
-};
   return (
     <button
       type="button"
