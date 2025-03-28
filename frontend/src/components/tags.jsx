@@ -114,7 +114,7 @@ export default function Tags() {
       )}
 
       <div className="flex flex-wrap max-w-[200px] gap-2 ">
-        {tags.map((tag, index) => (
+        {tags?.map((tag, index) => (
           <span
             key={index}
             style={{ backgroundColor: tag.color }}
