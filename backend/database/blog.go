@@ -7,7 +7,6 @@ import (
 
 	"errors"
 
-	"database/user"
 	"backend/models"
 	"backend/utils"
 
@@ -84,10 +83,12 @@ func GetBlogs(email string) ([]models.Blog, error) {
 
 	var blogs []models.Blog
 
-	userID := user.GetUser(email).ID
-
+	user, err := GetUser(email)
+	if err != nil {
+		return nil, errors.New("failed to retrieve user: " + err.Error())
+	}
+	userID := user.ID
 	filter := bson.M{"user_id": userID}
-
 	cursor, err := collection.Find(context.TODO(), filter)
 	if err != nil {
 		return nil, err

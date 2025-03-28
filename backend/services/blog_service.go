@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"backend/database"
+	"backend/models"
 	"backend/utils"
 
 	"backend/services/awsservice"
@@ -127,7 +128,7 @@ func HandleUploadCover(w http.ResponseWriter, r *http.Request) (*utils.UploadCov
 	}, nil, http.StatusOK
 }
 
-func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResponse, error, int) {
+func HandleGetBlogs(w http.ResponseWriter, r *http.Request) ([]models.Blog, error, int) {
 	email, ok := r.Context().Value("email").(string)
 
 	if !ok {
@@ -140,8 +141,5 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResp
 		return nil, errors.New("error getting blogs"), http.StatusInternalServerError
 	}
 
-	return &utils.GetBlogsResponse{
-		Message: "Blogs fetched successfully",
-		Blogs:   blogs,
-	}, nil, http.StatusOK
+	return blogs, nil, http.StatusOK
 }
