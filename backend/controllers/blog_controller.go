@@ -52,3 +52,27 @@ func SaveBlog(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendJSONResponse(w, response, status)
 }
+
+// Upload Cover Image
+// @Summary Upload Cover Image
+// @Description Upload a cover image for a blog
+// @Tags blogs
+// @Accept multipart/form-data
+// @Produce json
+// @Param image formData file true "Cover image"
+// @Success 200 {object} utils.TagResponse
+// @Failure 400 {object} utils.ErrorResponse "Invalid request format"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 500 {object} utils.ErrorResponse "Error uploading cover"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /api/cover/upload [POST]
+
+func UploadCover(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleUploadCover(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error uploading cover", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+}

@@ -10,6 +10,8 @@ import (
 	"backend/models"
 	"backend/utils"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -59,4 +61,19 @@ func SaveBlogContent(Request utils.SaveBlogContentRequest) error {
 
 	return nil
 
+}
+
+func UploadCover(BlogId string, Cover string) error {
+	collection := client.Database("zine").Collection("blogs")
+
+	// Convert BlogId to MongoDB ObjectID
+	objectID, err := primitive.ObjectIDFromHex(BlogId)
+	if err != nil {
+		return fmt.Errorf("invalid blog ID: %v", err)
+	}
+	filter := bson.M{"_id": objectID}
+	update := bson.M{"$set": bson.M{"cover": Cover}}
+
+	_, err = collection.UpdateOne(context.TODO(), filter, update)
+	return err
 }

@@ -146,3 +146,13 @@ type SaveBlogContentRequest struct {
 type SaveBlogContentResponse struct {
 	Message string `json:"message"`
 }
+
+type UploadCoverRequest struct {
+	BlogId string `json:"blog_id"`
+	Image  string `json:"image" form:"image"`
+}
+
+type UploadCoverResponse struct {
+	Message string `json:"message"`
+	Image   string `json:"image"`
+}

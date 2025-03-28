@@ -48,6 +48,7 @@ func Routes(router *mux.Router) {
 	// Blog Routes
 	api.HandleFunc("/blog/create", controllers.CreateBlog).Methods("POST")
 	api.HandleFunc("/blog/save", controllers.SaveBlog).Methods("POST")
+	api.HandleFunc("/blog/cover/upload", controllers.UploadCover).Methods("POST")
 }
 
 func SwaggerRoutes(router *mux.Router) {
