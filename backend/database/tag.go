@@ -65,6 +65,17 @@ func SetTag(Email string, Text string, Date string) error {
 		return errors.New("tag not found")
 	}
 
+	var blog models.Blog
+
+	filterBlog := bson.M{"date": Date}
+	blog.TagIDs = append(blog.TagIDs, tag.ID)
+	updateBlog := bson.M{"$set": bson.M{"tag_ids": blog.TagIDs}}
+	_, err = client.Database("zine").Collection("blogs").UpdateOne(context.TODO(), filterBlog, updateBlog)
+	if err != nil {
+		return err
+	}
+	// blog_id := blog.ID
+
 	// Add the date to the tag
 	tag.Dates = append(tag.Dates, Date)
 
