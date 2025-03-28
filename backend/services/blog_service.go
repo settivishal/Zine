@@ -128,13 +128,13 @@ func HandleUploadCover(w http.ResponseWriter, r *http.Request) (*utils.UploadCov
 }
 
 func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResponse, error, int) {
-	Email, ok := r.Context().Value("email").(string)
+	email, ok := r.Context().Value("email").(string)
 
 	if !ok {
 		return nil, errors.New("Error getting email"), http.StatusBadRequest
 	}
 
-	blogs, err := database.GetBlogs(Email)
+	blogs, err := database.GetBlogs(email)
 
 	if err != nil {
 		return nil, errors.New("error getting blogs"), http.StatusInternalServerError
