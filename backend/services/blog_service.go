@@ -128,7 +128,7 @@ func HandleUploadCover(w http.ResponseWriter, r *http.Request) (*utils.UploadCov
 	}, nil, http.StatusOK
 }
 
-func HandleGetBlogs(w http.ResponseWriter, r *http.Request) ([]models.Blog, error, int) {
+func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (map[string]models.Blog, error, int) {
 	email, ok := r.Context().Value("email").(string)
 
 	if !ok {
@@ -141,5 +141,10 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) ([]models.Blog, erro
 		return nil, errors.New("No blogs found for this user"), http.StatusInternalServerError
 	}
 
-	return blogs, nil, http.StatusOK
+	blogMap := make(map[string]models.Blog)
+	for _, blog := range blogs {
+		blogMap[blog.Date] = blog
+	}
+
+	return blogMap, nil, http.StatusOK
 }

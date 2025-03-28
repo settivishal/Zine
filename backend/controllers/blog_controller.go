@@ -84,10 +84,5 @@ func GetBlogs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if response == nil {
-	// 	utils.SendErrorResponse(w, "No blogs found", err, status)
-	// 	return
-	// }
-
 	utils.SendJSONResponse(w, response, status)
 }
