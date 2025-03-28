@@ -126,3 +126,22 @@ func HandleUploadCover(w http.ResponseWriter, r *http.Request) (*utils.UploadCov
 		Image:   cloudFrontURL,
 	}, nil, http.StatusOK
 }
+
+func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResponse, error, int) {
+	Email, ok := r.Context().Value("email").(string)
+
+	if !ok {
+		return nil, errors.New("Error getting email"), http.StatusBadRequest
+	}
+
+	blogs, err := database.GetBlogs(Email)
+
+	if err != nil {
+		return nil, errors.New("error getting blogs"), http.StatusInternalServerError
+	}
+
+	return &utils.GetBlogsResponse{
+		Message: "Blogs fetched successfully",
+		Blogs:   blogs,
+	}, nil, http.StatusOK
+}

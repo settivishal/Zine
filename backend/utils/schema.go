@@ -161,3 +161,8 @@ type UploadCoverResponse struct {
 	Message string `json:"message"`
 	Image   string `json:"image"`
 }
+
+type GetBlogsResponse struct {
+	Message string `json:"message"`
+	Blogs   []string `json:"blogs"`
+}

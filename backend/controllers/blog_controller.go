@@ -76,3 +76,13 @@ func UploadCover(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendJSONResponse(w, response, status)
 }
+
+func GetBlogs(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleGetBlogs(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error getting blogs", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+}
