@@ -14,20 +14,28 @@ import (
 )
 
 // Create Blog
-func CreateBlog(Email string, Request utils.CreateBlogRequest) error {
+func CreateBlog(Email string, Request utils.CreateBlogRequest) (string, error) {
 	collection := client.Database("zine").Collection("blogs")
 	user, err := GetUser(Email)
 	if err != nil {
-		return err
+		return "", err
 	}
 	blog := models.Blog{
 		Date:     Request.Date,
 		UserID:   user.ID,
 		IsPublic: false,
 	}
-	_, err = collection.InsertOne(context.TODO(), blog)
+	new_blog, err := collection.InsertOne(context.TODO(), blog)
 
-	return err
+	blog_url := ""
+
+	if oid, ok := new_blog.InsertedID.(interface{ Hex() string }); ok {
+		blog_url = fmt.Sprintf("localhost:3000/blogs/%s", oid.Hex())
+	} else {
+		return "", errors.New("failed to retrieve the ID of the new blog")
+	}
+
+	return blog_url, err
 }
 
 // Save Blog Content in to blog document

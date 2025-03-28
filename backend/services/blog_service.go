@@ -24,14 +24,17 @@ func HandleCreateBlog(w http.ResponseWriter, r *http.Request) (*utils.CreateBlog
 		return nil, errors.New(err.Error() + ": Invalid request format"), http.StatusBadRequest
 	}
 
+	blog_url, err := database.CreateBlog(Email, Request)
+
 	// Create blog in database
-	if err := database.CreateBlog(Email, Request); err != nil {
+	if err != nil {
 		return nil, errors.New("error creating blog"), http.StatusInternalServerError
 	}
 
 	// Return structured response
 	return &utils.CreateBlogResponse{
 		Message: "Blog created successfully",
+		BlogUrl: blog_url,
 	}, nil, http.StatusOK
 }
 
