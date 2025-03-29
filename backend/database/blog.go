@@ -12,7 +12,6 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -100,4 +99,37 @@ func UploadCover(BlogId string, Cover string) error {
 
 	_, err = collection.UpdateOne(context.TODO(), filter, update)
 	return err
+}
+
+func GetBlogs(email string) ([]models.Blog, error) {
+	collection := client.Database("zine").Collection("blogs")
+
+	var blogs []models.Blog
+
+	user, err := GetUser(email)
+	if err != nil {
+		return nil, errors.New("failed to retrieve user: " + err.Error())
+	}
+	userID := user.ID
+	filter := bson.M{"user_id": userID}
+	cursor, err := collection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	for cursor.Next(context.TODO()) {
+		var blog models.Blog
+		err := cursor.Decode(&blog)
+		if err != nil {
+			return nil, err
+		}
+		blogs = append(blogs, blog)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
 }
