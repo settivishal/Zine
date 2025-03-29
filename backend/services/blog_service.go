@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"backend/database"
+	"backend/models"
 	"backend/utils"
 
 	"backend/services/awsservice"
@@ -151,4 +152,25 @@ func HandleUploadCover(w http.ResponseWriter, r *http.Request) (*utils.UploadCov
 		Message: "Image uploaded successfully",
 		Image:   cloudFrontURL,
 	}, nil, http.StatusOK
+}
+
+func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (map[string]models.Blog, error, int) {
+	email, ok := r.Context().Value("email").(string)
+
+	if !ok {
+		return nil, errors.New("Error getting email"), http.StatusBadRequest
+	}
+
+	blogs, err := database.GetBlogs(email)
+
+	if err != nil || len(blogs) == 0 {
+		return nil, errors.New("No blogs found for this user"), http.StatusInternalServerError
+	}
+
+	blogMap := make(map[string]models.Blog)
+	for _, blog := range blogs {
+		blogMap[blog.Date] = blog
+	}
+
+	return blogMap, nil, http.StatusOK
 }
