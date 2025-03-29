@@ -117,7 +117,7 @@ func SetTag(Email string, Text string, Date string) error {
 
 // remove tag from a specific date
 func RemoveTag(Email string, Text string, Date string) error {
-	collection := client.Database("zine").Collection("tags")
+	tagsCollection := client.Database("zine").Collection("tags")
 	blogCollection := client.Database("zine").Collection("blogs")
 
 	var user models.User
@@ -130,7 +130,7 @@ func RemoveTag(Email string, Text string, Date string) error {
 	// Check if the tag exists
 	filter := bson.M{"text": Text, "user_id": user_id}
 	var tag models.Tag
-	if err := collection.FindOne(context.TODO(), filter).Decode(&tag); err != nil {
+	if err := tagsCollection.FindOne(context.TODO(), filter).Decode(&tag); err != nil {
 		return errors.New("tag not found")
 	}
 
@@ -144,7 +144,7 @@ func RemoveTag(Email string, Text string, Date string) error {
 
 	// Update the tag in the database
 	update := bson.M{"$set": bson.M{"dates": tag.Dates}}
-	_, err = collection.UpdateOne(context.TODO(), filter, update)
+	_, err = tagsCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return err
 	}
