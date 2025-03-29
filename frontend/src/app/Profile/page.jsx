@@ -8,7 +8,7 @@ import {
 } from "../../components/UpdateUserCreds";
 // import UpdatePassword from "../../components/UpdatePassword";
 import ProfilePicture from "../../components/ProfilePicture";
-import UpdateBio from "../../components/UpdateBio";
+import { UpdateBio } from "../../components/UpdateBio";
 // const ProfileContext = createContext();
 
 export default function ProfilePage({ children }) {

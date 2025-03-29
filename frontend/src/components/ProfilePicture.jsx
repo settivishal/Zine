@@ -2,6 +2,10 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
+import axios from "axios";
+import {
+    Button,
+} from "@mui/material";
 
 // components/DynamicHeroIcon.jsx
 import { UserIcon } from "@heroicons/react/24/outline";
@@ -24,42 +28,71 @@ function ProfileIcon({ className = "" }) {
     );
 }
 
-export default function ProfilePicture({ currentPicture}) {
+export default function ProfilePicture({currentPicture}) {
     const [isHovering, setIsHovering] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [error, setError] = useState("");
+
+    const [success, setSuccess] = useState("");
     const fileInputRef = useRef(null);
 
-    const handleUpdatePicture = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const formData = new FormData();
-        formData.append("profilePicture", file);
-        // Validation checks...
-        setIsUploading(true);
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append("image", file);
 
-        try {
-            const response = await fetch("http://localhost:8080/api/image/update", {
-                method: "POST",
+            axios.post("http://localhost:8080/api/image/update", formData, {
                 headers: {
-                "Content-Type": "application/json",
+                    Authorization: "Bearer " + localStorage.getItem("accessToken"),
                 },
-                body: formData,
+            })
+            .then((response) => {
+                setImage(response.data.imageUrl); // Assuming the response contains the URL of the uploaded image
+            })
+            .catch((error) => {
+                if (error.response && error.response.data) {
+                    setError(error.response.data.message || "Failed to upload image.");
+                } else {
+                    setError("An error occurred while uploading the image.");
+                }
             });
-        
-            if (!response.ok) {
-                const errorData = await response.json();
-                setErrorMessage(errorData.message || "Failed to upload picture");
-                return;
-            }
-        
-            const data = await response.json();
-            setSuccessMessage("Profile picture updated successfully!"); // Show
-        } catch (error) {
-            console.error("Error uploading image:", error);
-        } finally {
-            setIsUploading(false);
         }
     };
+
+
+    // const handleUpdatePicture = async (e) => {
+    //     e.preventDefault();
+    //     const file = e.target.files[0];
+    //     if (!file) return;
+    //     const formData = new FormData();
+    //     formData.append("profilePicture", file);
+    //     // Validation checks...
+    //     setIsUploading(true);
+
+    //     try {
+    //         const response = await fetch("http://localhost:8080/api/image/update", {
+    //             method: "POST",
+    //             headers: {
+    //             "Content-Type": "application/json",
+    //             },
+    //             body: formData,
+    //         });
+        
+    //         if (!response.ok) {
+    //             const errorData = await response.json();
+    //             setError(errorData.message || "Failed to upload picture");
+    //             return;
+    //         }
+        
+    //         const data = await response.json();
+    //         setSuccess("Profile picture updated successfully!"); // Show
+    //     } catch (error) {
+    //         console.error("Error uploading image:", error);
+    //     } finally {
+    //         setIsUploading(false);
+    //     }
+    // };
 
     return (
         <div className="flex flex-col items-center">
@@ -82,28 +115,25 @@ export default function ProfilePicture({ currentPicture}) {
                 {isHovering && (
                     <div
                         className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 cursor-pointer"
-                        onClick={() => fileInputRef.current?.click()}>
-                        <span className="text-black text-sm font-medium">
-                            {isUploading ? "Uploading..." : "Change Photo"}
-                        </span>
+                    >
                     </div>
                 )}
 
                 
             </div>
 
-            <button
-                className="mt-3 text-sm text-blue-500 hover:text-blue-300"
-                onClick={() => fileInputRef.current?.click()}>
-                    <input
+            <Button
+                variant="contained"
+                component="label"
+                className="m-4">
+                Upload Picture
+                <input
                     type="file"
-                    ref={fileInputRef}
-                    className="w-1 "
-                    accept="image/*"
-                    onChange={handleUpdatePicture}
+                    hidden
+                    onChange={handleImageUpload}
                 />
-                Update Profile Picture
-            </button>
+                
+            </Button>
         </div>
     );
 }

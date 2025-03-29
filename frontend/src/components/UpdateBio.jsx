@@ -1,16 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import axios from "axios";
+import { useState, useEffect} from "react";
 
 import Button from "./Button";
 
-export default function UpdateBio({currentBio}) {
-    const [bio, setBio] = useState(currentBio);
+const updateProfileField = async (
+    field,
+    value,
+    setError,
+    setIsEditing,
+    setIsSubmitting
+) => {
+    const [success, setSuccess] = useState("");
+    try {
+        const payload = { [field]: value };
+        const response = await axios.post(
+            "http://localhost:8080/api/profile/update",
+            payload, // Ensure the payload matches the server's expected format
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${
+                        localStorage.getItem("accessToken") || ""
+                    }`,
+                },
+            }
+        );
+
+        if (response.status !== 200) {
+            setError(response.data.message || `Failed to update ${field}.`);
+            return;
+        }
+
+        setSuccess(`${field} updated successfully`);
+        // setProfileData((prevData) => ({
+        //     ...prevData,
+        //     [field]: value, // Update the local state with the new value
+        // }));
+    } catch (error) {
+        console.error(`Error updating ${field}:`, error);
+        setError(
+            error.response?.data?.message ||
+                `Failed to update ${field}. Please try again.`
+        );
+    } finally {
+        setIsEditing(false);
+        setIsSubmitting(false);
+    }
+};
+
+
+function UpdateBio({ currentBio }) {
+    const [bio, setBio] = useState(""); // Ensure default value is an empty string
     const [isEditing, setIsEditing] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
 
-    const [success, setSuccess] = useState("");
+    useEffect(() => {
+        setBio(currentBio);
+    })
 
     const handleBio = async (e) => {
         e.preventDefault();
@@ -22,34 +71,42 @@ export default function UpdateBio({currentBio}) {
 
         setError("");
         setIsSubmitting(true);
+        updateProfileField(
+            "bio",
+            bio,
+            setError,
+            setIsEditing,
+            setIsSubmitting
+        );
 
-        try {
-            const response = await fetch("http://localhost:8080/api/profile/update", {
-                method: "POST",
-                headers: {
-                "Content-Type": "application/json",
-                },
-                body:JSON.stringify({bio}),
-            });
-        
-            if (!response.ok) {
-                const errorData = await response.json();
-                setError(errorData.message || "Failed to update Bio.");
-                return;
-            }
-        
-            const data = await response.json();
 
-            setSuccess("Bio updated successfully");
-            setIsEditing(false);
 
-            
-        } catch (error) {
-            console.error("Error updating Bio:", error);
-            setError("Failed to update Bio. Please try again.");
-        } finally {
-            setIsSubmitting(false);
-        }
+        // try {
+        //     const response = await fetch("http://localhost:8080/api/profile/update", {
+        //         method: "POST",
+        //         headers: {
+        //         "Content-Type": "application/json",
+        //         "Authorization": "Bearer" + " " + localStorage.getItem("accessToken"),
+        //         },
+        //         body:JSON.stringify({bio}),
+        //     });
+
+        //     if (!response.ok) {
+        //         const errorData = await response.json();
+        //         setError(errorData.message || "Failed to update Bio.");
+        //         return;
+        //     }
+
+        //     const data = await response.json();
+        //     setSuccess("Bio updated successfully");
+
+        // } catch (error) {
+        //     console.error("Error updating Bio:", error);
+        //     setError("Failed to update Bio. Please try again.");
+        // } finally {
+        //     setIsEditing(false);
+        //     setIsSubmitting(false);
+        // }
     };
 
     return (
@@ -60,7 +117,7 @@ export default function UpdateBio({currentBio}) {
                         <textarea
                             id="paragraphInput"
                             name="paragraphInput"
-                            value = {bio}
+                            value={bio}
                             onChange={(e) => setBio(e.target.value)}
                             rows="5"
                             cols="50"
@@ -77,26 +134,22 @@ export default function UpdateBio({currentBio}) {
                         <Button disabled={isSubmitting}>
                             {isSubmitting ? "Saving..." : "Save"}
                         </Button>
-                        
-                        <Button 
+
+                        <Button
                             onClick={(e) => {
                                 setBio(currentBio);
                                 setIsEditing(false);
                                 setError("");
                             }}
-                            disabled={isSubmitting}
-                        >
+                            disabled={isSubmitting}>
                             Cancel
-                        </Button>    
-                            
+                        </Button>
                     </div>
                 </form>
             ) : (
                 <div className="flex justify-between items-center">
                     <div>
-                        <p className="mt-1 text-4xl text-gray-900">
-                            {currentBio}
-                        </p>
+                        <p className="mt-1 text-4xl text-gray-900">{bio}</p>
                     </div>
 
                     <Button onClick={() => setIsEditing(true)}>Edit</Button>
@@ -105,3 +158,180 @@ export default function UpdateBio({currentBio}) {
         </div>
     );
 }
+
+function UpdateAge({ currentAge }) {
+    const [age, setAge] = useState(0); // Ensure default value is 0
+    const [isEditing, setIsEditing] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState("");
+
+    // const [success, setSuccess] = useState("");
+
+    useEffect(() => {
+        setAge(currentAge);
+    })
+
+    console.log("cage", currentAge);
+    console.log("age", age);
+
+    const handleAge = async (e) => {
+        e.preventDefault();
+
+        if (age === currentAge) {
+            setIsEditing(false);
+            return;
+        }
+
+        setError("");
+        setIsSubmitting(true);
+        updateProfileField(
+            "age",
+            age,
+            setError,
+            setIsEditing,
+            setIsSubmitting
+        );
+    };
+
+    return (
+        <div className="space-y-4">
+            {isEditing ? (
+                <form onSubmit={handleAge} className="space-y-4">
+                    <div>
+                        <input
+                            id="ageInput"
+                            name="ageInput"
+                            type="number"
+                            value={age}
+                            onChange={(e) => setAge(Number(e.target.value))} // Ensure value is a number
+                            placeholder="Enter your age..."
+                            disabled={isSubmitting}
+                            className="border border-gray-300 rounded px-2 py-1 text-blue-800 w-full"
+                        />
+
+                        {error && (
+                            <p className="mt-1 text-sm text-red-600">{error}</p>
+                        )}
+                    </div>
+
+                    <div className="flex gap-2">
+                        <Button disabled={isSubmitting}>
+                            {isSubmitting ? "Saving..." : "Save"}
+                        </Button>
+
+                        <Button
+                            onClick={(e) => {
+                                setAge(currentAge);
+                                setIsEditing(false);
+                                setError("");
+                            }}
+                            disabled={isSubmitting}>
+                            Cancel
+                        </Button>
+                    </div>
+                </form>
+            ) : (
+                <div className="flex items-center justify-between">
+                    <div>
+                        <p className="mt-1 text-4xl text-gray-900">{age}</p>
+                    </div>
+                    <Button
+                        onClick={() => setIsEditing(true)}
+                        variant="text"
+                        size="small"
+                        className="text-gray-500">
+                        ✏️
+                    </Button>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function UpdateGender({ currentGender }) {
+    const [gender, setGender] = useState(""); // Ensure default value is an empty string
+    const [isEditing, setIsEditing] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        setGender(currentGender);
+    });
+    const handleGender = async (e) => {
+        e.preventDefault();
+
+        if (gender === currentGender) {
+            setIsEditing(false);
+            return;
+        }
+
+        setError("");
+        setIsSubmitting(true);
+        updateProfileField(
+            "gender",
+            gender,
+            setError,
+            setIsEditing,
+            setIsSubmitting
+        );
+    };
+
+    return (
+        <div className="space-y-4">
+            {isEditing ? (
+                <form onSubmit={handleGender} className="space-y-4">
+                    <div>
+                        <select
+                            id="genderInput"
+                            name="genderInput"
+                            value={gender}
+                            onChange={(e) => setGender(e.target.value)}
+                            disabled={isSubmitting}
+                            className="border border-gray-300 rounded px-2 py-1 text-blue-800 w-full">
+                            <option value="" disabled>
+                                Select your gender...
+                            </option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+
+                        {error && (
+                            <p className="mt-1 text-sm text-red-600">{error}</p>
+                        )}
+                    </div>
+
+                    <div className="flex gap-2">
+                        <Button disabled={isSubmitting}>
+                            {isSubmitting ? "Saving..." : "Save"}
+                        </Button>
+
+                        <Button
+                            onClick={(e) => {
+                                setGender(currentGender);
+                                setIsEditing(false);
+                                setError("");
+                            }}
+                            disabled={isSubmitting}>
+                            Cancel
+                        </Button>
+                    </div>
+                </form>
+            ) : (
+                <div className="flex justify-between items-center">
+                    <div>
+                        <p className="mt-1 text-4xl text-gray-900">{gender}</p>
+                    </div>
+                    <Button
+                        onClick={() => setIsEditing(true)}
+                        variant="text"
+                        size="small"
+                        className="text-gray-500">
+                        ✏️
+                    </Button>
+                </div>
+            )}
+        </div>
+    );
+}
+
+export { UpdateBio, UpdateAge, UpdateGender };

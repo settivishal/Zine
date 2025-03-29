@@ -1,4 +1,5 @@
 "use client";
+import axios from 'axios';
 
 import {
     Avatar,
@@ -7,10 +8,10 @@ import {
     LinearProgress,
     Button,
 } from "@mui/material";
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect } from "react";
 import { compileFunction } from "vm";
 
-import UpdateBio from "../../components/UpdateBio";
+import {UpdateBio, UpdateAge, UpdateGender} from "../../components/UpdateBio";
 import ActivityGrid from "../../components/ActivityGrid";
 import Navbar from "../../components/Navbar";
 
@@ -26,6 +27,7 @@ export default function ProfilePage({ children }) {
         if (file) {
             const formData = new FormData();
             formData.append("image", file);
+            console.log("formData")
 
             try {
                 const response = await fetch("http://localhost:8080/api/image/update", {
@@ -43,12 +45,44 @@ export default function ProfilePage({ children }) {
                 }
 
                 const data = await response.json();
-                setImage(data.imageUrl); // Assuming the response contains the URL of the uploaded image
+                setImage(data.image); // Assuming the response contains the URL of the uploaded image
             } catch (error) {
                 setErrorMessage("An error occurred while uploading the image.");
             }
         }
     };
+
+
+    // useEffect(() => {
+    //     const fetchProfileData = () => {
+    //         const config = {
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //                 Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    //             },
+    //         };
+
+    //         axios
+    //             .get("http://localhost:8080/api/profile", config)
+    //             .then((response) => {
+    //                 setProfileData(response.data); // Set profile data (username, email, etc.)
+    //             })
+    //             .catch((error) => {
+    //                 if (error.response && error.response.data) {
+    //                     setErrorMessage(error.response.data.message || "Failed to fetch profile data.");
+    //                 } else {
+    //                     setErrorMessage("Failed to fetch profile data.");
+    //                 }
+    //             });
+    //     };
+
+    //     fetchProfileData();
+
+    //     const mockActivity = generateMockActivityData();
+    //     console.log(mockActivity);
+    //     setActivityData(mockActivity);
+    // }, []);
+    
 
     useEffect(() => {
         (async () => {
@@ -118,30 +152,24 @@ export default function ProfilePage({ children }) {
                         <Typography className="text-orange-500 text-sm">
                             UI Designer
                         </Typography>
-                        {/* <blockquote className="text-center italic mt-4 text-gray-600">
-                        "I’m looking for a site that will simplify the planning of my business trips."
-                    </blockquote> */}
+                        
                         <div className="mt-6 text-left w-full">
                             <Typography
                                 variant="body2"
                                 className="font-bold text-gray-700">
-                                Age:
+                                Age: {profileData?.age}
                             </Typography>
-                            <Typography className="text-blue-800">
-                                {profileData?.age}
-                            </Typography>
-                            {/* <Typography variant="body2" className="font-bold text-gray-700 mt-2">
-                            Status:
-                        </Typography>
-                        <Typography className="text-blue-800">Single </Typography> */}
+                            <div className="flex items-center gap-2">
+                                <UpdateAge currentAge={profileData?.age} />
+                            </div>
                             <Typography
                                 variant="body2"
                                 className="font-bold text-gray-700 mt-2">
-                                Location:
+                                Gender: {profileData?.gender}
                             </Typography>
-                            <Typography className="text-blue-800">
-                                Brooklyn
-                            </Typography>
+                            <div className="flex items-center gap-2">
+                                <UpdateGender currentGender={profileData?.gender} />
+                            </div>
                             <Typography
                                 variant="body2"
                                 className="font-bold text-gray-700 mt-2">
@@ -178,9 +206,6 @@ export default function ProfilePage({ children }) {
                                 Bio
                             </Typography>
                             <UpdateBio currentBio={profileData?.bio} />
-                            {/* <p className="text-sm text-gray-600 mt-2">
-                            Jill is a Regional Director who travels 4–8 times each month for work. She has a specific region she travels to and often visits the same cities and hotels. She expects travel solutions to be organized and efficient.
-                        </p> */}
                         </div>
                         {/* Motivations Section */}
                         <div>
@@ -189,17 +214,6 @@ export default function ProfilePage({ children }) {
                                 className="font-bold text-gray-800">
                                 Activity Grid
                             </Typography>
-                            {/* {["Price", "Comfort", "Convenience", "Speed", "Loyalty/Miles"].map((motivation, index) => (
-                            <div key={index} className="flex items-center gap-4 mt-1">
-                                <span className="text-sm text-gray-600">{motivation}</span>
-                                <LinearProgress
-                                    variant="determinate"
-                                    value={(index + 1) * 20}
-                                    sx={{ width: "100%", height: 8 }}
-                                    color={index % 2 === 0 ? "primary" : "secondary"}
-                                />
-                            </div>
-                        ))} */}
                             <div className="container mx-auto px-4 py-8 bg-white p-6 rounded-lg shadow h-96">
                                 <h2 className="text-slate-600 text-xl font-semibold mb-4">
                                     Your Activity
