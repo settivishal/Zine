@@ -1,18 +1,17 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
-	"net/http"
-	"context"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 
 	"backend/database"
-	"backend/models"
-	"backend/utils"
 	"backend/services/awsservice"
+	"backend/utils"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -152,7 +151,7 @@ func HandleUploadCover(w http.ResponseWriter, r *http.Request) (*utils.UploadCov
 	}, nil, http.StatusOK
 }
 
-func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (map[string]models.Blog, error, int) {
+func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResponse, error, int) {
 	email, ok := r.Context().Value("email").(string)
 
 	if !ok {
@@ -165,10 +164,18 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (map[string]models.B
 		return nil, errors.New("No blogs found for this user"), http.StatusInternalServerError
 	}
 
-	blogMap := make(map[string]models.Blog)
+	var blogResponses []utils.BlogResponse
 	for _, blog := range blogs {
-		blogMap[blog.Date] = blog
+		blogResponses = append(blogResponses, utils.BlogResponse{
+			ID:     blog.ID,
+			Title:  blog.Title,
+			Cover:  blog.Cover,
+			TagIDs: blog.TagIDs,
+		})
 	}
 
-	return blogMap, nil, http.StatusOK
+	return &utils.GetBlogsResponse{
+		Message: "Blogs fetched successfully",
+		Blogs:   blogResponses,
+	}, nil, http.StatusOK
 }

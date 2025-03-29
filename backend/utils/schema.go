@@ -164,9 +164,16 @@ type UploadCoverResponse struct {
 	Image   string `json:"image"`
 }
 
+type BlogResponse struct {
+	ID     string   `json:"id"`
+	Title  string   `json:"title"`
+	Cover  string   `json:"cover"`
+	TagIDs []string `json:"tagIds"`
+}
+
 type GetBlogsResponse struct {
-	Message string        `json:"message"`
-	Blogs   []models.Blog `json:"blogs"`
+	Message string         `json:"message"`
+	Blogs   []BlogResponse `json:"blogs"`
 }
 
 type GetBlogResponse struct {
