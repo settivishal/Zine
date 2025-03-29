@@ -68,6 +68,10 @@ func SetTag(Email string, Text string, Date string) error {
 		return errors.New("tag not found")
 	}
 
+	if slices.Contains(tag.Dates, Date) {
+		return nil
+	}
+
 	// Add the date to the tag
 	tag.Dates = append(tag.Dates, Date)
 
@@ -108,12 +112,13 @@ func SetTag(Email string, Text string, Date string) error {
 		return err
 	}
 
-	return err
+	return nil
 }
 
 // remove tag from a specific date
 func RemoveTag(Email string, Text string, Date string) error {
 	collection := client.Database("zine").Collection("tags")
+	blogCollection := client.Database("zine").Collection("blogs")
 
 	var user models.User
 	err := client.Database("zine").Collection("users").FindOne(context.TODO(), bson.M{"email": Email}).Decode(&user)
@@ -140,8 +145,42 @@ func RemoveTag(Email string, Text string, Date string) error {
 	// Update the tag in the database
 	update := bson.M{"$set": bson.M{"dates": tag.Dates}}
 	_, err = collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
 
-	return err
+	// Update the blog by removing the tag ID
+	var blog models.Blog
+
+	// convert the date string to a time.Time object
+	parsedDate, err := time.Parse("01/02/2006", Date)
+	if err != nil {
+		return err
+	}
+	normalizedDate := parsedDate.Format("1/2/2006")
+
+	blogFilter := bson.M{"date": normalizedDate, "user_id": user_id}
+	err = blogCollection.FindOne(context.TODO(), blogFilter).Decode(&blog)
+	if err != nil {
+		return errors.New("blog not found")
+	}
+
+	// Remove the tag ID from the blog's TagIDs array
+	for i, tagID := range blog.TagIDs {
+		if tagID == tag.ID {
+			blog.TagIDs = slices.Delete(blog.TagIDs, i, i+1)
+			break
+		}
+	}
+
+	// Update the blog in the database
+	updateBlog := bson.M{"$set": bson.M{"tag_ids": blog.TagIDs}}
+	_, err = blogCollection.UpdateOne(context.TODO(), blogFilter, updateBlog)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // GetTags retrieves all tags for a given user
