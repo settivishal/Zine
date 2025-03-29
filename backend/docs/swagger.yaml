@@ -1,4 +1,30 @@
 definitions:
+  models.Blog:
+    properties:
+      content:
+        additionalProperties: true
+        description: Dynamic schema represented as a map
+        type: object
+      cover:
+        type: string
+      date:
+        description: THIS WILL BE UNIQUE FOR EACH BLOG
+        type: string
+      id:
+        type: string
+      isPublic:
+        type: boolean
+      tagIDs:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      url:
+        type: string
+      userID:
+        type: string
+    type: object
   utils.ErrorResponse:
     properties:
       error:
@@ -67,6 +93,123 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/blog/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new blog
+      parameters:
+      - description: Blog details
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            date:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.TagResponse'
+        "400":
+          description: Invalid request format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Create Blog
+      tags:
+      - blogs
+  /api/blogs:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of blogs for a specific user with pagination.
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Limit per page
+        in: query
+        name: limit
+        type: integer
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/models.Blog'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get Blogs
+      tags:
+      - blogs
+  /api/hobbies/update:
+    post:
+      consumes:
+      - application/json
+      description: Update hobbies of a user
+      parameters:
+      - description: Hobbies details
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            hobbies:
+              items:
+                type: string
+              type: array
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.RegisterResponse'
+        "400":
+          description: Invalid request format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Update Hobbies
+      tags:
+      - users
   /api/image/update:
     post:
       consumes:
@@ -111,6 +254,90 @@ paths:
           schema:
             $ref: '#/definitions/utils.RegisterResponse'
       summary: Get Profile
+      tags:
+      - users
+  /api/profile/update:
+    post:
+      consumes:
+      - application/json
+      description: Update profile of a user
+      parameters:
+      - description: Profile details
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            age:
+              type: string
+            bio:
+              type: string
+            gender:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.RegisterResponse'
+        "400":
+          description: Invalid request format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Update Profile
+      tags:
+      - users
+  /api/socials/update:
+    post:
+      consumes:
+      - application/json
+      description: Update socials of a user
+      parameters:
+      - description: Socials details
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            instagram_url:
+              type: string
+            linkedin_url:
+              type: string
+            reddit_url:
+              type: string
+            twitter_url:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.RegisterResponse'
+        "400":
+          description: Invalid request format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Update Socials
       tags:
       - users
   /api/tags:
