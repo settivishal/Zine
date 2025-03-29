@@ -87,13 +87,13 @@ func SetTag(Email string, Text string, Date string) error {
 	var blog models.Blog
 
 	// convert the date string to a time.Time object
-	parsedDate, err := time.Parse("01/02/2006", Date)
+	parsedDate, err := time.Parse("2006-01-02", Date)
 	if err != nil {
-		return err
+		return errors.New("Error parsing date: " + Date)
 	}
-	normalizedDate := parsedDate.Format("1/2/2006")
+	formattedDate := parsedDate.Format("2006-01-02")
 
-	blogFilter := bson.M{"date": normalizedDate, "user_id": user_id}
+	blogFilter := bson.M{"date": formattedDate, "user_id": user_id}
 	err = blogCollection.FindOne(context.TODO(), blogFilter).Decode(&blog)
 	if err != nil {
 		return errors.New("blog not found")
