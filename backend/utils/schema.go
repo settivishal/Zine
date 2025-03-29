@@ -175,5 +175,5 @@ type GetBlogResponse struct {
 }
 
 type TagsRequestPayload struct {
-	TagIDs []string `json:"tag_ids"` // Expecting an array of tag IDs
+	TagIDs []string `json:"tag_ids"`
 }
