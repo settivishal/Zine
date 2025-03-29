@@ -19,7 +19,33 @@ import (
 	"context"
 	"log"
 	"os"
+	"strings"
 )
+
+// Handle Get Blog - _id is there in the query
+
+func HandleGetBlog(w http.ResponseWriter, r *http.Request) (*utils.GetBlogResponse, error, int) {
+	// Extract _id from the URL path parameters
+	vars := r.URL.Path
+	segments := strings.Split(vars, "/")
+	if len(segments) < 4 || segments[3] == "" {
+		return nil, errors.New("Blog ID is required"), http.StatusBadRequest
+	}
+	blogID := segments[3]
+
+	// Fetch blog data from the database
+	blog, err := database.GetBlog(blogID)
+
+	if err != nil {
+		return nil, errors.New("Error fetching blog data"), http.StatusInternalServerError
+	}
+
+	// Return structured response
+	return &utils.GetBlogResponse{
+		Message: "Blog fetched successfully",
+		Blog:    blog,
+	}, nil, http.StatusOK
+}
 
 // Handle Create Blog
 

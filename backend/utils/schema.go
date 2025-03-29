@@ -3,6 +3,8 @@ package utils
 import (
 	"time"
 
+	"backend/models"
+
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -163,6 +165,11 @@ type UploadCoverResponse struct {
 }
 
 type GetBlogsResponse struct {
-	Message string `json:"message"`
+	Message string   `json:"message"`
 	Blogs   []string `json:"blogs"`
+}
+
+type GetBlogResponse struct {
+	Message string      `json:"message"`
+	Blog    models.Blog `json:"blog"`
 }

@@ -46,6 +46,7 @@ func Routes(router *mux.Router) {
 	api.HandleFunc("/tags", controllers.GetTags).Methods("GET")
 
 	// Blog Routes
+	api.HandleFunc("/blog/{_id}", controllers.GetBlog).Methods("GET")
 	api.HandleFunc("/blog/create", controllers.CreateBlog).Methods("POST")
 	api.HandleFunc("/blog/save", controllers.SaveBlog).Methods("POST")
 	api.HandleFunc("/blog/cover/upload", controllers.UploadCover).Methods("POST")

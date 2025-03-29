@@ -2,9 +2,10 @@
 // import Link from "next/link";
 
 import * as React from "react";
+import { useState } from "react";
 
 import Base from "../../components/Base.jsx";
-// import AuthModal from "../Modal/page";
+import AuthModal from "../Modal/page";
 
 const style = {
     position: "absolute",
@@ -19,7 +20,23 @@ const style = {
 };
 
 export default function LandingPage() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openAuthModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeAuthModal = () => {
+        setIsModalOpen(false);
+    };
+
     return (
-        <Base/>
+        <>
+            <Base openAuthModal={openAuthModal} />
+            <AuthModal
+                isOpen={isModalOpen}
+                onClose={closeAuthModal}
+            />
+        </>
     );
 }
