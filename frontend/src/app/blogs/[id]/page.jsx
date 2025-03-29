@@ -15,6 +15,7 @@ export default function Blog() {
     const [blocks, setBlocks] = useState([])
     const params = useParams();
     const id = params.id;
+    const [editor, setEditor] = useState(null);
 
     const [editorContent, setEditorContent] = useState([
         {
@@ -27,9 +28,13 @@ export default function Blog() {
         },
     ]);
 
-    const editor = useCreateBlockNote({
-        initialContent: editorContent,
-    });
+    React.useEffect(() => {
+        // Initialize the editor after component mounts
+        const editor = useCreateBlockNote({
+            initialContent: editorContent,
+        });
+        setEditor(editor);
+    }, []);
 
     const fetchContentFromBackend = async () => {
         try {
@@ -102,12 +107,13 @@ export default function Blog() {
 
                 </div>
 
-                <BlockNoteView
-                    editor={editor}
-                    onChange={() => {
-                    }}
-                    className='mb-5'
-                />
+                {editor && (
+                    <BlockNoteView
+                        editor={editor}
+                        onChange={() => { }}
+                        className='mb-5'
+                    />
+                )}
 
                 <button className='bg-amber-500 text-white px-4 py-2 rounded hover:bg-amber-600 transition' onClick={handleSave}>Save</button>
 

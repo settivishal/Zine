@@ -7,12 +7,6 @@ const useProfile = () => {
     const [error, setError] = useState(null);
     const { accessToken } = useAuth();
 
-    const getCookie = (name) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    };
-
     useEffect(() => {
         const fetchProfileImage = async () => {
             if (!accessToken) return;
