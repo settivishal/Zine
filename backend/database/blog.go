@@ -48,12 +48,12 @@ func CreateBlog(Email string, Request utils.CreateBlogRequest) (string, error) {
 	}
 
 	// Validate and normalize the date
-	parsedDate, err := time.Parse("01/02/2006", Request.Date)
+	parsedDate, err := time.Parse("2006-01-02", Request.Date) // MM/DD/YYYY format
 	if err != nil {
-		return "", errors.New("Invalid date format")
+		return "", errors.New("Error parsing date: " + Request.Date)
 	}
-	normalizedDate := parsedDate.Format("01/02/2006")
-	filter := bson.M{"user_id": user.ID, "date": normalizedDate}
+	formattedDate := parsedDate.Format("2006-01-02")
+	filter := bson.M{"user_id": user.ID, "date": formattedDate}
 	existingBlog := models.Blog{}
 	err = collection.FindOne(context.TODO(), filter).Decode(&existingBlog)
 	if err == nil {
@@ -134,8 +134,10 @@ func GetBlogs(email string, page, limit int) ([]models.Blog, error) {
 	// Pagination calculations
 	skip := (page - 1) * limit
 
+	sort := bson.D{{Key: "date", Value: -1}}
+
 	filter := bson.M{"user_id": userID}
-	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetLimit(int64(limit)).SetSkip(int64(skip)))
+	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetLimit(int64(limit)).SetSkip(int64(skip)).SetSort(sort))
 	if err != nil {
 		return nil, err
 	}

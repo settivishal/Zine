@@ -167,7 +167,7 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResp
 	}
 	limit, err := strconv.Atoi(query.Get("limit"))
 	if err != nil || limit < 1 {
-		limit = 10 // Default page size
+		limit = 7 // Default page size
 	}
 
 	blogs, err := database.GetBlogs(email, page, limit)
