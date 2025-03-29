@@ -10,9 +10,10 @@ import (
 	"backend/models"
 	"backend/utils"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // GetBlog
@@ -118,7 +119,8 @@ func UploadCover(BlogId string, Cover string) error {
 	return err
 }
 
-func GetBlogs(email string) ([]models.Blog, error) {
+// Get Blogs - Retrieve all blogs for a given user email
+func GetBlogs(email string, page, limit int) ([]models.Blog, error) {
 	collection := client.Database("zine").Collection("blogs")
 
 	var blogs []models.Blog
@@ -128,8 +130,12 @@ func GetBlogs(email string) ([]models.Blog, error) {
 		return nil, errors.New("failed to retrieve user: " + err.Error())
 	}
 	userID := user.ID
+
+	// Pagination calculations
+	skip := (page - 1) * limit
+
 	filter := bson.M{"user_id": userID}
-	cursor, err := collection.Find(context.TODO(), filter)
+	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetLimit(int64(limit)).SetSkip(int64(skip)))
 	if err != nil {
 		return nil, err
 	}

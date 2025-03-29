@@ -172,8 +172,8 @@ type BlogResponse struct {
 }
 
 type GetBlogsResponse struct {
-	Message string         `json:"message"`
-	Blogs   []BlogResponse `json:"blogs"`
+	Message string                  `json:"message"`
+	Blogs   map[string]BlogResponse `json:"blogs"`
 }
 
 type GetBlogResponse struct {

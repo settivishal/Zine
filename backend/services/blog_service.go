@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"backend/database"
@@ -158,20 +159,31 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResp
 		return nil, errors.New("Error getting email"), http.StatusBadRequest
 	}
 
-	blogs, err := database.GetBlogs(email)
+	// Extract query parameters for pagination
+	query := r.URL.Query()
+	page, err := strconv.Atoi(query.Get("page"))
+	if err != nil || page < 1 {
+		page = 1 // Default to first page
+	}
+	limit, err := strconv.Atoi(query.Get("limit"))
+	if err != nil || limit < 1 {
+		limit = 10 // Default page size
+	}
 
+	blogs, err := database.GetBlogs(email, page, limit)
 	if err != nil || len(blogs) == 0 {
 		return nil, errors.New("No blogs found for this user"), http.StatusInternalServerError
 	}
 
-	var blogResponses []utils.BlogResponse
+	blogResponses := make(map[string]utils.BlogResponse)
 	for _, blog := range blogs {
-		blogResponses = append(blogResponses, utils.BlogResponse{
+		date := blog.Date
+		blogResponses[date] = utils.BlogResponse{
 			ID:     blog.ID,
 			Title:  blog.Title,
 			Cover:  blog.Cover,
 			TagIDs: blog.TagIDs,
-		})
+		}
 	}
 
 	return &utils.GetBlogsResponse{
