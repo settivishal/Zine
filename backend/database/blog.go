@@ -45,6 +45,23 @@ func CreateBlog(Email string, Request utils.CreateBlogRequest) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	// Check for existing blog with the same date
+	// parsedDate, err := time.Parse("01/02/2006", Request.Date)
+	// if err != nil {
+	// 	return "", err
+	// }
+	// normalizedDate := parsedDate.Format("01/02/2006")
+	filter := bson.M{"user_id": user.ID, "date": Request.Date}
+	existingBlog := models.Blog{}
+	err = collection.FindOne(context.TODO(), filter).Decode(&existingBlog)
+	if err == nil {
+		return "", errors.New("A blog entry for this date already exists")
+	} else if err != mongo.ErrNoDocuments {
+		return "", err
+	}
+
+	// Create a new blog entry
 	blog := models.Blog{
 		Date:     Request.Date,
 		UserID:   user.ID,
