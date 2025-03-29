@@ -7,6 +7,30 @@ import (
 	"backend/utils"
 )
 
+// Get Blog
+// @Summary Get Blog
+// @Description Get a blog by ID
+// @Tags blogs
+// @Accept json
+// @Produce json
+// @Param _id path string true "Blog ID"
+// @Success 200 {object} utils.TagResponse
+// @Failure 400 {object} utils.ErrorResponse "Invalid request format"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 500 {object} utils.ErrorResponse "Error getting blog"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /api/blogs/{_id} [GET]
+
+func GetBlog(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleGetBlog(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error getting blog", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+}
+
 // Create a new blog
 // @Summary Create Blog
 // @Description Create a new blog
