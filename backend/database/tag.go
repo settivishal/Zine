@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"errors"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 
@@ -75,9 +76,16 @@ func SetTag(Email string, Text string, Date string) error {
 
 	// Update the blog with the tag
 	var blog models.Blog
-	blogFilter := bson.M{"date": Date, "user_id": user_id}
-	fmt.Printf("Querying Blog with Date: '%s' (length: %d), UserID: '%s' (length: %d)\n", 
-    Date, len(Date), user_id, len(user_id))
+
+	// convert the date string to a time.Time object
+	inputDate := Date
+    parsedDate, err := time.Parse("01/02/2006", inputDate) // MM/DD/YYYY format
+    if err != nil {
+        return err
+    }
+	normalizedDate := parsedDate.Format("1/2/2006")
+
+	blogFilter := bson.M{"date": normalizedDate, "user_id": user_id}
 	err = client.Database("zine").Collection("blogs").FindOne(context.TODO(), blogFilter).Decode(&blog)
 	if err != nil {
 		return errors.New("blog not found")
