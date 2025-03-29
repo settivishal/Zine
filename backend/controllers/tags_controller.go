@@ -119,3 +119,13 @@ func GetTags(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendJSONResponse(w, response, status)
 }
+
+func GetTagsByID(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleGetTagsByID(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error getting tags by ID", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+}

@@ -165,11 +165,15 @@ type UploadCoverResponse struct {
 }
 
 type GetBlogsResponse struct {
-	Message string   `json:"message"`
-	Blogs   []string `json:"blogs"`
+	Message string        `json:"message"`
+	Blogs   []models.Blog `json:"blogs"`
 }
 
 type GetBlogResponse struct {
 	Message string      `json:"message"`
 	Blog    models.Blog `json:"blog"`
+}
+
+type TagsRequestPayload struct {
+	TagIDs []string `json:"tag_ids"` // Expecting an array of tag IDs
 }

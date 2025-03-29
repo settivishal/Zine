@@ -105,3 +105,26 @@ func HandleGetTags(w http.ResponseWriter, r *http.Request) ([]models.Tag, error,
 	// Return structured response
 	return tags, nil, http.StatusOK
 }
+
+func HandleGetTagsByID(w http.ResponseWriter, r *http.Request) ([]models.Tag, error, int) {
+	var payload utils.TagsRequestPayload
+
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		return nil, errors.New("error decoding request payload"), http.StatusBadRequest
+	}
+
+	// Check if tag_ids is provided
+	if len(payload.TagIDs) == 0 {
+		return nil, errors.New("no tag IDs provided"), http.StatusBadRequest
+	}
+
+	// Get the tags from the database using the array of tag IDs
+	tags, err := database.GetTagsByID(payload.TagIDs)
+	if err != nil {
+		return nil, errors.New("error getting tags"), http.StatusInternalServerError
+	}
+
+	// Return structured response
+	return tags, nil, http.StatusOK
+}

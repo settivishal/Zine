@@ -217,3 +217,32 @@ func GetTags(Email string) ([]models.Tag, error) {
 
 	return tags, nil
 }
+
+// GetTagsByID retrieves all tags for a given user and date
+func GetTagsByID(TagIDs []string) ([]models.Tag, error) {
+	collection := client.Database("zine").Collection("tags")
+
+	filter := bson.M{"_id": bson.M{"$in": TagIDs}}
+
+	var tags []models.Tag
+	cursor, err := collection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	for cursor.Next(context.TODO()) {
+		var tag models.Tag
+		err := cursor.Decode(&tag)
+		if err != nil {
+			return nil, err
+		}
+		tags = append(tags, tag)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return tags, nil
+}
