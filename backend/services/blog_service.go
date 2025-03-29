@@ -170,7 +170,7 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResp
 		limit = 7 // Default page size
 	}
 
-	blogs, err := database.GetBlogs(email, page, limit)
+	blogs, err, count, totalPages := database.GetBlogs(email, page, limit)
 	if err != nil || len(blogs) == 0 {
 		return nil, errors.New("No blogs found for this user"), http.StatusInternalServerError
 	}
@@ -187,7 +187,9 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResp
 	}
 
 	return &utils.GetBlogsResponse{
-		Message: "Blogs fetched successfully",
-		Blogs:   blogResponses,
+		Message:    "Blogs fetched successfully",
+		Blogs:      blogResponses,
+		Count:      count,
+		TotalPages: totalPages,
 	}, nil, http.StatusOK
 }

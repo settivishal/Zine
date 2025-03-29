@@ -172,8 +172,10 @@ type BlogResponse struct {
 }
 
 type GetBlogsResponse struct {
-	Message string                  `json:"message"`
-	Blogs   map[string]BlogResponse `json:"blogs"`
+	Message    string                  `json:"message"`
+	Blogs      map[string]BlogResponse `json:"blogs"`
+	Count      int                     `json:"count"`
+	TotalPages int                     `json:"total_pages"`
 }
 
 type GetBlogResponse struct {
