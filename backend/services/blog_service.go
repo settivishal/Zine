@@ -4,22 +4,20 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"context"
+	"log"
+	"os"
+	"strings"
 
 	"backend/database"
 	"backend/models"
 	"backend/utils"
-
 	"backend/services/awsservice"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-
-	"context"
-	"log"
-	"os"
-	"strings"
 )
 
 // Handle Get Blog - _id is there in the query
@@ -66,7 +64,7 @@ func HandleCreateBlog(w http.ResponseWriter, r *http.Request) (*utils.CreateBlog
 
 	// Create blog in database
 	if err != nil {
-		return nil, errors.New("error creating blog"), http.StatusInternalServerError
+		return nil, errors.New("error creating blog: " + err.Error()), http.StatusInternalServerError
 	}
 
 	// Return structured response
