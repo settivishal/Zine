@@ -11,9 +11,33 @@ import (
 	"backend/utils"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
+
+// GetBlog
+func GetBlog(BlogId string) (models.Blog, error) {
+	collection := client.Database("zine").Collection("blogs")
+
+	// Convert BlogId to MongoDB ObjectID
+	objectID, err := primitive.ObjectIDFromHex(BlogId)
+	if err != nil {
+		return models.Blog{}, fmt.Errorf("invalid blog ID: %v", err)
+	}
+
+	// Find the blog by ID
+	var blog models.Blog
+	err = collection.FindOne(context.TODO(), bson.M{"_id": objectID}).Decode(&blog)
+
+	if err == mongo.ErrNoDocuments {
+		return models.Blog{}, errors.New("blog not found")
+	}
+
+	print(blog.ID, "Blog ID")
+
+	return blog, err
+}
 
 // Create Blog
 func CreateBlog(Email string, Request utils.CreateBlogRequest) (string, error) {
