@@ -1,18 +1,18 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
-	"net/http"
-	"context"
 	"log"
+	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"backend/database"
-	"backend/models"
-	"backend/utils"
 	"backend/services/awsservice"
+	"backend/utils"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -152,23 +152,44 @@ func HandleUploadCover(w http.ResponseWriter, r *http.Request) (*utils.UploadCov
 	}, nil, http.StatusOK
 }
 
-func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (map[string]models.Blog, error, int) {
+func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResponse, error, int) {
 	email, ok := r.Context().Value("email").(string)
 
 	if !ok {
 		return nil, errors.New("Error getting email"), http.StatusBadRequest
 	}
 
-	blogs, err := database.GetBlogs(email)
+	// Extract query parameters for pagination
+	query := r.URL.Query()
+	page, err := strconv.Atoi(query.Get("page"))
+	if err != nil || page < 1 {
+		page = 1 // Default to first page
+	}
+	limit, err := strconv.Atoi(query.Get("limit"))
+	if err != nil || limit < 1 {
+		limit = 7 // Default page size
+	}
 
+	blogs, err, count, totalPages := database.GetBlogs(email, page, limit)
 	if err != nil || len(blogs) == 0 {
 		return nil, errors.New("No blogs found for this user"), http.StatusInternalServerError
 	}
 
-	blogMap := make(map[string]models.Blog)
+	blogResponses := make(map[string]utils.BlogResponse)
 	for _, blog := range blogs {
-		blogMap[blog.Date] = blog
+		date := blog.Date
+		blogResponses[date] = utils.BlogResponse{
+			ID:     blog.ID,
+			Title:  blog.Title,
+			Cover:  blog.Cover,
+			TagIDs: blog.TagIDs,
+		}
 	}
 
-	return blogMap, nil, http.StatusOK
+	return &utils.GetBlogsResponse{
+		Message:    "Blogs fetched successfully",
+		Blogs:      blogResponses,
+		Count:      count,
+		TotalPages: totalPages,
+	}, nil, http.StatusOK
 }

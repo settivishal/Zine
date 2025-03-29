@@ -4,15 +4,16 @@ import (
 	"context"
 	"fmt"
 	"time"
-
+	"math"
 	"errors"
 
 	"backend/models"
 	"backend/utils"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // GetBlog
@@ -47,12 +48,12 @@ func CreateBlog(Email string, Request utils.CreateBlogRequest) (string, error) {
 	}
 
 	// Validate and normalize the date
-	parsedDate, err := time.Parse("01/02/2006", Request.Date)
+	parsedDate, err := time.Parse("2006-01-02", Request.Date)
 	if err != nil {
-		return "", errors.New("Invalid date format")
+		return "", errors.New("Error parsing date: " + Request.Date)
 	}
-	normalizedDate := parsedDate.Format("01/02/2006")
-	filter := bson.M{"user_id": user.ID, "date": normalizedDate}
+	formattedDate := parsedDate.Format("2006-01-02")
+	filter := bson.M{"user_id": user.ID, "date": formattedDate}
 	existingBlog := models.Blog{}
 	err = collection.FindOne(context.TODO(), filter).Decode(&existingBlog)
 	if err == nil {
@@ -118,20 +119,27 @@ func UploadCover(BlogId string, Cover string) error {
 	return err
 }
 
-func GetBlogs(email string) ([]models.Blog, error) {
+// Get Blogs - Retrieve all blogs for a given user email
+func GetBlogs(email string, page, limit int) ([]models.Blog, error, int, int) {
 	collection := client.Database("zine").Collection("blogs")
 
 	var blogs []models.Blog
 
 	user, err := GetUser(email)
 	if err != nil {
-		return nil, errors.New("failed to retrieve user: " + err.Error())
+		return nil, errors.New("failed to retrieve user: " + err.Error()), 0, 0
 	}
 	userID := user.ID
+
+	// Pagination calculations
+	skip := (page - 1) * limit
+
+	sort := bson.D{{Key: "date", Value: -1}}
+
 	filter := bson.M{"user_id": userID}
-	cursor, err := collection.Find(context.TODO(), filter)
+	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetLimit(int64(limit)).SetSkip(int64(skip)).SetSort(sort))
 	if err != nil {
-		return nil, err
+		return nil, err, 0, 0
 	}
 	defer cursor.Close(context.TODO())
 
@@ -139,14 +147,20 @@ func GetBlogs(email string) ([]models.Blog, error) {
 		var blog models.Blog
 		err := cursor.Decode(&blog)
 		if err != nil {
-			return nil, err
+			return nil, err, 0, 0
 		}
 		blogs = append(blogs, blog)
 	}
 
 	if err := cursor.Err(); err != nil {
-		return nil, err
+		return nil, err, 0, 0
 	}
 
-	return blogs, nil
+	count, err := collection.CountDocuments(context.TODO(), filter)
+	if err != nil {
+		return nil, err, 0, 0
+	}
+	totalPages := int(math.Ceil(float64(count) / float64(limit)))
+
+	return blogs, nil, int(count), totalPages
 }
