@@ -25,6 +25,21 @@ definitions:
       userID:
         type: string
     type: object
+  models.Tag:
+    properties:
+      color:
+        type: string
+      dates:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      text:
+        type: string
+      user_id:
+        type: string
+    type: object
   utils.ErrorResponse:
     properties:
       error:
@@ -719,4 +734,80 @@ paths:
       summary: Reset Password
       tags:
       - users
+  /tags:
+    post:
+      consumes:
+      - application/json
+      description: Get a list of tags by their IDs. The tag IDs are provided in the
+        body as an array.
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Request body containing tag IDs
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Tag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/models.Tag'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get Tags by IDs
+      tags:
+      - tags
+  /tags/getByIDs:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of tags by their IDs. The tag IDs are provided in the
+        body as an array.
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Request body containing tag IDs
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Tag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/models.Tag'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get Tags by IDs
+      tags:
+      - tags
 swagger: "2.0"

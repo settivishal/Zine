@@ -125,6 +125,20 @@ func GetTags(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, response, status)
 }
 
+// Get all tags by IDs
+
+//	@Summary		Get Tags by IDs
+//	@Description	Get a list of tags by their IDs. The tag IDs are provided in the body as an array.
+//	@Tags			tags
+//	@Accept			json
+//	@Produce		json
+//	@Param			Authorization	header		string		true	"Bearer <token>"
+//	@Param			body			body		models.Tag	true	"Request body containing tag IDs"
+//	@Success		200				{object}	map[string]models.Tag
+//	@Failure		400				{object}	utils.ErrorResponse
+//	@Failure		500				{object}	utils.ErrorResponse
+//	@Router			/tags [post]
+//	@Router			/tags/getByIDs [get]
 func GetTagsByIDs(w http.ResponseWriter, r *http.Request) {
 	response, err, status := services.HandleGetTagsByIDs(w, r)
 	if err != nil {
