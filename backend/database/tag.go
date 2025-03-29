@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 
 	"backend/models"
-	"fmt"
+	"slices"
 )
 
 // InsertTag saves a new tag in MongoDB
@@ -51,7 +51,8 @@ func DeleteTag(Email string, Text string) error {
 
 // Set tags in MongoDB
 func SetTag(Email string, Text string, Date string) error {
-	collection := client.Database("zine").Collection("tags")
+	tagsCollection := client.Database("zine").Collection("tags")
+	blogCollection := client.Database("zine").Collection("blogs")
 
 	var user models.User
 	err := client.Database("zine").Collection("users").FindOne(context.TODO(), bson.M{"email": Email}).Decode(&user)
@@ -63,7 +64,7 @@ func SetTag(Email string, Text string, Date string) error {
 	// Check if the tag exists
 	filter := bson.M{"text": Text, "user_id": user_id}
 	var tag models.Tag
-	if err := collection.FindOne(context.TODO(), filter).Decode(&tag); err != nil {
+	if err := tagsCollection.FindOne(context.TODO(), filter).Decode(&tag); err != nil {
 		return errors.New("tag not found")
 	}
 
@@ -72,23 +73,29 @@ func SetTag(Email string, Text string, Date string) error {
 
 	// Update the tag in the database
 	update := bson.M{"$set": bson.M{"dates": tag.Dates}}
-	_, err = collection.UpdateOne(context.TODO(), filter, update)
+	_, err = tagsCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
 
 	// Update the blog with the tag
 	var blog models.Blog
 
 	// convert the date string to a time.Time object
-	inputDate := Date
-    parsedDate, err := time.Parse("01/02/2006", inputDate) // MM/DD/YYYY format
-    if err != nil {
-        return err
-    }
+	parsedDate, err := time.Parse("01/02/2006", Date)
+	if err != nil {
+		return err
+	}
 	normalizedDate := parsedDate.Format("1/2/2006")
 
 	blogFilter := bson.M{"date": normalizedDate, "user_id": user_id}
-	err = client.Database("zine").Collection("blogs").FindOne(context.TODO(), blogFilter).Decode(&blog)
+	err = blogCollection.FindOne(context.TODO(), blogFilter).Decode(&blog)
 	if err != nil {
 		return errors.New("blog not found")
+	}
+
+	if slices.Contains(blog.TagIDs, tag.ID) {
+		return nil
 	}
 
 	// Add the tag ID to the blog
@@ -96,7 +103,7 @@ func SetTag(Email string, Text string, Date string) error {
 
 	// Update the blog in the database
 	updateBlog := bson.M{"$set": bson.M{"tag_ids": blog.TagIDs}}
-	_, err = client.Database("zine").Collection("blogs").UpdateOne(context.TODO(), blogFilter, updateBlog)
+	_, err = blogCollection.UpdateOne(context.TODO(), blogFilter, updateBlog)
 	if err != nil {
 		return err
 	}
