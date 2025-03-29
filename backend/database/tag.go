@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 
 	"backend/models"
+	"fmt"
 )
 
 // InsertTag saves a new tag in MongoDB
@@ -65,23 +66,32 @@ func SetTag(Email string, Text string, Date string) error {
 		return errors.New("tag not found")
 	}
 
-	var blog models.Blog
-
-	filterBlog := bson.M{"date": Date}
-	blog.TagIDs = append(blog.TagIDs, tag.ID)
-	updateBlog := bson.M{"$set": bson.M{"tag_ids": blog.TagIDs}}
-	_, err = client.Database("zine").Collection("blogs").UpdateOne(context.TODO(), filterBlog, updateBlog)
-	if err != nil {
-		return err
-	}
-	// blog_id := blog.ID
-
 	// Add the date to the tag
 	tag.Dates = append(tag.Dates, Date)
 
 	// Update the tag in the database
 	update := bson.M{"$set": bson.M{"dates": tag.Dates}}
 	_, err = collection.UpdateOne(context.TODO(), filter, update)
+
+	// Update the blog with the tag
+	var blog models.Blog
+	blogFilter := bson.M{"date": Date, "user_id": user_id}
+	fmt.Printf("Querying Blog with Date: '%s' (length: %d), UserID: '%s' (length: %d)\n", 
+    Date, len(Date), user_id, len(user_id))
+	err = client.Database("zine").Collection("blogs").FindOne(context.TODO(), blogFilter).Decode(&blog)
+	if err != nil {
+		return errors.New("blog not found")
+	}
+
+	// Add the tag ID to the blog
+	blog.TagIDs = append(blog.TagIDs, tag.ID)
+
+	// Update the blog in the database
+	updateBlog := bson.M{"$set": bson.M{"tag_ids": blog.TagIDs}}
+	_, err = client.Database("zine").Collection("blogs").UpdateOne(context.TODO(), blogFilter, updateBlog)
+	if err != nil {
+		return err
+	}
 
 	return err
 }
