@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"backend/models"
 	"slices"
@@ -218,11 +219,20 @@ func GetTags(Email string) ([]models.Tag, error) {
 	return tags, nil
 }
 
-// GetTagsByID retrieves all tags for a given user and date
-func GetTagsByID(TagIDs []string) ([]models.Tag, error) {
+// GetTagsByIDs retrieves all tags for a given user and date
+func GetTagsByIDs(TagIDs []string) ([]models.Tag, error) {
 	collection := client.Database("zine").Collection("tags")
 
-	filter := bson.M{"_id": bson.M{"$in": TagIDs}}
+	var tagIDs []primitive.ObjectID
+	for _, tagID := range TagIDs {
+		objID, _ := primitive.ObjectIDFromHex(tagID)
+		// if err != nil {
+		// 	return nil, fmt.Errorf("invalid ID %s: %v", tagID, err)
+		// }
+		tagIDs = append(tagIDs, objID)
+	}
+
+	filter := bson.M{"_id": bson.M{"$in": tagIDs}}
 
 	var tags []models.Tag
 	cursor, err := collection.Find(context.TODO(), filter)
