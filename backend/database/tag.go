@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"time"
+	"slices"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"backend/models"
-	"slices"
 )
 
 // InsertTag saves a new tag in MongoDB

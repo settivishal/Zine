@@ -122,7 +122,7 @@ func HandleGetTagsByIDs(w http.ResponseWriter, r *http.Request) ([]models.Tag, e
 	// Get the tags from the database using the array of tag IDs
 	tags, err := database.GetTagsByIDs(payload.TagIDs)
 	if err != nil {
-		return nil, errors.New("error getting tags"), http.StatusInternalServerError
+		return nil, err, http.StatusInternalServerError
 	}
 
 	// Return structured response
