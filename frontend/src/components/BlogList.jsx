@@ -63,22 +63,45 @@ const BlogList = () => {
 
     useEffect(() => {
         const fetchBlogs = async () => {
+            if (!accessToken) {
+                console.log('Waiting for access token...');
+                return;
+            }
+
             try {
-                const response = await fetch('http://localhost:8080/api/blogs?page=1&limit=7', {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                    }
+                const response = await fetch("http://localhost:8080/api/blogs?page=1&limit=7", {
+                    method: "GET",
+                    headers: { Authorization: `Bearer ${accessToken}` },
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    setRealBlogs(data);
-                    console.log(data);
+                    console.log('Raw API response:', data);
+
+                    if (data.blogs) {
+                        setRealBlogs(data.blogs);
+                        console.log('Processed blogs data:', data.blogs);
+                    } else {
+                        console.error('Blog data missing in response:', data);
+                    }
+
+                    // Log pagination info for debugging
+                    console.log('Total pages:', data.total_pages);
+                    console.log('Total count:', data.count);
                 } else {
-                    console.error('Failed to fetch blogs');
+                    const errorData = await response.json().catch(() => null);
+                    console.error('Failed to fetch blogs:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        errorData
+                    });
                 }
             } catch (error) {
-                console.error('Error fetching blogs:', error);
+                console.error('Error fetching blogs:', {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack
+                });
             }
         };
 
