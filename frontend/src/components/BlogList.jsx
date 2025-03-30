@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Card, CardContent, Typography, Box, Chip, Dialog, DialogTitle, DialogContent } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Image from 'next/image';
@@ -36,6 +36,7 @@ const BlogList = () => {
     ];
 
     const { accessToken } = useAuth();
+    const [realBlogs, setRealBlogs] = useState([]);
     const [blogs, setBlogs] = useState([
         // Sample blog data - replace with actual API call
         {
@@ -59,6 +60,30 @@ const BlogList = () => {
     // Add new state for dialog
     const [openTagDialog, setOpenTagDialog] = useState(false);
     const [selectedBlogId, setSelectedBlogId] = useState(null);
+
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/blogs', {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setRealBlogs(data);
+                    console.log(data);
+                } else {
+                    console.error('Failed to fetch blogs');
+                }
+            } catch (error) {
+                console.error('Error fetching blogs:', error);
+            }
+        };
+
+        fetchBlogs();
+    }, [accessToken]);
 
     const handleCreateBlog = async () => {
         try {
@@ -117,23 +142,32 @@ const BlogList = () => {
         handleCloseDialog();
     };
 
+    // Add this function to check if blog exists for today
+    const blogExistsForToday = () => {
+        const today = new Date();
+        const formattedDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+        return Object.keys(realBlogs).includes(formattedDate);
+    };
+
     return (
         <div className="h-full flex flex-col gap-4">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-black">My Blogs</h2>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleCreateBlog}
-                    sx={{
-                        backgroundColor: '#1a73e8',
-                        '&:hover': {
-                            backgroundColor: '#1557b0'
-                        }
-                    }}
-                >
-                    Create New Blog
-                </Button>
+                {!blogExistsForToday() && (
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={handleCreateBlog}
+                        sx={{
+                            backgroundColor: '#1a73e8',
+                            '&:hover': {
+                                backgroundColor: '#1557b0'
+                            }
+                        }}
+                    >
+                        Create New Blog
+                    </Button>
+                )}
             </div>
 
             <div className="overflow-y-auto">
