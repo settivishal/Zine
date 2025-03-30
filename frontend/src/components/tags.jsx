@@ -2,33 +2,27 @@
 
 import React, { useState, useEffect } from "react";
 import { SketchPicker } from "react-color";
+import { useAuth } from '../hooks/authcontext';
 
 export default function Tags() {
   const [tags, setTags] = useState([]);
   const [newTag, setNewTag] = useState("");
   const [color, setColor] = useState("#000000");
   const [showInput, setShowInput] = useState(false);
-  const [jwt_token, setJwtToken] = useState(null);
-
-  // Fetch JWT token first, then fetch tags when token is available
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      setJwtToken(token); // Update state
-    }
-  }, []);
+  const [selectedTag, setSelectedTag] = useState(null);
+  const { accessToken } = useAuth();
 
   useEffect(() => {
-    if (jwt_token) {
+    if (accessToken) {
       fetchTags();
     }
-  }, [jwt_token]); // Runs when jwt_token is updated
+  }, [accessToken]);
 
   const fetchTags = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/tags", {
         method: "GET",
-        headers: { Authorization: `Bearer ${jwt_token}` },
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       if (response.ok) {
@@ -50,7 +44,7 @@ export default function Tags() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${jwt_token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify(payload),
         });
@@ -66,6 +60,27 @@ export default function Tags() {
       } catch (error) {
         console.error("Error:", error);
       }
+    }
+  };
+
+  const handleDeleteTag = async (tagText) => {
+    try {
+      const response = await fetch("http://localhost:8080/api/tag/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ text: tagText }),
+      });
+
+      if (response.ok) {
+        fetchTags(); // Refresh the tags list after deletion
+      } else {
+        console.error("Failed to delete tag");
+      }
+    } catch (error) {
+      console.error("Error deleting tag:", error);
     }
   };
 
