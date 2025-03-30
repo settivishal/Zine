@@ -19,12 +19,12 @@ import (
 // Return Access and Refesh Tokens
 func GenerateTokens(credentials utils.Credentials, w http.ResponseWriter) (string, time.Time, string) {
 	// Generate JWT Tokens
-	accessToken, accessExpiry, err := utils.GenerateJWT(credentials.Email, "access_token", time.Hour*24*7)
+	accessToken, accessExpiry, err := utils.GenerateJWT(credentials.Email, "access_token", time.Minute*5)
 	if err != nil {
 		utils.SendErrorResponse(w, "Error generating access token", err, http.StatusInternalServerError)
 	}
 
-	refreshToken, _, err := utils.GenerateJWT(credentials.Email, "refresh_token", time.Hour*24*7*30)
+	refreshToken, _, err := utils.GenerateJWT(credentials.Email, "refresh_token", time.Hour*24*7)
 	if err != nil {
 		utils.SendErrorResponse(w, "Error generating refresh token", err, http.StatusInternalServerError)
 	}
@@ -108,15 +108,6 @@ func HandleRegister(r *http.Request) (*utils.RegisterResponse, error, int) {
 	// Send email
 	SendMailSimple("Welcome to Zine! "+credentials.Name, emailBody, []string{credentials.Email})
 
-	// Create a grid for the user with user_id
-	user, err = database.GetUser(credentials.Email)
-	if err != nil {
-		return nil, errors.New("error getting user ID: " + err.Error()), http.StatusInternalServerError
-	}
-	if err := database.CreateGrid(user.ID); err != nil {
-		return nil, errors.New("error creating grid: " + err.Error()), http.StatusInternalServerError
-	}
-
 	// Return structured response
 	return &utils.RegisterResponse{
 		Message: "Registration successful",
@@ -143,7 +134,7 @@ func HandleLogout(r *http.Request) (error, int) {
 	// Invalidate JWT Token
 	err := utils.InvalidateJWT(token)
 	if err != nil {
-		return errors.New(err.Error()), http.StatusInternalServerError
+		return errors.New(err.Error() + ": Failed to logout"), http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK

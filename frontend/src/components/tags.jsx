@@ -9,20 +9,10 @@ export default function Tags() {
   const [color, setColor] = useState("#000000");
   const [showInput, setShowInput] = useState(false);
   const [jwt_token, setJwtToken] = useState(null);
-  const [selectedTag, setSelectedTag] = useState(null);
 
   // Fetch JWT token first, then fetch tags when token is available
   useEffect(() => {
-
-    const getCookie = (name) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-    };
-
-    const token = getCookie('accessToken');
-    //const token = localStorage.getItem("accessToken");
-    console.log("Tags Token:", token);
+    const token = localStorage.getItem("accessToken");
     if (token) {
       setJwtToken(token); // Update state
     }
@@ -43,7 +33,6 @@ export default function Tags() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Fetched tags:", data); // See the tag structure
         setTags(data);
       } else {
         console.error("Failed to fetch tags");
@@ -56,9 +45,6 @@ export default function Tags() {
   const handleAddTag = async () => {
     if (newTag.trim()) {
       const payload = { text: newTag, color: color };
-      console.log("Creating tag with payload:", JSON.stringify(payload));
-      console.log("Using URL:", "http://localhost:8080/api/tag/create");
-
       try {
         const response = await fetch("http://localhost:8080/api/tag/create", {
           method: "POST",
@@ -69,42 +55,17 @@ export default function Tags() {
           body: JSON.stringify(payload),
         });
 
-        console.log("Create tag response status:", response.status);
-        const responseText = await response.text();
-        console.log("Create tag response:", responseText);
-
         if (response.ok) {
           fetchTags(); // Fetch updated tags after creating a new one
           setNewTag("");
           setColor("#000000");
           setShowInput(false);
         } else {
-          console.error("Failed to create tag:", response.status, responseText);
+          console.error("Failed to create tag");
         }
       } catch (error) {
-        console.error("Error creating tag:", error.message, error.stack);
+        console.error("Error:", error);
       }
-    }
-  };
-
-  const handleDeleteTag = async (tagText) => {
-    try {
-      const response = await fetch("http://localhost:8080/api/tag/delete", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${jwt_token}`,
-        },
-        body: JSON.stringify({ text: tagText }),
-      });
-
-      if (response.ok) {
-        fetchTags(); // Refresh the tags list after deletion
-      } else {
-        console.error("Failed to delete tag");
-      }
-    } catch (error) {
-      console.error("Error deleting tag:", error);
     }
   };
 
@@ -154,23 +115,13 @@ export default function Tags() {
 
       <div className="flex flex-wrap max-w-[200px] gap-2 ">
         {tags?.map((tag, index) => (
-          <div key={index} className="relative">
-            <span
-              onClick={() => setSelectedTag(selectedTag === tag.text ? null : tag.text)}
-              style={{ backgroundColor: tag.color }}
-              className="inline-block px-3 py-1 text-sm text-white rounded-full shadow-md cursor-pointer"
-            >
-              {tag.text}
-            </span>
-            {selectedTag === tag.text && (
-              <button
-                onClick={() => handleDeleteTag(tag.text)}
-                className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center bg-red-500 text-white rounded-full text-xs hover:bg-red-700"
-              >
-                ×
-              </button>
-            )}
-          </div>
+          <span
+            key={index}
+            style={{ backgroundColor: tag.color }}
+            className="inline-block px-3 py-1 text-sm text-white rounded-full shadow-md"
+          >
+            {tag.text}
+          </span>
         ))}
       </div>
     </div>

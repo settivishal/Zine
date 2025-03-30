@@ -5,15 +5,18 @@ import (
 
 	"backend/config"
 
-	"golang.org/x/net/context"
-
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/redis/go-redis/v9"
+	"golang.org/x/net/context"
 )
 
 var jwtKey = []byte(config.Env("JWT_SECRET_KEY"))
 
 // Redis client for token blacklist
 var ctx = context.Background()
+var redisClient = redis.NewClient(&redis.Options{
+	Addr: "localhost:6379", // Update with your Redis address
+})
 
 // GenerateJWT creates a new JWT token with custom expiration and subject
 func GenerateJWT(email, subject string, expiry time.Duration) (string, time.Time, error) {
@@ -62,10 +65,11 @@ func InvalidateJWT(tokenString string) error {
 		return nil // Token already expired
 	}
 
-	err = config.RedisClient.Set(ctx, tokenString, "blacklisted", expiration).Err()
+	err = redisClient.Set(ctx, tokenString, "blacklisted", expiration).Err()
 	if err != nil {
 		return err
 	}
+
 
 	claims.ExpiresAt = jwt.NewNumericDate(time.Now())
 	return nil
