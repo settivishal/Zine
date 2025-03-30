@@ -1,21 +1,18 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from './authcontext';
 
 const useProfile = () => {
     const [profileImage, setProfileImage] = useState('/profile2.jpg'); // Default fallback image
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    const getCookie = (name) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    };
+    const { accessToken } = useAuth();
 
     useEffect(() => {
         const fetchProfileImage = async () => {
+            if (!accessToken) return;
+
             try {
                 setLoading(true);
-                const accessToken = getCookie('accessToken');
                 const response = await fetch('http://localhost:8080/api/profile', {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
@@ -43,7 +40,7 @@ const useProfile = () => {
         };
 
         fetchProfileImage();
-    }, []);
+    }, [accessToken]);
 
     return { profileImage, loading, error };
 };

@@ -2,43 +2,27 @@
 
 import React, { useState, useEffect } from "react";
 import { SketchPicker } from "react-color";
+import { useAuth } from '../hooks/authcontext';
 
 export default function Tags() {
   const [tags, setTags] = useState([]);
   const [newTag, setNewTag] = useState("");
   const [color, setColor] = useState("#000000");
   const [showInput, setShowInput] = useState(false);
-  const [jwt_token, setJwtToken] = useState(null);
   const [selectedTag, setSelectedTag] = useState(null);
-
-  // Fetch JWT token first, then fetch tags when token is available
-  useEffect(() => {
-
-    const getCookie = (name) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-    };
-
-    const token = getCookie('accessToken');
-    //const token = localStorage.getItem("accessToken");
-    console.log("Tags Token:", token);
-    if (token) {
-      setJwtToken(token); // Update state
-    }
-  }, []);
+  const { accessToken } = useAuth();
 
   useEffect(() => {
-    if (jwt_token) {
+    if (accessToken) {
       fetchTags();
     }
-  }, [jwt_token]); // Runs when jwt_token is updated
+  }, [accessToken]);
 
   const fetchTags = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/tags", {
         method: "GET",
-        headers: { Authorization: `Bearer ${jwt_token}` },
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       if (response.ok) {
@@ -64,7 +48,7 @@ export default function Tags() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${jwt_token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify(payload),
         });
@@ -93,7 +77,7 @@ export default function Tags() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${jwt_token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({ text: tagText }),
       });

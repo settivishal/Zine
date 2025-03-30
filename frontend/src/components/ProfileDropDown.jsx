@@ -3,10 +3,12 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { User, Gear, Question, SignOut } from "@phosphor-icons/react";
 import useProfile from '../hooks/useProfile';
+import { useAuth } from '../hooks/authcontext';
 
 const ProfileDropDown = () => {
   const [toggle, setToggle] = useState(false);
   const { profileImage, loading, error } = useProfile();
+  const { accessToken } = useAuth();
 
   const options = [
     { label: "Profile", icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick("Profile") },
@@ -14,12 +16,6 @@ const ProfileDropDown = () => {
     { label: "Help", icon: <Question size={16} className="mr-2" />, onClick: () => handleOptionClick("Help") },
     { label: "Logout", icon: <SignOut size={16} className="mr-2 text-red-500" />, onClick: () => handleOptionClick("Logout") }
   ];
-
-  const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  };
 
   const deleteCookie = (name) => {
     document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
@@ -30,7 +26,6 @@ const ProfileDropDown = () => {
       window.location.href = "/profile";
     } else if (option === "Logout") {
       try {
-        const accessToken = getCookie('accessToken');
         console.log('Access Token:', accessToken);
 
         const response = await fetch('http://localhost:8080/consumer/logout', {

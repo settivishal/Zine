@@ -1,8 +1,9 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Card, CardContent, Typography, Box, Chip, Dialog, DialogTitle, DialogContent } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Image from 'next/image';
+import { useAuth } from '../hooks/authcontext';
 //import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 
@@ -34,6 +35,8 @@ const BlogList = () => {
         }
     ];
 
+    const { accessToken } = useAuth();
+    const [realBlogs, setRealBlogs] = useState([]);
     const [blogs, setBlogs] = useState([
         // Sample blog data - replace with actual API call
         {
@@ -58,9 +61,53 @@ const BlogList = () => {
     const [openTagDialog, setOpenTagDialog] = useState(false);
     const [selectedBlogId, setSelectedBlogId] = useState(null);
 
-    const handleCreateBlog = () => {
-        // Implement navigation to blog creation page
-        console.log('Navigate to create blog page');
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/blogs', {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setRealBlogs(data);
+                    console.log(data);
+                } else {
+                    console.error('Failed to fetch blogs');
+                }
+            } catch (error) {
+                console.error('Error fetching blogs:', error);
+            }
+        };
+
+        fetchBlogs();
+    }, [accessToken]);
+
+    const handleCreateBlog = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/blog/create', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+
+            const data = await response.json();
+            console.log(data);
+            if (response.ok) {
+                // Extract just the path from blog_url and combine with origin
+                const blogPath = data.blog_url.replace('localhost:3000', '');
+                window.location.href = `${window.location.origin}${blogPath}`;
+            } else {
+                console.error('Failed to create blog:', data.message);
+            }
+        } catch (error) {
+            console.error('Error creating blog:', error);
+        }
     };
 
     const handleTagClick = (tag) => {
@@ -95,23 +142,32 @@ const BlogList = () => {
         handleCloseDialog();
     };
 
+    // Add this function to check if blog exists for today
+    const blogExistsForToday = () => {
+        const today = new Date();
+        const formattedDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+        return Object.keys(realBlogs).includes(formattedDate);
+    };
+
     return (
         <div className="h-full flex flex-col gap-4">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-black">My Blogs</h2>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleCreateBlog}
-                    sx={{
-                        backgroundColor: '#1a73e8',
-                        '&:hover': {
-                            backgroundColor: '#1557b0'
-                        }
-                    }}
-                >
-                    Create New Blog
-                </Button>
+                {!blogExistsForToday() && (
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={handleCreateBlog}
+                        sx={{
+                            backgroundColor: '#1a73e8',
+                            '&:hover': {
+                                backgroundColor: '#1557b0'
+                            }
+                        }}
+                    >
+                        Create New Blog
+                    </Button>
+                )}
             </div>
 
             <div className="overflow-y-auto">
