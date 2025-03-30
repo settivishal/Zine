@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 	"errors"
-	"time"
 	"slices"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -196,7 +196,8 @@ func GetTags(Email string) ([]models.Tag, error) {
 	}
 	user_id := user.ID
 
-	cursor, err := collection.Find(context.TODO(), bson.M{"user_id": user_id})
+	filter := bson.M{"user_id": user_id}
+	cursor, err := collection.Find(context.TODO(), filter)
 	if err != nil {
 		return nil, err
 	}

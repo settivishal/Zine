@@ -137,8 +137,7 @@ func GetTags(w http.ResponseWriter, r *http.Request) {
 //	@Success		200				{object}	map[string]models.Tag
 //	@Failure		400				{object}	utils.ErrorResponse
 //	@Failure		500				{object}	utils.ErrorResponse
-//	@Router			/tags [post]
-//	@Router			/tags/getByIDs [get]
+//	@Router			/tags/getByIDs [post]
 func GetTagsByIDs(w http.ResponseWriter, r *http.Request) {
 	response, err, status := services.HandleGetTagsByIDs(w, r)
 	if err != nil {
