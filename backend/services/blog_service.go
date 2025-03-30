@@ -67,6 +67,13 @@ func HandleCreateBlog(w http.ResponseWriter, r *http.Request) (*utils.CreateBlog
 		return nil, errors.New("error creating blog: " + err.Error()), http.StatusInternalServerError
 	}
 
+	// update the grid with the date
+	err = database.UpdateGrid(Email, Request.Date)
+
+	if err != nil {
+		return nil, errors.New("error updating grid: " + err.Error()), http.StatusInternalServerError
+	}
+
 	// Return structured response
 	return &utils.CreateBlogResponse{
 		Message: "Blog created successfully",
