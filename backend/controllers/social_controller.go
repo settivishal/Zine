@@ -11,12 +11,12 @@ import (
 
 // GoogleLogin redirects user to Google OAuth2 Login page
 
-// @Summary Google Login
-// @Description Google login function returns redirect url
-// @Tags users
-// @Produce json
-// @Success 200
-// @Router /auth/google [GET]
+//	@Summary		Google Login
+//	@Description	Google login function returns redirect url
+//	@Tags			users
+//	@Produce		json
+//	@Success		200
+//	@Router			/auth/google [GET]
 func GoogleLogin(w http.ResponseWriter, r *http.Request) {
 	url, err := services.GetGoogleAuthURL()
 

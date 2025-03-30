@@ -5,17 +5,12 @@ import (
 	"net/http"
 	"strings"
 
-	"backend/config"
 	"backend/utils"
-
-	"github.com/redis/go-redis/v9"
+	"backend/config"
 )
 
 // Redis client for token blacklist
 var ctx = context.Background()
-var redisClient = redis.NewClient(&redis.Options{
-	Addr: config.Env("REDIS_URL"),
-})
 
 func JWTAuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -51,6 +46,6 @@ func JWTAuthMiddleware(next http.Handler) http.Handler {
 
 // IsTokenBlacklisted checks if the provided token is blacklisted.
 func IsTokenBlacklisted(tokenString string) bool {
-	_, err := redisClient.Get(ctx, tokenString).Result()
-	return err == nil // If found in Redis, it's blacklisted
+	_, err := config.RedisClient.Get(ctx, tokenString).Result()
+	return err == nil
 }
