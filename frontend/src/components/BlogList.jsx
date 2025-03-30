@@ -110,17 +110,23 @@ const BlogList = () => {
 
     const handleCreateBlog = async () => {
         try {
+            // Get today's date in YYYY-MM-DD format
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+
             const response = await fetch('http://localhost:8080/api/blog/create', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({})
+                body: JSON.stringify({
+                    date: formattedDate
+                })
             });
 
             const data = await response.json();
-            console.log(data);
+            console.log('Create blog response:', data);
             if (response.ok) {
                 // Extract just the path from blog_url and combine with origin
                 const blogPath = data.blog_url.replace('localhost:3000', '');
@@ -168,7 +174,10 @@ const BlogList = () => {
     // Add this function to check if blog exists for today
     const blogExistsForToday = () => {
         const today = new Date();
-        const formattedDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+        // Format date as YYYY-MM-DD
+        const formattedDate = today.toISOString().split('T')[0];
+        console.log('Checking for blog on date:', formattedDate); // Debug log
+        console.log('Available blog dates:', Object.keys(realBlogs)); // Debug log
         return Object.keys(realBlogs).includes(formattedDate);
     };
 
