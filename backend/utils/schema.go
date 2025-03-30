@@ -186,3 +186,8 @@ type GetBlogResponse struct {
 type TagsRequestPayload struct {
 	TagIDs []string `json:"tag_ids"`
 }
+
+type GetGridResponse struct {
+	Message string      `json:"message"`
+	Grid    models.Grid `json:"grid"`
+}
