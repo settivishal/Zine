@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useState, useEffect} from "react";
-
+import { useAuth } from "../hooks/authcontext";
 import Button from "./Button";
 
 const updateProfileField = async (
@@ -13,6 +13,7 @@ const updateProfileField = async (
     setIsSubmitting
 ) => {
     const [success, setSuccess] = useState("");
+    const { accessToken } = useAuth();
     try {
         const payload = { [field]: value };
         const response = await axios.post(
@@ -21,9 +22,7 @@ const updateProfileField = async (
             {
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${
-                        localStorage.getItem("accessToken") || ""
-                    }`,
+                    Authorization: `Bearer ${accessToken}`,
                 },
             }
         );

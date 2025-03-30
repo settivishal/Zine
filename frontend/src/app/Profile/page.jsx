@@ -10,12 +10,14 @@ import {
 import ProfilePicture from "../../components/ProfilePicture";
 import { UpdateBio } from "../../components/UpdateBio";
 // const ProfileContext = createContext();
+import { useAuth } from "@/hooks/authcontext";
 
 export default function ProfilePage({ children }) {
     const [profileData, setProfileData] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
 
     const [activityData, setActivityData] = useState([]);
+    const { accessToken } = useAuth();
 
     useEffect(() => {
         (async () => {
@@ -26,8 +28,7 @@ export default function ProfilePage({ children }) {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization:
-                        "Bearer" + " " + localStorage.getItem("accessToken"),
+                    Authorization: `Bearer ${accessToken}`, // Assuming you have a token in your auth context
                 },
             });
 

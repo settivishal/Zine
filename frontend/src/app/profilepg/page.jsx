@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { compileFunction } from "vm";
+import { useAuth } from './authcontext';
 
 import {UpdateBio, UpdateAge, UpdateGender} from "../../components/UpdateBio";
 import ActivityGrid from "../../components/ActivityGrid";
@@ -21,7 +22,7 @@ export default function ProfilePage({ children }) {
     const [errorMessage, setErrorMessage] = useState("");
 
     const [activityData, setActivityData] = useState([]);
-
+    const { accessToken } = useAuth();
     const handleImageUpload = async (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -33,7 +34,9 @@ export default function ProfilePage({ children }) {
                 const response = await fetch("http://localhost:8080/api/image/update", {
                     method: "POST",
                     headers: {
-                        Authorization: "Bearer " + localStorage.getItem("accessToken"),
+                        // "Content-Type": "multipart/form-data", // Do not set this header; the browser will set it automatically
+                        Authorization: `Bearer ${accessToken}` // Include the access token in the headers
+                        
                     },
                     body: formData,
                 });

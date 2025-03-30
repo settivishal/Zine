@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Button, Avatar, Box } from "@mui/material";
 import axios from "axios";
+import { useAuth } from "@/hooks/authcontext";
 
 const ProfilePicture = ({ currentPic }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [preview, setPreview] = useState(currentPic);
-
+    const { accessToken } = useAuth();
     useEffect(() => {
         setPreview(currentPic);
         console.log("preview", preview);
@@ -32,7 +33,6 @@ const ProfilePicture = ({ currentPic }) => {
             alert("Please select an image first!");
             return;
         }
-
         const formData = new FormData();
         formData.append("image", selectedImage);
 
@@ -40,7 +40,7 @@ const ProfilePicture = ({ currentPic }) => {
             const response = await axios.post("http://localhost:8080/api/image/update", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
-                    Authorization: "Bearer " + localStorage.getItem("accessToken"),
+                    Authorization: `Bearer ${accessToken}` // Assuming you have a token in your auth context,
                 },
             });
             alert("Profile picture uploaded successfully!");
