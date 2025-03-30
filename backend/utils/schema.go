@@ -183,10 +183,6 @@ type GetBlogResponse struct {
 	Blog    models.Blog `json:"blog"`
 }
 
-// type GetTagsResponse struct {
-// 	Tags    []models.Tag `json:"tags"`
-// }
-
 type TagsRequestPayload struct {
 	TagIDs []string `json:"tag_ids"`
 }
