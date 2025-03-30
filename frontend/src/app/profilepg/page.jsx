@@ -120,10 +120,16 @@ export default function ProfilePage({ children }) {
         setActivityData(mockActivity);
     }, []);
 
+
+
+
+
+    
+
     return (
         <>
             <Navbar Page={"Home"} />
-            <div className="min-h-screen px-16 flex items-center justify-center p-6">
+            <div className="min-h-screen px-16 flex items-center justify-center">
                 <div className="bg-amber-100 shadow-xl rounded-lg w-full p-8 grid grid-cols-1 md:grid-cols-4 gap-6">
                     {/* Left Section */}
                     <div className="bg-orange-50 p-6 rounded-lg flex flex-col items-center">
