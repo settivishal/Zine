@@ -734,48 +734,8 @@ paths:
       summary: Reset Password
       tags:
       - users
-  /tags:
-    post:
-      consumes:
-      - application/json
-      description: Get a list of tags by their IDs. The tag IDs are provided in the
-        body as an array.
-      parameters:
-      - description: Bearer <token>
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Request body containing tag IDs
-        in: body
-        name: body
-        required: true
-        schema:
-          items:
-            type: string
-          type: array
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              $ref: '#/definitions/models.Tag'
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.ErrorResponse'
-      summary: Get Tags by IDs
-      tags:
-      - tags
   /tags/getByIDs:
-    get:
+    post:
       consumes:
       - application/json
       description: Get a list of tags by their IDs. The tag IDs are provided in the
