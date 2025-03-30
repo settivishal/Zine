@@ -37,6 +37,7 @@ func Routes(router *mux.Router) {
 	api.HandleFunc("/profile/update", controllers.UpdateProfile).Methods("POST")
 	api.HandleFunc("/profile/update_hobbies", controllers.UpdateHobbies).Methods("POST")
 	api.HandleFunc("/profile/update_socials", controllers.UpdateSocials).Methods("POST")
+	api.HandleFunc("/profile/grid", controllers.GetGrid).Methods("GET")
 
 	// Tag Routes
 	api.HandleFunc("/tag/create", controllers.CreateTag).Methods("POST")
@@ -44,6 +45,14 @@ func Routes(router *mux.Router) {
 	api.HandleFunc("/tag/set", controllers.SetTag).Methods("POST")
 	api.HandleFunc("/tag/remove", controllers.RemoveTag).Methods("POST")
 	api.HandleFunc("/tags", controllers.GetTags).Methods("GET")
+	api.HandleFunc("/tags/getByIDs", controllers.GetTagsByIDs).Methods("POST")
+
+	// Blog Routes
+	api.HandleFunc("/blog/{_id}", controllers.GetBlog).Methods("GET")
+	api.HandleFunc("/blog/create", controllers.CreateBlog).Methods("POST")
+	api.HandleFunc("/blog/save", controllers.SaveBlog).Methods("POST")
+	api.HandleFunc("/blog/cover/upload", controllers.UploadCover).Methods("POST")
+	api.HandleFunc("/blogs", controllers.GetBlogs).Methods("GET")
 }
 
 func SwaggerRoutes(router *mux.Router) {

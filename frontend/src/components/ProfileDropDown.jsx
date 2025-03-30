@@ -1,11 +1,13 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
-import profileImage from '../../public/profile2.jpg';
 import { User, Gear, Question, SignOut } from "@phosphor-icons/react";
+import useProfile from '../hooks/useProfile';
 
 const ProfileDropDown = ({Page}) => {
   const [toggle, setToggle] = useState(false);
+  const { profileImage, loading, error } = useProfile();
+
   const options = [
     { label: Page, icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick(Page) },
     { label: "Settings", icon: <Gear size={16} className="mr-2" />, onClick: () => handleOptionClick("Settings") },
@@ -13,12 +15,47 @@ const ProfileDropDown = ({Page}) => {
     { label: "Logout", icon: <SignOut size={16} className="mr-2 text-red-500" />, onClick: () => handleOptionClick("Logout") }
   ];
 
-  const handleOptionClick = (option) => {
-    if(option === Page) {
-      window.location.href = "/" + Page.toLowerCase();
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  };
+
+  const deleteCookie = (name) => {
+    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  };
+
+  const handleOptionClick = async (option) => {
+    if (option === "Profile") {
+      window.location.href = "/profile";
+    } else if (option === "Logout") {
+      try {
+        const accessToken = getCookie('accessToken');
+        console.log('Access Token:', accessToken);
+
+        const response = await fetch('http://localhost:8080/consumer/logout', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+
+        // Debug logs
+        console.log('Response status:', response.status);
+        const responseText = await response.text();
+        console.log('Response body:', responseText);
+
+        if (response.ok) {
+          deleteCookie('accessToken');
+          window.location.href = "/";
+        } else {
+          console.error('Logout failed:', response.status, responseText);
+        }
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
     }
-    // Add your logic here for each option
-    setToggle(false); // Close the dropdown after clicking an option
+    setToggle(false);
   };
 
   return (
@@ -28,13 +65,22 @@ const ProfileDropDown = ({Page}) => {
         className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-gray-200 transition-all"
         onClick={() => setToggle(!toggle)}
       >
-        <Image 
-          src={profileImage} 
-          alt="Profile"
-          width={32}
-          height={32}
-          className="rounded-full object-cover"
-        />
+        {loading ? (
+          <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+        ) : error ? (
+          <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+            <User size={20} />
+          </div>
+        ) : (
+          <Image
+            src={profileImage}
+            alt="Profile"
+            width={32}
+            height={32}
+            className="rounded-full object-cover"
+            unoptimized
+          />
+        )}
       </div>
 
       {/* Dropdown Menu */}
