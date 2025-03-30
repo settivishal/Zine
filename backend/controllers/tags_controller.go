@@ -133,7 +133,7 @@ func GetTags(w http.ResponseWriter, r *http.Request) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			Authorization	header		string		true	"Bearer <token>"
-//	@Param			body			body		models.Tag	true	"Request body containing tag IDs"
+//	@Param			body			body		[]string	true	"Request body containing tag IDs"
 //	@Success		200				{object}	map[string]models.Tag
 //	@Failure		400				{object}	utils.ErrorResponse
 //	@Failure		500				{object}	utils.ErrorResponse

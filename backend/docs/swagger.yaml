@@ -751,7 +751,9 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.Tag'
+          items:
+            type: string
+          type: array
       produces:
       - application/json
       responses:
@@ -789,7 +791,9 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.Tag'
+          items:
+            type: string
+          type: array
       produces:
       - application/json
       responses:
