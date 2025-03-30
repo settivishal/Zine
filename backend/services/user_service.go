@@ -34,18 +34,13 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) (*utils.UserInfoRespo
 	}
 
 	return &utils.UserInfoResponse{
-		Message:      "Welcome, " + user.Name,
-		Name:         user.Name,
-		Email:        user.Email,
-		Image:        user.Image,
-		Bio:          user.Bio,
-		Age:          user.Age,
-		Gender:       user.Gender,
-		Hobbies:      user.Hobbies,
-		InstagramUrl: user.InstagramUrl,
-		TwitterUrl:   user.TwitterUrl,
-		RedditUrl:    user.RedditUrl,
-		LinkedinUrl:  user.LinkedinUrl,
+		Message: "Welcome, " + user.Name,
+		Name:    user.Name,
+		Email:   user.Email,
+		Image:   user.Image,
+		Bio:     user.Bio,
+		Age:     user.Age,
+		Gender:  user.Gender,
 	}, nil, http.StatusOK
 }
 
@@ -169,24 +164,4 @@ func HandleUpdateSocials(w http.ResponseWriter, r *http.Request) (*utils.UpdateP
 	}
 
 	return &utils.UpdateProfileSocialsResponse{Message: "Socials updated successfully"}, nil, http.StatusOK
-}
-
-func HandleGetGrid(w http.ResponseWriter, r *http.Request) (*utils.GetGridResponse, error, int) {
-	Email, ok := r.Context().Value("email").(string)
-
-	if !ok {
-		return nil, errors.New("Error getting email"), http.StatusBadRequest
-	}
-
-	grid, err := database.GetGrid(Email)
-
-	if err != nil {
-		return nil, errors.New("Error getting grid"), http.StatusInternalServerError
-	}
-
-	return &utils.GetGridResponse{
-		Message: "Grid fetched successfully",
-		Grid:    grid,
-	}, nil, http.StatusOK
-
 }

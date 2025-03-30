@@ -1,17 +1,18 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
+import profileImage from '../../public/profile2.jpg';
 import { User, Gear, Question, SignOut } from "@phosphor-icons/react";
 import useProfile from '../hooks/useProfile';
 import { useAuth } from '../hooks/authcontext';
 
-const ProfileDropDown = () => {
+const ProfileDropDown = ({Page}) => {
   const [toggle, setToggle] = useState(false);
   const { profileImage, loading, error } = useProfile();
   const { accessToken } = useAuth();
 
   const options = [
-    { label: "Profile", icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick("Profile") },
+    { label: Page, icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick(Page) },
     { label: "Settings", icon: <Gear size={16} className="mr-2" />, onClick: () => handleOptionClick("Settings") },
     { label: "Help", icon: <Question size={16} className="mr-2" />, onClick: () => handleOptionClick("Help") },
     { label: "Logout", icon: <SignOut size={16} className="mr-2 text-red-500" />, onClick: () => handleOptionClick("Logout") }
@@ -22,8 +23,8 @@ const ProfileDropDown = () => {
   };
 
   const handleOptionClick = async (option) => {
-    if (option === "Profile") {
-      window.location.href = "/profile";
+    if (option === Page) {
+      window.location.href = "/profilepg";
     } else if (option === "Logout") {
       try {
         console.log('Access Token:', accessToken);
@@ -50,7 +51,8 @@ const ProfileDropDown = () => {
         console.error('Error during logout:', error);
       }
     }
-    setToggle(false);
+    // Add your logic here for each option
+    setToggle(false); // Close the dropdown after clicking an option
   };
 
   return (
@@ -60,22 +62,13 @@ const ProfileDropDown = () => {
         className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-gray-200 transition-all"
         onClick={() => setToggle(!toggle)}
       >
-        {loading ? (
-          <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
-        ) : error ? (
-          <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
-            <User size={20} />
-          </div>
-        ) : (
-          <Image
-            src={profileImage}
-            alt="Profile"
-            width={32}
-            height={32}
-            className="rounded-full object-cover"
-            unoptimized
-          />
-        )}
+        <Image 
+          src={profileImage} 
+          alt="Profile"
+          width={32}
+          height={32}
+          className="rounded-full object-cover"
+        />
       </div>
 
       {/* Dropdown Menu */}

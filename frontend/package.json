@@ -10,9 +10,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@blocknote/core": "^0.26.0",
-    "@blocknote/mantine": "^0.26.0",
-    "@blocknote/react": "^0.26.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fullcalendar/core": "^6.1.15",
@@ -20,8 +17,8 @@
     "@fullcalendar/react": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
     "@heroicons/react": "^2.2.0",
-    "@mui/material": "^6.4.3",
     "@mui/icons-material": "^6.4.8",
+    "@mui/material": "^6.4.8",
     "@mui/x-date-pickers": "^7.27.0",
     "@phosphor-icons/react": "^2.1.7",
     "axios": "^1.7.9",
