@@ -153,3 +153,28 @@ func UpdateSocials(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, response, status)
 
 }
+
+// Get Grid
+
+// @Summary Get Grid
+// @Description Get a grid by ID
+// @Tags grids
+// @Accept json
+// @Produce json
+// @Param _id path string true "Grid ID"
+// @Success 200 {object} utils.TagResponse
+// @Failure 400 {object} utils.ErrorResponse "Invalid request format"
+// @Failure 401 {object} utils.ErrorResponse "Unauthorized"
+// @Failure 500 {object} utils.ErrorResponse "Error getting grid"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /api/grids/{_id} [GET]
+
+func GetGrid(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleGetGrid(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error getting grid", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+}
