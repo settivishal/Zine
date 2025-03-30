@@ -164,9 +164,18 @@ type UploadCoverResponse struct {
 	Image   string `json:"image"`
 }
 
+type BlogResponse struct {
+	ID     string   `json:"id"`
+	Title  string   `json:"title"`
+	Cover  string   `json:"cover"`
+	TagIDs []string `json:"tagIds"`
+}
+
 type GetBlogsResponse struct {
-	Message string        `json:"message"`
-	Blogs   []models.Blog `json:"blogs"`
+	Message    string                  `json:"message"`
+	Blogs      map[string]BlogResponse `json:"blogs"`
+	Count      int                     `json:"count"`
+	TotalPages int                     `json:"total_pages"`
 }
 
 type GetBlogResponse struct {
@@ -175,5 +184,10 @@ type GetBlogResponse struct {
 }
 
 type TagsRequestPayload struct {
-	TagIDs []string `json:"tag_ids"` // Expecting an array of tag IDs
+	TagIDs []string `json:"tag_ids"`
+}
+
+type GetGridResponse struct {
+	Message string      `json:"message"`
+	Grid    models.Grid `json:"grid"`
 }

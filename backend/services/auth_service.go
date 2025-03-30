@@ -108,6 +108,15 @@ func HandleRegister(r *http.Request) (*utils.RegisterResponse, error, int) {
 	// Send email
 	SendMailSimple("Welcome to Zine! "+credentials.Name, emailBody, []string{credentials.Email})
 
+	// Create a grid for the user with user_id
+	user, err = database.GetUser(credentials.Email)
+	if err != nil {
+		return nil, errors.New("error getting user ID: " + err.Error()), http.StatusInternalServerError
+	}
+	if err := database.CreateGrid(user.ID); err != nil {
+		return nil, errors.New("error creating grid: " + err.Error()), http.StatusInternalServerError
+	}
+
 	// Return structured response
 	return &utils.RegisterResponse{
 		Message: "Registration successful",

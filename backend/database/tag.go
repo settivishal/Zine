@@ -3,13 +3,13 @@ package database
 import (
 	"context"
 	"errors"
+	"slices"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"backend/models"
-	"slices"
 )
 
 // InsertTag saves a new tag in MongoDB
@@ -55,8 +55,15 @@ func SetTag(Email string, Text string, Date string) error {
 	tagsCollection := client.Database("zine").Collection("tags")
 	blogCollection := client.Database("zine").Collection("blogs")
 
+	// convert the date string to a time.Time object
+	parsedDate, err := time.Parse("2006-01-02", Date)
+	if err != nil {
+		return errors.New("Error parsing date: " + Date)
+	}
+	formattedDate := parsedDate.Format("2006-01-02")
+
 	var user models.User
-	err := client.Database("zine").Collection("users").FindOne(context.TODO(), bson.M{"email": Email}).Decode(&user)
+	err = client.Database("zine").Collection("users").FindOne(context.TODO(), bson.M{"email": Email}).Decode(&user)
 	if err != nil {
 		return err
 	}
@@ -85,15 +92,7 @@ func SetTag(Email string, Text string, Date string) error {
 
 	// Update the blog with the tag
 	var blog models.Blog
-
-	// convert the date string to a time.Time object
-	parsedDate, err := time.Parse("01/02/2006", Date)
-	if err != nil {
-		return err
-	}
-	normalizedDate := parsedDate.Format("1/2/2006")
-
-	blogFilter := bson.M{"date": normalizedDate, "user_id": user_id}
+	blogFilter := bson.M{"date": formattedDate, "user_id": user_id}
 	err = blogCollection.FindOne(context.TODO(), blogFilter).Decode(&blog)
 	if err != nil {
 		return errors.New("blog not found")
@@ -121,8 +120,15 @@ func RemoveTag(Email string, Text string, Date string) error {
 	tagsCollection := client.Database("zine").Collection("tags")
 	blogCollection := client.Database("zine").Collection("blogs")
 
+	// convert the date string to a time.Time object
+	parsedDate, err := time.Parse("2006-01-02", Date)
+	if err != nil {
+		return errors.New("Error parsing date: " + Date)
+	}
+	formattedDate := parsedDate.Format("2006-01-02")
+
 	var user models.User
-	err := client.Database("zine").Collection("users").FindOne(context.TODO(), bson.M{"email": Email}).Decode(&user)
+	err = client.Database("zine").Collection("users").FindOne(context.TODO(), bson.M{"email": Email}).Decode(&user)
 	if err != nil {
 		return err
 	}
@@ -153,14 +159,7 @@ func RemoveTag(Email string, Text string, Date string) error {
 	// Update the blog by removing the tag ID
 	var blog models.Blog
 
-	// convert the date string to a time.Time object
-	parsedDate, err := time.Parse("01/02/2006", Date)
-	if err != nil {
-		return err
-	}
-	normalizedDate := parsedDate.Format("1/2/2006")
-
-	blogFilter := bson.M{"date": normalizedDate, "user_id": user_id}
+	blogFilter := bson.M{"date": formattedDate, "user_id": user_id}
 	err = blogCollection.FindOne(context.TODO(), blogFilter).Decode(&blog)
 	if err != nil {
 		return errors.New("blog not found")
@@ -197,7 +196,8 @@ func GetTags(Email string) ([]models.Tag, error) {
 	}
 	user_id := user.ID
 
-	cursor, err := collection.Find(context.TODO(), bson.M{"user_id": user_id})
+	filter := bson.M{"user_id": user_id}
+	cursor, err := collection.Find(context.TODO(), filter)
 	if err != nil {
 		return nil, err
 	}
