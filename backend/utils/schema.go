@@ -3,6 +3,8 @@ package utils
 import (
 	"time"
 
+	"backend/models"
+
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -23,13 +25,18 @@ type RegisterResponse struct {
 	Name    string `json:"name"`
 }
 type UserInfoResponse struct {
-	Message string `json:"message"`
-	Email   string `json:"email"`
-	Name    string `json:"name"`
-	Image   string `json:"image"`
-	Bio     string `json:"bio"`
-	Age     int64  `json:"age"`
-	Gender  string `json:"gender"`
+	Message      string   `json:"message"`
+	Email        string   `json:"email"`
+	Name         string   `json:"name"`
+	Image        string   `json:"image"`
+	Bio          string   `json:"bio"`
+	Age          int64    `json:"age"`
+	Gender       string   `json:"gender"`
+	Hobbies      []string `json:"hobbies"`
+	InstagramUrl string   `json:"instagram_url"`
+	TwitterUrl   string   `json:"twitter_url"`
+	RedditUrl    string   `json:"reddit_url"`
+	LinkedinUrl  string   `json:"linkedin_url"`
 }
 
 type LoginResponse struct {
@@ -127,4 +134,60 @@ type UpdateProfileSocialsRequest struct {
 
 type UpdateProfileSocialsResponse struct {
 	Message string `json:"message"`
+}
+
+type CreateBlogRequest struct {
+	Date string `json:"date"`
+}
+
+type CreateBlogResponse struct {
+	Message string `json:"message"`
+	BlogUrl string `json:"blog_url"`
+}
+
+type SaveBlogContentRequest struct {
+	BlogId  string                 `json:"blog_id"`
+	Content map[string]interface{} `json:"content"`
+}
+
+type SaveBlogContentResponse struct {
+	Message string `json:"message"`
+}
+
+type UploadCoverRequest struct {
+	BlogId string `json:"blog_id"`
+	Image  string `json:"image" form:"image"`
+}
+
+type UploadCoverResponse struct {
+	Message string `json:"message"`
+	Image   string `json:"image"`
+}
+
+type BlogResponse struct {
+	ID     string   `json:"id"`
+	Title  string   `json:"title"`
+	Cover  string   `json:"cover"`
+	TagIDs []string `json:"tagIds"`
+}
+
+type GetBlogsResponse struct {
+	Message    string                  `json:"message"`
+	Blogs      map[string]BlogResponse `json:"blogs"`
+	Count      int                     `json:"count"`
+	TotalPages int                     `json:"total_pages"`
+}
+
+type GetBlogResponse struct {
+	Message string      `json:"message"`
+	Blog    models.Blog `json:"blog"`
+}
+
+type TagsRequestPayload struct {
+	TagIDs []string `json:"tag_ids"`
+}
+
+type GetGridResponse struct {
+	Message string      `json:"message"`
+	Grid    models.Grid `json:"grid"`
 }

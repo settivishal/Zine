@@ -2,20 +2,20 @@
 
 import { useState, useEffect, createContext } from "react";
 import ActivityGrid from "../../components/ActivityGrid";
-import {
-    UpdateUsername,
-    UpdatePassword,
-} from "../../components/UpdateUserCreds";
-// import UpdatePassword from "../../components/UpdatePassword";
+import UpdateUsername from "../../components/UpdateUsername";
+import UpdatePassword from "../../components/UpdatePassword";
 import ProfilePicture from "../../components/ProfilePicture";
-import { UpdateBio } from "../../components/UpdateBio";
-// const ProfileContext = createContext();
+import UpdateBio from "../../components/UpdateBio";
 
-export default function ProfilePage({ children }) {
+
+const ProfileContext = createContext();
+
+export default function ProfilePage({children}) {
     const [profileData, setProfileData] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
 
     const [activityData, setActivityData] = useState([]);
+    
 
     useEffect(() => {
         (async () => {
@@ -26,30 +26,27 @@ export default function ProfilePage({ children }) {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization:
-                        "Bearer" + " " + localStorage.getItem("accessToken"),
+                    "Authorization": "Bearer" + " " + localStorage.getItem("accessToken")
                 },
             });
-
+        
             if (!response.ok) {
                 const errorData = await response.json();
-                setErrorMessage(
-                    errorData.message || "Failed to fetch profile data."
-                );
+                setErrorMessage(errorData.message || "Failed to fetch profile data.");
                 return;
             }
-
+        
             const data = await response.json();
             // console.log("data" + data)
-
+            
             setProfileData(data); // Set profile data (username, email, etc.)
             // Mock activity data - array of objects with date and count
             // const mockActivity = generateMockActivityData();
             // setActivityData(mockActivity);
-        })();
+        })()
 
         const mockActivity = generateMockActivityData();
-        console.log(mockActivity);
+        console.log(mockActivity)
         setActivityData(mockActivity);
     }, []);
 
@@ -63,27 +60,68 @@ export default function ProfilePage({ children }) {
     //     // In a real app, you would upload the image and save the URL
     // };
 
+
     return (
-        <main className="container min-h-screen m-24 px-16 items-center bg-zinc-600 mx-auto py-8">
-            <div>
-                <ProfilePicture currentPic={profileData?.image}/>
-            </div>
-            {/* Update profile section */}
-            <div className="w-1/2 bg-slate-100 p-6 m-3 rounded-lg shadow">
-                <h2 className="text-slate-600 text-xl font-semibold mb-4">
-                    Update Username
-                </h2>
-                <UpdateUsername
-                    currentUsername={profileData?.name}
-                    // onUpdate={handleUsernameUpdate}
-                />
-            </div>
-            {/* Update password section */}
-            <div className="w-1/2 bg-white p-6 m-3 rounded-lg shadow">
-                <h2 className="text-slate-600 text-xl font-semibold mb-4">
-                    Security
-                </h2>
-                <UpdatePassword />
+        <main className="container bg-zinc-600 mx-auto px-2 py-8 max-w-full">
+            <h1 className="text-3xl font-bold mb-8">Your Profile</h1>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                {/* Left sidebar with profile picture and basic info */}
+                <div className="md:col-span-1 space-y-6">
+                    <div className="bg-slate-900 p-20 rounded-lg shadow">
+                        <ProfilePicture
+                            currentPicture={""}
+                            // onUpdate={handleProfilePictureUpdate}
+                        />
+
+                        <div className="mt-4">
+                            <h2 className="text-gray-500 text-2xl font-semibold">
+                                {profileData?.name}
+                            </h2>
+                            <p className="text-2xl text-gray-600">{profileData?.email}</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Main content area */}
+                <div className="md:col-span-2 lg:col-span-3 space-y-4">
+                    {/* Bio */}
+                    <div className="bg-white p-6 rounded-lg shadow h-96">
+                        <h2 className="text-slate-600 text-xl font-semibold mb-4">
+                            BIO
+                        </h2>
+                        <label
+                            htmlFor="About"
+                            className="block text-lg font-medium text-gray-700">
+                            About
+                        </label>
+                        <UpdateBio currentBio={profileData?.bio} />
+                    </div>
+                    {/* Activity grid */}
+                    <div className="container mx-auto px-4 py-8 bg-white p-6 rounded-lg shadow h-96">
+                        <h2 className="text-slate-600 text-xl font-semibold mb-4">
+                            Your Activity
+                        </h2>
+                        <ActivityGrid activityData={activityData} />
+                    </div>
+                    {/* Update profile section */}
+                    <div className="w-1/2 bg-white p-6 rounded-lg shadow">
+                        <h2 className="text-slate-600 text-xl font-semibold mb-4">
+                            Update Username
+                        </h2>
+                        <UpdateUsername
+                            currentUsername={profileData?.name}
+                            // onUpdate={handleUsernameUpdate}
+                        />
+                    </div>
+                    {/* Update password section */}
+                    <div className="w-1/2 bg-white p-6 rounded-lg shadow">
+                        <h2 className="text-slate-600 text-xl font-semibold mb-4">
+                            Security
+                        </h2>
+                        <UpdatePassword />
+                    </div>
+                </div>
             </div>
         </main>
     );

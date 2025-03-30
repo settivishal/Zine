@@ -1,42 +1,12 @@
-// import VerticalFeatureRow from './VerticalFeatureRow';
+import VerticalFeatureRow from './VerticalFeatureRow';
 import Section from './Section';
 import React from 'react';
-import classNames from 'classnames';
-
-
-
-import { useRouter } from 'next/navigation';
-const VerticalFeatureRow = (props) => {
-  const verticalFeatureClass = classNames(
-    'mt-20',
-    'flex',
-    'flex-wrap',
-    'items-center',
-    {
-      'flex-row-reverse': props.reverse,
-    },
-  );
-  const router = useRouter();
-  return (
-    <div className={verticalFeatureClass}>  // "mt-20 flex flex-wrap items-center flex-row-reverse"
-      <div className="w-full text-center sm:w-1/2 sm:px-6">
-        <h3 className="text-3xl font-semibold text-gray-900">{props.title}</h3>
-        <div className="mt-6 text-xl leading-9">{props.description}</div>
-      </div>
-
-      <div className="w-full p-6 sm:w-1/2">
-        <img src={`${router.basePath}${props.image}`} alt={props.imageAlt} />
-      </div>
-    </div>
-  );
-};
-
 
 const VerticalFeatures = () => (
   <div className='bg-gray-100'>
     <Section
       title="Our Features"
-      description="The Landing page will be improvised with more featured content on our website in the upcoming sprints."
+      description="The Landing page will be improvised with more featured content on our website in the upcmoing sprints."
     >
       <VerticalFeatureRow
         title="Home Page"
@@ -58,6 +28,8 @@ const VerticalFeatures = () => (
         imageAlt="Third feature alt text"
       />
     </Section>
+
+
   </div>
 );
 
