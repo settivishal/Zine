@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Avatar, Box } from "@mui/material";
 import axios from "axios";
-import { useAuth } from "@/hooks/authcontext";
+import { useAuth } from "../hooks/authcontext";
 
 const ProfilePicture = ({ currentPic }) => {
     const [selectedImage, setSelectedImage] = useState(null);

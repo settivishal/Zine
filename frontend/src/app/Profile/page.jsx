@@ -8,9 +8,8 @@ import {
 } from "../../components/UpdateUserCreds";
 // import UpdatePassword from "../../components/UpdatePassword";
 import ProfilePicture from "../../components/ProfilePicture";
-import { UpdateBio } from "../../components/UpdateBio";
 // const ProfileContext = createContext();
-import { useAuth } from "@/hooks/authcontext";
+import { useAuth } from "../../hooks/authcontext";
 
 export default function ProfilePage({ children }) {
     const [profileData, setProfileData] = useState({});
@@ -41,7 +40,7 @@ export default function ProfilePage({ children }) {
             }
 
             const data = await response.json();
-            // console.log("data" + data)
+            console.log("data" + data)
 
             setProfileData(data); // Set profile data (username, email, etc.)
             // Mock activity data - array of objects with date and count

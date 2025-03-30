@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { compileFunction } from "vm";
-import { useAuth } from './authcontext';
+import { useAuth } from '../../hooks/authcontext';
 
 import {UpdateBio, UpdateAge, UpdateGender} from "../../components/UpdateBio";
 import ActivityGrid from "../../components/ActivityGrid";
@@ -23,6 +23,7 @@ export default function ProfilePage({ children }) {
 
     const [activityData, setActivityData] = useState([]);
     const { accessToken } = useAuth();
+    
     const handleImageUpload = async (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -96,8 +97,7 @@ export default function ProfilePage({ children }) {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization:
-                        "Bearer" + " " + localStorage.getItem("accessToken"),
+                    Authorization: `Bearer ${accessToken}`, // Assuming you have a token in your auth context
                 },
             });
 
