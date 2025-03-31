@@ -22,6 +22,10 @@ type MockHandleUpdateImage struct {
 	mock.Mock
 }
 
+type MockHandleUpdateProfile struct {
+	mock.Mock
+}
+
 func (m *MockHandleProfile) MockHandleProfile(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
@@ -33,6 +37,11 @@ func (m *MockHandleChangePassword) MockHandleChangePassword(w http.ResponseWrite
 }
 
 func (m *MockHandleUpdateImage) MockHandleUpdateImage(w http.ResponseWriter, r *http.Request) (interface{},error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHandleUpdateProfile) MockHandleUpdateProfile(w http.ResponseWriter, r *http.Request) (interface{},error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
 }
@@ -222,6 +231,50 @@ func TestUpdateImage(t *testing.T) {
 		// Assertions	
 		assert.Nil(t, response)	
 		assert.EqualError(t, err, "Error updating image")
+		assert.Equal(t, 400, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+}
+
+func TestUpdateProfile(t *testing.T) {
+	// Test case 1: Update profile successfully
+	t.Run("Update profile successfully", func(t *testing.T) {
+		mockSuccessHandler := new(MockHandleUpdateProfile)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/profile", nil)	
+
+		mockSuccessHandler.On("MockHandleUpdateProfile", req).Return("Profile updated successfully", nil, http.StatusOK)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockSuccessHandler.MockHandleUpdateProfile(w, req)
+
+		// Assertions
+		assert.Equal(t, "Profile updated successfully", response)
+		assert.NoError(t, err)
+		assert.Equal(t, 200, statusCode)
+
+		// Verify that the expected call was made
+		mockSuccessHandler.AssertExpectations(t)
+	})
+
+	// Test case 2: Error updating profile
+	t.Run("Error updating profile", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleUpdateProfile)
+
+		req := httptest.NewRequest(http.MethodPost, "/profile", nil)
+
+		mockFailureHandler.On("MockHandleUpdateProfile", req).Return(nil, errors.New("Error updating profile"), http.StatusBadRequest)
+
+		// Call the mock method	
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockFailureHandler.MockHandleUpdateProfile(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err, "Error updating profile")	
 		assert.Equal(t, 400, statusCode)
 
 		// Verify that the expected call was made
