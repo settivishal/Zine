@@ -5,13 +5,13 @@ import { User, Gear, Question, SignOut } from "@phosphor-icons/react";
 import useProfile from '../hooks/useProfile';
 import { useAuth } from '../hooks/authcontext';
 
-const ProfileDropDown = () => {
+const ProfileDropDown = ({Page}) => {
   const [toggle, setToggle] = useState(false);
   const { profileImage, loading, error } = useProfile();
   const { accessToken } = useAuth();
 
   const options = [
-    { label: "Profile", icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick("Profile") },
+    { label: Page, icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick(Page) },
     { label: "Settings", icon: <Gear size={16} className="mr-2" />, onClick: () => handleOptionClick("Settings") },
     { label: "Help", icon: <Question size={16} className="mr-2" />, onClick: () => handleOptionClick("Help") },
     { label: "Logout", icon: <SignOut size={16} className="mr-2 text-red-500" />, onClick: () => handleOptionClick("Logout") }
@@ -22,9 +22,13 @@ const ProfileDropDown = () => {
   };
 
   const handleOptionClick = async (option) => {
-    if (option === "Profile") {
-      window.location.href = "/profile";
-    } else if (option === "Logout") {
+    if (option === Page) {
+      window.location.href = "/" + Page.toLowerCase();
+    }
+    else if (option === "Settings") {
+      window.location.href = "/settings";
+    } 
+    else if (option === "Logout") {
       try {
         console.log('Access Token:', accessToken);
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 
 import Button from "./Button";
-import HeroOneButton from "./HeroOneButton";
+// import HeroOneButton from "./HeroOneButton";
 import Section from "./Section";
 // import NavbarTwoColumns from "./Components/NavbarTwoColumns";
 
@@ -14,6 +14,18 @@ import myImg from "../../public/zine.png";
 import AuthModal from "../app/Modal/page";
 
 
+
+const HeroOneButton = (props) => (
+    <header className="text-center">
+      <h1 className="whitespace-pre-line text-5xl font-bold leading-hero text-gray-900">
+        {props.title}
+      </h1>
+      <div className="mb-16 mt-4 text-2xl">{props.description}</div>
+  
+      {props.button}
+    </header>
+);
+
 const Hero = () => {
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     return (
@@ -24,17 +36,9 @@ const Hero = () => {
 
                 <div className="flex gap-2 items-center justify-between">
                         <Link href="../home">
-                            {/* <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-                                Home
-                            </button> */}
                             <Button>Home</Button>
                         </Link>
 
-                        {/* <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-                            Sign in
-                        </button> */}
                         <Button onClick={() => setIsModalOpen(true)}>Sign in</Button>
 
                         {/* Auth Modal */}
