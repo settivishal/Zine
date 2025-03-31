@@ -34,6 +34,10 @@ type MockHandleUpdateSocials struct {
 	mock.Mock
 }
 
+type MockHandleGetGrid struct {
+	mock.Mock
+}
+
 func (m *MockHandleProfile) MockHandleProfile(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
@@ -60,6 +64,11 @@ func (m *MockHandleUpdateHobbies) MockHandleUpdateHobbies(w http.ResponseWriter,
 }
 
 func (m *MockHandleUpdateSocials) MockHandleUpdateSocials(w http.ResponseWriter, r *http.Request) (interface{},error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHandleGetGrid) MockHandleGetGrid(w http.ResponseWriter, r *http.Request) (interface{},error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
 }
@@ -381,6 +390,50 @@ func TestUpdateSocials(t *testing.T) {
 		// Assertions
 		assert.Nil(t, response)
 		assert.EqualError(t, err, "Error updating socials")	
+		assert.Equal(t, 400, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+}
+
+func TestGetGrid(t *testing.T) {
+	// Test case 1: Get grid successfully
+	t.Run("Get grid successfully", func(t *testing.T) {
+		mockSuccessHandler := new(MockHandleGetGrid)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/profile/grid", nil)	
+
+		mockSuccessHandler.On("MockHandleGetGrid", req).Return("Grid fetched successfully", nil, http.StatusOK)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockSuccessHandler.MockHandleGetGrid(w, req)
+
+		// Assertions
+		assert.Equal(t, "Grid fetched successfully", response)
+		assert.NoError(t, err)
+		assert.Equal(t, 200, statusCode)
+
+		// Verify that the expected call was made
+		mockSuccessHandler.AssertExpectations(t)
+	})
+
+	// Test case 2: Error getting grid
+	t.Run("Error getting grid", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleGetGrid)	
+
+		req := httptest.NewRequest(http.MethodPost, "/api/profile/grid", nil)	
+
+		mockFailureHandler.On("MockHandleGetGrid", req).Return(nil, errors.New("Error getting grid"), http.StatusBadRequest)
+
+		// Call the mock method	
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockFailureHandler.MockHandleGetGrid(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err, "Error getting grid")	
 		assert.Equal(t, 400, statusCode)
 
 		// Verify that the expected call was made
