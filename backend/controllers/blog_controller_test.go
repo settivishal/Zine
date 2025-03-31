@@ -22,6 +22,10 @@ type MockHandleSaveBlog struct {
 	mock.Mock
 }
 
+type MockHandleUploadCover struct {
+	mock.Mock
+}
+
 func (m *MockHandleGetBlog) MockHandleGetBlog(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
@@ -33,6 +37,11 @@ func (m *MockHandleCreateBlog) MockHandleCreateBlog(w http.ResponseWriter, r *ht
 }
 
 func (m *MockHandleSaveBlog) MockHandleSaveBlog(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHandleUploadCover) MockHandleUploadCover(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
 }
@@ -169,5 +178,50 @@ func TestSaveBlog(t *testing.T) {
 
 		// Verify that the expected call was made		
 		mockHandleSaveBlog.AssertExpectations(t)
+	})
+}
+
+func TestUploadCover(t *testing.T) {
+	// Test case 1: tag created successfully
+	t.Run("Successful CreateTag Response", func(t *testing.T) {
+		// Mock dependencies
+		mockHandleUploadCover := new(MockHandleUploadCover)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/blog/cover", nil)		
+
+		mockHandleUploadCover.On("MockHandleUploadCover", req).Return("Image uploaded successfully", nil, http.StatusOK)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockHandleUploadCover.MockHandleUploadCover(w, req)
+
+		// Assertions
+		assert.Equal(t, "Image uploaded successfully", response)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		// Verify that the expected call was made		
+		mockHandleUploadCover.AssertExpectations(t)
+	})
+
+	// Test case 2: error creating tag
+	t.Run("Error CreateTag Response", func(t *testing.T) {
+		mockHandleUploadCover := new(MockHandleUploadCover)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/blog/cover", nil)
+
+		mockHandleUploadCover.On("MockHandleUploadCover", req).Return(nil, errors.New("Error uploading cover"), http.StatusInternalServerError)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockHandleUploadCover.MockHandleUploadCover(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.Equal(t, "Error uploading cover", err.Error())		
+		assert.Equal(t, http.StatusInternalServerError, statusCode)
+
+		// Verify that the expected call was made		
+		mockHandleUploadCover.AssertExpectations(t)
 	})
 }
