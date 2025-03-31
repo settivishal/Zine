@@ -129,7 +129,7 @@ Unit tests are written for each controller to ensure API functionality.
     ```
 
 3. **Logout**
-    - Endpoint: `POST /consumer/register`
+    - Endpoint: `POST /consumer/logout`
     - Headers: `Authorization: Bearer <token>`
     - Repsone:
     ```json
@@ -354,4 +354,221 @@ Unit tests are written for each controller to ensure API functionality.
 	        }
 	    ]
 	    ```
-<!-- add more -->
+
+16.  **Get Tag by IDs**
+	    - Endpoint: `POST /api/tags/getByIDs`
+	
+	    - Headers: `Authorization: Bearer <token>`
+
+        - Request Body:
+	
+	    ```json
+	    {
+            "tag_ids": [
+                "67e7884db0c4836677dc1e6e",
+                "67e8531a759214d9d24c8697"
+            ]
+        }
+	    ```
+	
+	    - Response:
+	    ```
+        [
+            {
+                "ID": "67e7884db0c4836677dc1e6e",
+                "user_id": "",
+                "text": "holiday1",
+                "color": "#fff000",
+                "dates": []
+            },
+            {
+                "ID": "67e8531a759214d9d24c8697",
+                "user_id": "",
+                "text": "holiday",
+                "color": "#fff000",
+                "dates": null
+            }
+        ]
+        ```
+
+17.  **Get Blogs**
+        - Endpoint: `GET /api/blogs?page=1&limit=7`
+
+        - Headers: `Authorization: Bearer <token>`
+
+        - Response:
+        ```json
+        {
+            "message": "Blogs fetched successfully",
+            "blogs": {
+                "2025-03-23": {
+                    "id": "67e84b8ad950e85ca14a8d7e",
+                    "title": "",
+                    "cover": "",
+                    "tagIds": null
+                },
+                "2025-03-24": {
+                    "id": "67e84b88d950e85ca14a8d7d",
+                    "title": "",
+                    "cover": "",
+                    "tagIds": null
+                },
+            }
+        }
+        ```
+
+18. **Get blog by ID**
+	- Endpoint: `GET /api/blog/67e84b8ad950e85ca14a8d7e`
+	
+	- Headers: `Authorization: Bearer <token>`
+
+    - Response:
+    ```json
+    {
+        "message": "Blog fetched successfully",
+        "blog": {
+            "ID": "67e84b8ad950e85ca14a8d7e",
+            "Title": "",
+            "Cover": "",
+            "Content": null,
+            "Date": "2025-03-23",
+            "UserID": "67e495f5c8fc3210a7c6a6bc",
+            "TagIDs": null,
+            "IsPublic": false,
+            "Url": ""
+        }
+    }
+    ```
+
+19. **Create Blog Page**
+	- Endpoint: `POST /api/blog/create`
+	
+	- Headers: `Authorization: Bearer <token>`
+
+    - Request Body:
+
+    ```json
+    {
+        "date": "2025-03-22"
+    }
+    ```
+
+    - Response:
+    ```json
+    {
+        "message": "Blog fetched successfully",
+        "blog": {
+            "ID": "67e84b8ad950e85ca14a8d7e",
+            "Title": "",
+            "Cover": "",
+            "Content": null,
+            "Date": "2025-03-23",
+            "UserID": "67e495f5c8fc3210a7c6a6bc",
+            "TagIDs": null,
+            "IsPublic": false,
+            "Url": ""
+        }
+    }
+    ```
+
+20. **Upload cover image**
+    - Endpoint: `POST /api/blog/cover/upload`
+	
+	- Headers: `Authorization: Bearer <token>`
+
+    - Request Body:
+
+    ```json
+    {
+        "blog_id": "67e6cb055356881d20c0c48c",
+        "image" : The image file to be uploaded.
+    }
+    ```
+
+    - Response:
+    ```json
+    {
+        "message": "Image uploaded successfully",
+        "image": "https://d9amksc9hkkpj.cloudfront.net/WhatsApp Image 2025-03-28 at 10.48.55 AM.jpeg"
+    }
+    ```
+
+21. **Get Grid**
+    - Endpoint: `GET /api/profile/grid`
+	
+	- Headers: `Authorization: Bearer <token>`
+
+    - Response:
+    ```json
+    {
+        "message": "Grid fetched successfully",
+        "grid": {
+            "ID": "67e88c76f6fc273ba08294a8",
+            "UserID": "67e495f5c8fc3210a7c6a6bc",
+            "Dates": [
+                "2025/2/20"
+            ]
+        }
+    }
+    ```
+
+22. **Update Socials**
+    - Endpoint: `POST /api/profile/update_socials`
+	
+	- Headers: `Authorization: Bearer <token>`
+
+    - Request Body:
+
+    ```json
+    {
+        "linkedin_url": "https://linkedin.com",
+        "reddit_url": "https://reddit.com"
+    }
+    ```
+
+    - Response:
+    ```json
+    {
+        "message": "Socials updated successfully"
+    }
+    ```
+
+23. **Update Hobbies**
+    - Endpoint: `POST /api/profile/update_hobbies`
+	
+	- Headers: `Authorization: Bearer <token>`
+
+    - Request Body:
+
+    ```json
+    {
+        "hobbies": ["eating"]
+    }
+    ```
+
+    - Response:
+    ```json
+    {
+        "message": "Hobbies updated successfully"
+    }
+    ```
+
+24. **Update Profile**
+    - Endpoint: `POST /api/profile/update`
+	
+	- Headers: `Authorization: Bearer <token>`
+
+    - Request Body:
+
+    ```json
+    {
+        "age": 25
+    }
+    ```
+
+    - Response:
+    ```json
+    {
+        "message": "Profile updated successfully"
+    }
+    ```
