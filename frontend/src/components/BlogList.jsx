@@ -11,9 +11,37 @@ import { useTags } from '../hooks/tagsContext';
 const BlogList = () => {
     const { accessToken } = useAuth();
     const { tags, fetchTags } = useTags();
-    const [realBlogs, setRealBlogs] = useState({});  // Initialize as empty object instead of array
+    const [realBlogs, setRealBlogs] = useState({});
+    const [blogTags, setBlogTags] = useState({}); // New state to store tags for each blog
     const [openTagDialog, setOpenTagDialog] = useState(false);
     const [selectedBlogId, setSelectedBlogId] = useState(null);
+
+    const fetchTagsByIds = async (tagIds) => {
+        if (!tagIds || tagIds.length === 0) return [];
+
+        try {
+            const response = await fetch("http://localhost:8080/api/tags/getByIDs", {
+                method: "POST",
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tag_ids: tagIds })
+            });
+
+            if (response.ok) {
+                const tags = await response.json();
+                // The response is already an array of tags, so we don't need to access .tags
+                return tags || [];
+            } else {
+                console.error('Failed to fetch tags by IDs');
+                return [];
+            }
+        } catch (error) {
+            console.error('Error fetching tags by IDs:', error);
+            return [];
+        }
+    };
 
     useEffect(() => {
         const fetchBlogs = async () => {
@@ -30,32 +58,33 @@ const BlogList = () => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Raw API response:', data);
 
                     if (data.blogs) {
                         setRealBlogs(data.blogs);
-                        console.log('Processed blogs data:', data.blogs);
-                    } else {
-                        console.error('Blog data missing in response:', data);
-                    }
 
-                    // Log pagination info for debugging
-                    console.log('Total pages:', data.total_pages);
-                    console.log('Total count:', data.count);
-                } else {
-                    const errorData = await response.json().catch(() => null);
-                    console.error('Failed to fetch blogs:', {
-                        status: response.status,
-                        statusText: response.statusText,
-                        errorData
-                    });
+                        // Collect all unique tag IDs from all blogs
+                        const allTagIds = Object.values(data.blogs)
+                            .filter(blog => blog.tagIds)
+                            .flatMap(blog => blog.tagIds);
+
+                        if (allTagIds.length > 0) {
+                            const tags = await fetchTagsByIds(allTagIds);
+                            // Create a mapping of blog IDs to their tags
+                            const tagMapping = {};
+                            Object.values(data.blogs).forEach(blog => {
+                                if (blog.tagIds) {
+                                    tagMapping[blog.id] = tags.filter(tag =>
+                                        blog.tagIds.includes(tag.ID)  // Note: Changed to match the API's ID field
+                                    );
+                                }
+                            });
+                            setBlogTags(tagMapping);
+                        }
+                    }
                 }
+                // ... existing error handling ...
             } catch (error) {
-                console.error('Error fetching blogs:', {
-                    name: error.name,
-                    message: error.message,
-                    stack: error.stack
-                });
+                console.error('Error fetching blogs:', error);
             }
         };
 
@@ -104,7 +133,7 @@ const BlogList = () => {
         console.log(`Tag clicked: ${tag}`);
     };
 
-    const handleAddTags = (blogId) => {
+    const handleAddTags = (blogId, date) => {
         setSelectedBlogId(blogId);
         setOpenTagDialog(true);
         fetchTags();
@@ -115,20 +144,64 @@ const BlogList = () => {
         setSelectedBlogId(null);
     };
 
-    const handleTagSelect = (newTag) => {
-        setRealBlogs(blogs.map(blog => {
-            if (blog.id === selectedBlogId) {
-                // Check if tag already exists
-                const tagExists = blog.tags.some(tag => tag.text === newTag.text);
-                if (!tagExists) {
-                    return {
-                        ...blog,
-                        tags: [...blog.tags, newTag]
-                    };
-                }
+    // Add new function to make the API call
+    const addTagToBlog = async (tagText, blogDate) => {
+        try {
+            // No need to format the date since it's already in YYYY-MM-DD format
+            const payload = {
+                text: tagText,
+                date: blogDate
+            };
+
+            // Log the payload for debugging
+            console.log('Adding tag with payload:', payload);
+
+            const response = await fetch('http://localhost:8080/api/tag/set', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                console.log('Successfully added tag to blog');
+                // Refresh the blogs to get updated tag information
+                const fetchBlogs = async () => {
+                    // ... copy your existing fetchBlogs function here ...
+                };
+                await fetchBlogs();
+            } else {
+                const errorData = await response.json().catch(() => null);
+                console.error('Failed to add tag to blog:', {
+                    status: response.status,
+                    error: errorData
+                });
             }
-            return blog;
-        }));
+        } catch (error) {
+            console.error('Error adding tag to blog:', error);
+        }
+    };
+
+    // Update handleTagSelect function
+    const handleTagSelect = async (selectedTag) => {
+        if (!selectedBlogId) return;
+
+        // Find the blog date for the selected blog
+        const blogEntry = Object.entries(realBlogs).find(([_, blog]) => blog.id === selectedBlogId);
+        if (!blogEntry) return;
+
+        const [blogDate, blog] = blogEntry;
+
+        // Check if tag already exists for this blog
+        const existingTags = blogTags[blog.id] || [];
+        const tagExists = existingTags.some(tag => tag.text === selectedTag.text);
+
+        if (!tagExists) {
+            await addTagToBlog(selectedTag.text, blogDate);
+        }
+
         handleCloseDialog();
     };
 
@@ -177,8 +250,8 @@ const BlogList = () => {
                     >
                         <div style={{ position: 'relative', width: '100%', height: '200px' }}>
                             <Image
-                                src={blog.cover || '/images/alps.jpg'} // Default image if cover doesn't exist
-                                alt={blog.title || 'Blog Post'} // Default alt text if title doesn't exist
+                                src={blog.cover || '/images/alps.jpg'}
+                                alt={blog.title || 'Blog Post'}
                                 fill
                                 style={{ objectFit: 'cover' }}
                                 priority={false}
@@ -195,36 +268,32 @@ const BlogList = () => {
                                     alignItems: 'center'
                                 }}
                             >
-                                {(blog.tagIds || []).map((tagId, index) => {
-                                    const tag = tags.find(t => t.id === tagId);
-                                    if (!tag) return null;
-                                    return (
-                                        <Chip
-                                            key={index}
-                                            label={tag.text}
-                                            size="small"
-                                            onClick={() => handleTagClick(tag.text)}
-                                            sx={{
-                                                backgroundColor: tag.color,
-                                                color: 'white',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s ease',
-                                                '&:hover': {
-                                                    transform: 'translateY(-2px)',
-                                                    boxShadow: 2
-                                                },
-                                                '&:active': {
-                                                    transform: 'translateY(0)'
-                                                }
-                                            }}
-                                        />
-                                    );
-                                })}
+                                {blogTags[blog.id]?.map((tag, index) => (
+                                    <Chip
+                                        key={tag.ID}
+                                        label={tag.text}
+                                        size="small"
+                                        onClick={() => handleTagClick(tag.text)}
+                                        sx={{
+                                            backgroundColor: tag.color || '#666',
+                                            color: 'white',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            '&:hover': {
+                                                transform: 'translateY(-2px)',
+                                                boxShadow: 2
+                                            },
+                                            '&:active': {
+                                                transform: 'translateY(0)'
+                                            }
+                                        }}
+                                    />
+                                ))}
                                 <Chip
                                     icon={<AddIcon />}
                                     label="Add Tag"
                                     size="small"
-                                    onClick={() => handleAddTags(blog.id)}
+                                    onClick={() => handleAddTags(blog.id, date)}
                                     sx={{
                                         backgroundColor: 'rgba(255, 255, 255, 0.9)',
                                         color: '#666',
