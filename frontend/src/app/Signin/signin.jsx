@@ -114,7 +114,7 @@ export default function SignIn() {
                     </div>
                 </form>
                 <div className="mt-6 text-center">
-                    <a href="#" className="text-sm text-blue-600 font-semibold">
+                    <a href="/forgot" className="text-sm text-blue-600 font-semibold">
                         Forgot password?
                     </a>
                 </div>

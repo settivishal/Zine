@@ -3,45 +3,26 @@
 import React, { useState, useEffect } from "react";
 import { SketchPicker } from "react-color";
 import { useAuth } from '../hooks/authcontext';
+import { useTags } from '../hooks/tagsContext';
 
 export default function Tags() {
-  const [tags, setTags] = useState([]);
   const [newTag, setNewTag] = useState("");
   const [color, setColor] = useState("#000000");
   const [showInput, setShowInput] = useState(false);
   const [selectedTag, setSelectedTag] = useState(null);
   const { accessToken } = useAuth();
+  const { tags, fetchTags } = useTags();
 
   useEffect(() => {
     if (accessToken) {
       fetchTags();
     }
-  }, [accessToken]);
-
-  const fetchTags = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/api/tags", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Fetched tags:", data); // See the tag structure
-        setTags(data);
-      } else {
-        console.error("Failed to fetch tags");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+  }, [accessToken, fetchTags]);
 
   const handleAddTag = async () => {
     if (newTag.trim()) {
       const payload = { text: newTag, color: color };
       console.log("Creating tag with payload:", JSON.stringify(payload));
-      console.log("Using URL:", "http://localhost:8080/api/tag/create");
 
       try {
         const response = await fetch("http://localhost:8080/api/tag/create", {
@@ -54,16 +35,17 @@ export default function Tags() {
         });
 
         console.log("Create tag response status:", response.status);
-        const responseText = await response.text();
-        console.log("Create tag response:", responseText);
+
+        const responseData = await response.json();
+        console.log("Create tag response:", responseData);
 
         if (response.ok) {
-          fetchTags(); // Fetch updated tags after creating a new one
+          await fetchTags();
           setNewTag("");
           setColor("#000000");
           setShowInput(false);
         } else {
-          console.error("Failed to create tag:", response.status, responseText);
+          console.error("Failed to create tag:", response.status, responseData);
         }
       } catch (error) {
         console.error("Error creating tag:", error.message, error.stack);
