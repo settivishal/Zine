@@ -5,12 +5,14 @@ import AddIcon from '@mui/icons-material/Add';
 import Image from 'next/image';
 import { useAuth } from '../hooks/authcontext';
 import { useTags } from '../hooks/tagsContext';
+import { useRouter } from 'next/navigation';
 //import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 
 const BlogList = () => {
     const { accessToken } = useAuth();
     const { tags, fetchTags } = useTags();
+    const router = useRouter();
     const [realBlogs, setRealBlogs] = useState({});
     const [blogTags, setBlogTags] = useState({}); // New state to store tags for each blog
     const [openTagDialog, setOpenTagDialog] = useState(false);
@@ -248,6 +250,11 @@ const BlogList = () => {
         }
     };
 
+    // Add function to handle blog click
+    const handleBlogClick = (blogId) => {
+        router.push(`/blogs/${blogId}`);
+    };
+
     return (
         <div className="h-full flex flex-col gap-4">
             <div className="flex justify-between items-center mb-6">
@@ -273,6 +280,7 @@ const BlogList = () => {
                     <Card
                         key={blog.id}
                         className="mb-4 hover:shadow-lg transition-shadow"
+                        onClick={() => handleBlogClick(blog.id)}
                         sx={{
                             cursor: 'pointer',
                             '&:hover': {
@@ -281,7 +289,10 @@ const BlogList = () => {
                             }
                         }}
                     >
-                        <div style={{ position: 'relative', width: '100%', height: '200px' }}>
+                        <div
+                            style={{ position: 'relative', width: '100%', height: '200px' }}
+                            onClick={(e) => e.stopPropagation()} // Prevent image container clicks from triggering navigation
+                        >
                             <Image
                                 src={blog.cover || '/images/alps.jpg'}
                                 alt={blog.title || 'Blog Post'}

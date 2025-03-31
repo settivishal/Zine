@@ -5,7 +5,7 @@ import { User, Gear, Question, SignOut } from "@phosphor-icons/react";
 import useProfile from '../hooks/useProfile';
 import { useAuth } from '../hooks/authcontext';
 
-const ProfileDropDown = ({Page}) => {
+const ProfileDropDown = ({ Page }) => {
   const [toggle, setToggle] = useState(false);
   const { profileImage, loading, error } = useProfile();
   const { accessToken } = useAuth();
@@ -27,7 +27,7 @@ const ProfileDropDown = ({Page}) => {
     }
     else if (option === "Settings") {
       window.location.href = "/settings";
-    } 
+    }
     else if (option === "Logout") {
       try {
         console.log('Access Token:', accessToken);
@@ -76,7 +76,7 @@ const ProfileDropDown = ({Page}) => {
             alt="Profile"
             width={32}
             height={32}
-            className="rounded-full object-cover"
+            className="rounded-full object-cover w-8 h-8 aspect-square"
             unoptimized
           />
         )}

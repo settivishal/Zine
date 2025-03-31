@@ -18,12 +18,12 @@ import AuthModal from "../app/Modal/page";
 
 const HeroOneButton = (props) => (
     <header className="text-center">
-      <h1 className="whitespace-pre-line text-5xl font-bold leading-hero text-gray-900">
-        {props.title}
-      </h1>
-      <div className="mb-16 mt-4 text-2xl">{props.description}</div>
-  
-      {props.button}
+        <h1 className="whitespace-pre-line text-5xl font-bold leading-hero text-gray-900">
+            {props.title}
+        </h1>
+        <div className="mb-16 mt-4 text-2xl">{props.description}</div>
+
+        {props.button}
     </header>
 );
 
@@ -51,12 +51,18 @@ const Hero = () => {
                 <div className="flex items-center justify-between" >
                     <Image src={myImg} width={70} height={70} alt="Zine" />
 
-                <div className="flex gap-2 items-center justify-between">
+                    <div className="flex gap-2 items-center justify-between">
                         <Link href="../home">
                             <Button>Home</Button>
                         </Link>
 
-                        <Button onClick={() => setIsModalOpen(true)}>Sign in</Button>
+                        {accessToken ? (
+                            <Link href="/profile">
+                                <Button>Profile</Button>
+                            </Link>
+                        ) : (
+                            <Button onClick={() => setIsModalOpen(true)}>Sign in</Button>
+                        )}
 
                         {/* Auth Modal */}
                         <AuthModal
