@@ -57,7 +57,6 @@ Unit tests are written for each controller to ensure API functionality.
 |---------------------------------|--------------------------------|-----------|
 | `auth_middleware.go`            | `auth_middleware_test.go`               | Tests authentication middleware, including JWT validation and user authorization. |
 | `headers_middleware.go`         | `headers_middleware_test.go`            | Tests the handling and validation of HTTP headers for requests and responses. |
-<!-- add more -->
 
 ### Utils with Unit Tests
 
@@ -67,7 +66,6 @@ Unit tests are written for each controller to ensure API functionality.
 | `jwt_utils.go`             | `jwt_utils_test.go`              | Tests utility functions for generating, validating, and parsing JWT tokens. |
 | `response_utils.go`        | `response_utils_test.go`         | Tests utility functions for handling and formatting HTTP responses. |
 | `token_utils.go`        | `token_utils_test.go`               | Tests utility functions for generating reset token. |
-<!-- add more -->
 
 ## Unit Tests and Cypress for Frontend
 
