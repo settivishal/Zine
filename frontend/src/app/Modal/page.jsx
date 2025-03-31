@@ -2,9 +2,10 @@
 import { useState } from "react";
 import SignUp from "../signin/signup";
 import SignIn from "../signin/signin";
-
+import { useAuth } from '../../hooks/authcontext';
 
 export default function AuthModal({ isOpen, onClose }) {
+    const { accessToken } = useAuth();
     const [activeTab, setActiveTab] = useState("signin"); // 'signin' or 'signup'
     const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
@@ -13,6 +14,8 @@ export default function AuthModal({ isOpen, onClose }) {
         setActiveTab(tab);
         setRegistrationSuccess(showSuccessMessage);
     };
+
+    // Add token expiration check function
 
     if (!isOpen) return null;
 
@@ -30,13 +33,14 @@ export default function AuthModal({ isOpen, onClose }) {
                 {/* Tabs Header */}
                 <div className="flex border-b border-gray-300 mb-4">
                     <button
-                        onClick={() => handleTabChange("signin")}
-                        className={`flex-1 py-2 text-center ${activeTab === "signin"
-                            ? "text-blue-500 border-b-2 border-blue-500 font-semibold"
-                            : "text-gray-500 hover:text-blue-500"
-                            }`}>
-                        Sign In
-                    </button>
+                            onClick={() => handleTabChange("signin")}
+                            className={`flex-1 py-2 text-center ${activeTab === "signin"
+                                ? "text-blue-500 border-b-2 border-blue-500 font-semibold"
+                                : "text-gray-500 hover:text-blue-500"
+                                }`}>
+                            Sign In
+                        </button>
+
                     <button
                         onClick={() => handleTabChange("signup")}
                         className={`flex-1 py-2 text-center ${activeTab === "signup"
