@@ -26,6 +26,10 @@ type MockHandleUploadCover struct {
 	mock.Mock
 }
 
+type MockHandleGetBlogs struct {
+	mock.Mock
+}
+
 func (m *MockHandleGetBlog) MockHandleGetBlog(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
@@ -46,22 +50,27 @@ func (m *MockHandleUploadCover) MockHandleUploadCover(w http.ResponseWriter, r *
 	return args.Get(0), args.Error(1), args.Int(2)
 }
 
+func (m *MockHandleGetBlogs) MockHandleGetBlogs(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
 func TestGetBlog(t *testing.T) {
-	// Test case 1: tag created successfully
-	t.Run("Successful CreateTag Response", func(t *testing.T) {
+	// Test case 1: get tag successfully
+	t.Run("Successful getting Response", func(t *testing.T) {
 		// Mock dependencies
 		mockHandleGetBlog := new(MockHandleGetBlog)
 
 		req := httptest.NewRequest(http.MethodPost, "/blog/{_id}", nil)
 
-		mockHandleGetBlog.On("MockHandleGetBlog", req).Return("Tag created successfully", nil, http.StatusOK)
+		mockHandleGetBlog.On("MockHandleGetBlog", req).Return("Blog fetched successfully", nil, http.StatusOK)
 
 		// Call the mock method
 		w := httptest.NewRecorder()
 		response, err, statusCode := mockHandleGetBlog.MockHandleGetBlog(w, req)
 
 		// Assertions
-		assert.Equal(t, "Tag created successfully", response)
+		assert.Equal(t, "Blog fetched successfully", response)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, statusCode)
 
@@ -69,13 +78,13 @@ func TestGetBlog(t *testing.T) {
 		mockHandleGetBlog.AssertExpectations(t)
 	})
 
-	// Test case 2: error creating tag
-	t.Run("Error CreateTag Response", func(t *testing.T) {
+	// Test case 2: error getting tag
+	t.Run("Error getting Response", func(t *testing.T) {
 		mockHandleGetBlog := new(MockHandleGetBlog)
 
 		req := httptest.NewRequest(http.MethodPost, "/blog/{_id}", nil)
 
-		mockHandleGetBlog.On("MockHandleGetBlog", req).Return(nil, errors.New("error creating tag"), http.StatusInternalServerError)
+		mockHandleGetBlog.On("MockHandleGetBlog", req).Return(nil, errors.New("Error getting blog"), http.StatusInternalServerError)
 
 		// Call the mock method
 		w := httptest.NewRecorder()
@@ -83,7 +92,7 @@ func TestGetBlog(t *testing.T) {
 
 		// Assertions
 		assert.Nil(t, response)
-		assert.Equal(t, "error creating tag", err.Error())
+		assert.Equal(t, "Error getting blog", err.Error())
 		assert.Equal(t, http.StatusInternalServerError, statusCode)
 
 		// Verify that the expected call was made
@@ -137,21 +146,21 @@ func TestCreateBlog(t *testing.T) {
 }
 
 func TestSaveBlog(t *testing.T) {
-	// Test case 1: tag created successfully
-	t.Run("Successful CreateTag Response", func(t *testing.T) {
+	// Test case 1: tag saved successfully
+	t.Run("Successful Saveing Tag Response", func(t *testing.T) {
 		// Mock dependencies
 		mockHandleSaveBlog := new(MockHandleSaveBlog)
 
 		req := httptest.NewRequest(http.MethodPost, "/blog/save", nil)
 
-		mockHandleSaveBlog.On("MockHandleSaveBlog", req).Return("Tag created successfully", nil, http.StatusOK)
+		mockHandleSaveBlog.On("MockHandleSaveBlog", req).Return("Blog saved successfully", nil, http.StatusOK)
 
 		// Call the mock method
 		w := httptest.NewRecorder()
 		response, err, statusCode := mockHandleSaveBlog.MockHandleSaveBlog(w, req)
 
 		// Assertions
-		assert.Equal(t, "Tag created successfully", response)
+		assert.Equal(t, "Blog saved successfully", response)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, statusCode)
 
@@ -159,13 +168,13 @@ func TestSaveBlog(t *testing.T) {
 		mockHandleSaveBlog.AssertExpectations(t)
 	})
 
-	// Test case 2: error creating tag
-	t.Run("Error CreateTag Response", func(t *testing.T) {
+	// Test case 2: error saving tag
+	t.Run("Error Saving Tag Response", func(t *testing.T) {
 		mockHandleSaveBlog := new(MockHandleSaveBlog)
 
 		req := httptest.NewRequest(http.MethodPost, "/blog/save", nil)		
 
-		mockHandleSaveBlog.On("MockHandleSaveBlog", req).Return(nil, errors.New("error creating tag"), http.StatusInternalServerError)
+		mockHandleSaveBlog.On("MockHandleSaveBlog", req).Return(nil, errors.New("Error saving blog"), http.StatusInternalServerError)
 
 		// Call the mock method
 		w := httptest.NewRecorder()
@@ -173,7 +182,7 @@ func TestSaveBlog(t *testing.T) {
 
 		// Assertions
 		assert.Nil(t, response)
-		assert.Equal(t, "error creating tag", err.Error())		
+		assert.Equal(t, "Error saving blog", err.Error())		
 		assert.Equal(t, http.StatusInternalServerError, statusCode)
 
 		// Verify that the expected call was made		
@@ -223,5 +232,50 @@ func TestUploadCover(t *testing.T) {
 
 		// Verify that the expected call was made		
 		mockHandleUploadCover.AssertExpectations(t)
+	})
+}
+
+func TestGetBlogs(t *testing.T) {
+	// Test case 1: tag created successfully
+	t.Run("Successful GetBlogs Response", func(t *testing.T) {
+		// Mock dependencies
+		mockHandleGetBlogs := new(MockHandleGetBlogs)
+
+		req := httptest.NewRequest(http.MethodGet, "/api/blogs", nil)		
+
+		mockHandleGetBlogs.On("MockHandleGetBlogs", req).Return("Blogs fetched successfully", nil, http.StatusOK)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockHandleGetBlogs.MockHandleGetBlogs(w, req)
+
+		// Assertions
+		assert.Equal(t, "Blogs fetched successfully", response)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		// Verify that the expected call was made		
+		mockHandleGetBlogs.AssertExpectations(t)
+	})
+
+	// Test case 2: error creating tag
+	t.Run("Error GetBlogs Response", func(t *testing.T) {
+		mockHandleGetBlogs := new(MockHandleGetBlogs)
+
+		req := httptest.NewRequest(http.MethodGet, "/api/blogs", nil)		
+
+		mockHandleGetBlogs.On("MockHandleGetBlogs", req).Return(nil, errors.New("Error getting blogs"), http.StatusInternalServerError)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockHandleGetBlogs.MockHandleGetBlogs(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.Equal(t, "Error getting blogs", err.Error())		
+		assert.Equal(t, http.StatusInternalServerError, statusCode)
+
+		// Verify that the expected call was made		
+		mockHandleGetBlogs.AssertExpectations(t)
 	})
 }
