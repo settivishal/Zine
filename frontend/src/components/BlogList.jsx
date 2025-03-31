@@ -7,57 +7,9 @@ import { useAuth } from '../hooks/authcontext';
 //import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 
-const BlogList = () => {
-    let userTags = [
-        {
-            text: 'Travel',
-            color: '#2196f3'
-        },
-        {
-            text: 'Nature',
-            color: '#4caf50'
-        },
-        {
-            text: 'Adventure',
-            color: '#ff9800'
-        },
-        {
-            text: 'Beach',
-            color: '#00bcd4'
-        },
-        {
-            text: 'Summer',
-            color: '#f44336'
-        },
-        {
-            text: 'Vacation',
-            color: '#9c27b0'
-        }
-    ];
-
+const BlogList = ({ availableTags, onTagsUpdate }) => {
     const { accessToken } = useAuth();
-    const [realBlogs, setRealBlogs] = useState([]);
-    const [blogs, setBlogs] = useState([
-        // Sample blog data - replace with actual API call
-        {
-            id: 1,
-            title: 'Majestic peaks and breathtaking views in the heart of the Swiss Alps! 🏔️✨',
-            excerpt: 'Snow-capped mountains, crystal-clear lakes, and charming alpine villages...',
-            date: '2024-03-19',
-            image: '/images/alps.jpg',
-            tags: [userTags[0], userTags[1], userTags[2]] // Travel, Nature, Adventure
-        },
-        {
-            id: 2,
-            title: 'Sun, sand, and endless vibes at Miami Beach! ☀️🌊✨',
-            excerpt: 'Golden sands, turquoise waters, and vibrant nightlife ...',
-            date: '2024-03-18',
-            image: '/images/beach.jpg',
-            tags: [userTags[3], userTags[4], userTags[5]] // Beach, Summer, Vacation
-        }
-    ]);
-
-    // Add new state for dialog
+    const [realBlogs, setRealBlogs] = useState({});  // Initialize as empty object instead of array
     const [openTagDialog, setOpenTagDialog] = useState(false);
     const [selectedBlogId, setSelectedBlogId] = useState(null);
 
@@ -155,7 +107,7 @@ const BlogList = () => {
     };
 
     const handleTagSelect = (newTag) => {
-        setBlogs(blogs.map(blog => {
+        setRealBlogs(blogs.map(blog => {
             if (blog.id === selectedBlogId) {
                 // Check if tag already exists
                 const tagExists = blog.tags.some(tag => tag.text === newTag.text);
@@ -169,6 +121,7 @@ const BlogList = () => {
             return blog;
         }));
         handleCloseDialog();
+        onTagsUpdate(); // Refresh tags after selection if needed
     };
 
     // Add this function to check if blog exists for today
@@ -203,7 +156,7 @@ const BlogList = () => {
             </div>
 
             <div className="overflow-y-auto">
-                {blogs.map((blog) => (
+                {Object.entries(realBlogs).map(([date, blog]) => (
                     <Card
                         key={blog.id}
                         className="mb-4 hover:shadow-lg transition-shadow"
@@ -217,11 +170,11 @@ const BlogList = () => {
                     >
                         <div style={{ position: 'relative', width: '100%', height: '200px' }}>
                             <Image
-                                src={blog.image}
-                                alt={blog.title}
+                                src={blog.cover || '/images/alps.jpg'} // Default image if cover doesn't exist
+                                alt={blog.title || 'Blog Post'} // Default alt text if title doesn't exist
                                 fill
                                 style={{ objectFit: 'cover' }}
-                                priority={blog.id === 1} // Priority loading for first image
+                                priority={false}
                             />
                             <Box
                                 sx={{
@@ -235,27 +188,31 @@ const BlogList = () => {
                                     alignItems: 'center'
                                 }}
                             >
-                                {blog.tags.map((tag, index) => (
-                                    <Chip
-                                        key={index}
-                                        label={tag.text}
-                                        size="small"
-                                        onClick={() => handleTagClick(tag.text)}
-                                        sx={{
-                                            backgroundColor: tag.color,
-                                            color: 'white',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s ease',
-                                            '&:hover': {
-                                                transform: 'translateY(-2px)',
-                                                boxShadow: 2
-                                            },
-                                            '&:active': {
-                                                transform: 'translateY(0)'
-                                            }
-                                        }}
-                                    />
-                                ))}
+                                {(blog.tagIds || []).map((tagId, index) => {
+                                    const tag = availableTags.find(t => t.id === tagId);
+                                    if (!tag) return null;
+                                    return (
+                                        <Chip
+                                            key={index}
+                                            label={tag.text}
+                                            size="small"
+                                            onClick={() => handleTagClick(tag.text)}
+                                            sx={{
+                                                backgroundColor: tag.color,
+                                                color: 'white',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease',
+                                                '&:hover': {
+                                                    transform: 'translateY(-2px)',
+                                                    boxShadow: 2
+                                                },
+                                                '&:active': {
+                                                    transform: 'translateY(0)'
+                                                }
+                                            }}
+                                        />
+                                    );
+                                })}
                                 <Chip
                                     icon={<AddIcon />}
                                     label="Add Tag"
@@ -279,14 +236,14 @@ const BlogList = () => {
                         </div>
                         <CardContent>
                             <Typography variant="h6" component="h3" className="mb-2">
-                                {blog.title}
+                                {blog.title || 'Untitled Blog Post'} {/* Default title if none exists */}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" className="mb-2">
-                                {blog.excerpt}
+                                {blog.excerpt || 'No content yet...'} {/* Default excerpt if none exists */}
                             </Typography>
                             <Box className="flex justify-end text-sm text-gray-500">
                                 <Typography variant="caption">
-                                    {new Date(blog.date).toLocaleDateString()}
+                                    {new Date(date).toLocaleDateString()} {/* Using the date from the object key */}
                                 </Typography>
                             </Box>
                         </CardContent>
@@ -299,7 +256,7 @@ const BlogList = () => {
                 <DialogTitle>Select a Tag</DialogTitle>
                 <DialogContent>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 2 }}>
-                        {userTags.map((tag, index) => (
+                        {availableTags.map((tag, index) => (
                             <Chip
                                 key={index}
                                 label={tag.text}

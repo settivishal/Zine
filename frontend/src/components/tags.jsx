@@ -1,41 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { SketchPicker } from "react-color";
 import { useAuth } from '../hooks/authcontext';
 
-export default function Tags() {
-  const [tags, setTags] = useState([]);
+export default function Tags({ tags, setTags }) {
   const [newTag, setNewTag] = useState("");
   const [color, setColor] = useState("#000000");
   const [showInput, setShowInput] = useState(false);
   const [selectedTag, setSelectedTag] = useState(null);
   const { accessToken } = useAuth();
-
-  useEffect(() => {
-    if (accessToken) {
-      fetchTags();
-    }
-  }, [accessToken]);
-
-  const fetchTags = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/api/tags", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Fetched tags:", data); // See the tag structure
-        setTags(data);
-      } else {
-        console.error("Failed to fetch tags");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
 
   const handleAddTag = async () => {
     if (newTag.trim()) {
@@ -58,7 +32,8 @@ export default function Tags() {
         console.log("Create tag response:", responseText);
 
         if (response.ok) {
-          fetchTags(); // Fetch updated tags after creating a new one
+          const newTags = await response.json();
+          setTags(newTags);
           setNewTag("");
           setColor("#000000");
           setShowInput(false);
@@ -83,7 +58,7 @@ export default function Tags() {
       });
 
       if (response.ok) {
-        fetchTags(); // Refresh the tags list after deletion
+        setTags(tags.filter((tag) => tag.text !== tagText));
       } else {
         console.error("Failed to delete tag");
       }
