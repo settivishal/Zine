@@ -16,7 +16,6 @@ export default function Blog() {
     const [blocks, setBlocks] = useState([]);
     const params = useParams();
     const id = params.id;
-    // console.log(id);
     const { accessToken } = useAuth();
     const [editorContent, setEditorContent] = useState([
         {
@@ -47,7 +46,6 @@ export default function Blog() {
     // };
     const fetchContentFromBackend = async (id) => {
         try {
-            console.log(id);
             const response = await axios.get(`http://localhost:8080/api/blog/${id}`,
                 {
                     headers: {
@@ -57,7 +55,6 @@ export default function Blog() {
                 }
             ); // Use axios to make the GET request
             setEditorContent(response.data?.blog?.Content); // Update the editor content with data from backend
-            console.log(response.data?.blog?.Date);
         } catch (error) {
             console.error('Error fetching content:', error);
         }
@@ -96,14 +93,13 @@ export default function Blog() {
                 throw new Error('Failed to save content');
             }
 
-            console.log('Content saved successfully');
         } catch (error) {
             console.error('Error saving content:', error);
         }
     };
 
     const handleSave = async () => {
-        console.log(editor);
+        //console.log(editor);
     };
 
     return (

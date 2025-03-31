@@ -49,7 +49,6 @@ const BlogList = () => {
     // Move fetchBlogs outside useEffect so we can reuse it
     const fetchBlogs = async () => {
         if (!accessToken) {
-            console.log('Waiting for access token...');
             return;
         }
 
@@ -121,7 +120,7 @@ const BlogList = () => {
             });
 
             const data = await response.json();
-            console.log('Create blog response:', data);
+            
             if (response.ok) {
                 // Extract just the path from blog_url and combine with origin
                 const blogPath = data.blog_url.replace('localhost:3000', '');
@@ -136,7 +135,7 @@ const BlogList = () => {
 
     const handleTagClick = (tag) => {
         // Implement tag click functionality
-        console.log(`Tag clicked: ${tag}`);
+        //console.log(`Tag clicked: ${tag}`);
     };
 
     const handleAddTags = (blogId, date) => {
@@ -158,7 +157,7 @@ const BlogList = () => {
                 date: blogDate
             };
 
-            console.log('Adding tag with payload:', payload);
+            
 
             const response = await fetch('http://localhost:8080/api/tag/set', {
                 method: 'POST',
@@ -170,7 +169,6 @@ const BlogList = () => {
             });
 
             if (response.ok) {
-                console.log('Successfully added tag to blog');
                 // Refresh the blogs data immediately after adding tag
                 await fetchBlogs();
             } else {
@@ -211,8 +209,7 @@ const BlogList = () => {
         const today = new Date();
         // Format date as YYYY-MM-DD
         const formattedDate = today.toISOString().split('T')[0];
-        console.log('Checking for blog on date:', formattedDate); // Debug log
-        console.log('Available blog dates:', Object.keys(realBlogs)); // Debug log
+     
         return Object.keys(realBlogs).includes(formattedDate);
     };
 
@@ -224,7 +221,7 @@ const BlogList = () => {
                 date: blogDate
             };
 
-            console.log('Removing tag with payload:', payload);
+            
 
             const response = await fetch('http://localhost:8080/api/tag/remove', {
                 method: 'POST',
@@ -236,7 +233,7 @@ const BlogList = () => {
             });
 
             if (response.ok) {
-                console.log('Successfully removed tag from blog');
+                
                 await fetchBlogs(); // Refresh the blogs data
             } else {
                 const errorData = await response.json().catch(() => null);
@@ -395,7 +392,7 @@ const BlogList = () => {
                 <DialogTitle>Select a Tag</DialogTitle>
                 <DialogContent>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 2 }}>
-                        {console.log('Available tags in dialog:', tags)}  {/* Debug log */}
+                        
                         {tags && tags.map((tag, index) => (
                             <Chip
                                 key={index}

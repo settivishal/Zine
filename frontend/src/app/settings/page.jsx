@@ -37,7 +37,7 @@ export default function ProfilePage({ children }) {
                 }
 
                 const data = await response.json();
-                console.log("data" + data)
+                c
 
                 setProfileData(data); // Set profile data (username, email, etc.)
             })();

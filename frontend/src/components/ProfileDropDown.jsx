@@ -30,7 +30,7 @@ const ProfileDropDown = ({ Page }) => {
     }
     else if (option === "Logout") {
       try {
-        console.log('Access Token:', accessToken);
+        
 
         const response = await fetch('http://localhost:8080/consumer/logout', {
           method: 'POST',
@@ -40,9 +40,9 @@ const ProfileDropDown = ({ Page }) => {
         });
 
         // Debug logs
-        console.log('Response status:', response.status);
+        
         const responseText = await response.text();
-        console.log('Response body:', responseText);
+        
 
         if (response.ok) {
           deleteCookie('accessToken');

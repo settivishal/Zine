@@ -70,14 +70,14 @@ export default function Blog() {
                 throw new Error('Failed to save content');
             }
 
-            console.log('Content saved successfully');
+            
         } catch (error) {
             console.error('Error saving content:', error);
         }
     };
 
     const handleSave = async () => {
-        console.log(editor);
+        //console.log(editor);
     };
 
   return (

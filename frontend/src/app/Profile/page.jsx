@@ -29,7 +29,7 @@ export default function ProfilePage({ children }) {
         if (file) {
             const formData = new FormData();
             formData.append("image", file);
-            console.log("formData")
+            
 
             try {
                 const response = await fetch("http://localhost:8080/api/image/update", {
@@ -83,13 +83,11 @@ export default function ProfilePage({ children }) {
     //     fetchProfileData();
 
     //     const mockActivity = generateMockActivityData();
-    //     console.log(mockActivity);
     //     setActivityData(mockActivity);
     // }, []);
     
 
     useEffect(() => {
-        console.log("accessToken" + accessToken);
         if (accessToken) {
             (async () => {
                 // Fetch user data and activity data from API
@@ -112,7 +110,7 @@ export default function ProfilePage({ children }) {
                 }
 
                 const data = await response.json();
-                // console.log("data" + data)
+                
 
                 setProfileData(data); // Set profile data (username, email, etc.)
                 // Mock activity data - array of objects with date and count
@@ -122,7 +120,6 @@ export default function ProfilePage({ children }) {
     }
 
         const mockActivity = generateMockActivityData();
-        console.log(mockActivity);
         setActivityData(mockActivity);
     }, [accessToken]);
 

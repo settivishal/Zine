@@ -142,8 +142,7 @@ function UpdateAge({ currentAge }) {
         setAge(currentAge);
     })
 
-    console.log("cage", currentAge);
-    console.log("age", age);
+    
 
     const handleAge = async (e) => {
         e.preventDefault();
