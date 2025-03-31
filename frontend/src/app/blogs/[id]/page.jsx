@@ -1,21 +1,23 @@
 "use client"
 
 import { useParams } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCreateBlockNote } from "@blocknote/react";
+import axios from 'axios';
 import { BlockNoteView } from "@blocknote/mantine";
 import Navbar from '../../../components/Navbar';
 import Image from 'next/image';
-
+import { useAuth } from '../../../hooks/authcontext';
 
 import "@blocknote/mantine/style.css";
 import "@blocknote/core/fonts/inter.css";
 
 export default function Blog() {
-    const [blocks, setBlocks] = useState([])
+    const [blocks, setBlocks] = useState([]);
     const params = useParams();
     const id = params.id;
-
+    // console.log(id);
+    const { accessToken } = useAuth();
     const [editorContent, setEditorContent] = useState([
         {
             type: "heading",
@@ -31,22 +33,42 @@ export default function Blog() {
         initialContent: editorContent,
     });
 
-    const fetchContentFromBackend = async () => {
+    // const fetchContentFromBackend = async () => {
+    //     try {
+    //         const response = await fetch('/api/getContent');
+    //         if (!response.ok) {
+    //             throw new Error('Failed to fetch content');
+    //         }
+    //         const data = await response.json();
+    //         setEditorContent(data.content); // Update the editor content with data from backend
+    //     } catch (error) {
+    //         console.error('Error fetching content:', error);
+    //     }
+    // };
+    const fetchContentFromBackend = async (id) => {
         try {
-            const response = await fetch('/api/getContent');
-            if (!response.ok) {
-                throw new Error('Failed to fetch content');
-            }
-            const data = await response.json();
-            setEditorContent(data.content); // Update the editor content with data from backend
+            console.log(id);
+            const response = await axios.get(`http://localhost:8080/api/blog/${id}`,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization" : `Bearer ${accessToken}`,
+                    },
+                }
+            ); // Use axios to make the GET request
+            setEditorContent(response.data?.blog?.Content); // Update the editor content with data from backend
+            console.log(response.data?.blog?.Date);
         } catch (error) {
             console.error('Error fetching content:', error);
         }
     };
 
-    // React.useEffect(() => {
-    //     fetchContentFromBackend(); // Fetch content when the component mounts
-    // }, []);
+    useEffect(() => {
+        if (id  && accessToken) {
+            fetchContentFromBackend(id);
+        } // Fetch content when the component mounts
+    }, [id, accessToken]);
+    
 
     editor.uploadFile = async (file) => {
         const reader = new FileReader();
@@ -65,6 +87,7 @@ export default function Blog() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
                 },
                 body: JSON.stringify({ content }),
             });

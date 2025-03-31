@@ -2,7 +2,7 @@
 import ProfileDropdown from './ProfileDropDown';
 import Image from 'next/image';
 
-const Navbar = () => {
+const Navbar = ({Page}) => {
   return (
     <nav className="bg-gray-100 shadow-lg rounded-lg mb-4 p-4 flex justify-between items-center">
       {/* Left Section with Logo */}
@@ -23,7 +23,7 @@ const Navbar = () => {
 
       {/* Right Section (Profile Dropdown) */}
       <div className="w-3/4 flex justify-end">
-        <ProfileDropdown />
+        <ProfileDropdown Page = {Page} />
       </div>
     </nav>
   );

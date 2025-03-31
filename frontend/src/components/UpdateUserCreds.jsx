@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "../hooks/authcontext";
 
 import Button from "./Button";
 
 export default function UpdatePassword() {
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
+    const [Email, setEmail] = useState("");
+    const [Password, setPassword] = useState("");
+    const [New_Password, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
@@ -14,7 +16,7 @@ export default function UpdatePassword() {
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+    const { accessToken } = useAuth();
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -23,22 +25,22 @@ export default function UpdatePassword() {
         setSuccess("");
 
         // Validate inputs
-        if (!currentPassword) {
+        if (!Password) {
             setError("Current password is required");
             return;
         }
 
-        if (!newPassword) {
+        if (!New_Password) {
             setError("New password is required");
             return;
         }
 
-        if (newPassword.length < 8) {
+        if (New_Password.length < 8) {
             setError("Password must be at least 8 characters long");
             return;
         }
 
-        if (newPassword !== confirmPassword) {
+        if (New_Password !== confirmPassword) {
             setError("Passwords do not match");
             return;
         }
@@ -50,20 +52,21 @@ export default function UpdatePassword() {
                 method: "POST",
                 headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${accessToken}`,
                 },
-                body: JSON.stringify({ currentPassword, newPassword }),
+                body: JSON.stringify({Email, Password, New_Password }),
             });
         
             if (!response.ok) {
                 const errorData = await response.json();
-                setErrorMessage(errorData.message || "Failed to update password.");
+                setError(errorData.message || "Failed to update password.");
                 return;
             }
         
             const data = await response.json();
 
             // Reset form
-            setCurrentPassword("");
+            setPassword("");
             setNewPassword("");
             setConfirmPassword("");
             setSuccess("Password updated successfully");
@@ -90,19 +93,37 @@ export default function UpdatePassword() {
                     {error}
                 </div>
             )}
+            <div>
+                <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700">
+                    User Email
+                </label>
+                <div className="relative mt-1">
+                    <input
+                        id="email"
+                        type="text"
+                        placeholder="email"
+                        value={Email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="mb-3 w-full py-2 border border-gray-600 rounded  text-sm text-black focus:outline-none focus:ring-1 focus:bor focus:ring-blue-500"
+                        disabled={isSubmitting}
+                    />
+                </div>
+            </div>
 
             <div>
                 <label
-                    htmlFor="current-password"
+                    htmlFor="password"
                     className="block text-sm font-medium text-gray-700">
                     Current Password
                 </label>
                 <div className="relative mt-1">
                     <input
-                        id="current-password"
+                        id="password"
                         type={showCurrentPassword ? "text" : "password"}
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        value={Password}
+                        onChange={(e) => setPassword(e.target.value)}
                         className="mb-3 w-full py-2 border border-gray-600 rounded  text-sm text-black focus:outline-none focus:ring-1 focus:bor focus:ring-blue-500"
                         disabled={isSubmitting}
                     />
@@ -119,7 +140,7 @@ export default function UpdatePassword() {
                     <input
                         id="new-password"
                         type={showNewPassword ? "text" : "password"}
-                        value={newPassword}
+                        value={New_Password}
                         onChange={(e) => setNewPassword(e.target.value)}
                         className="mb-3 w-full py-2 border border-gray-600 rounded  text-sm text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
                         disabled={isSubmitting}
@@ -170,3 +191,6 @@ export default function UpdatePassword() {
         </form>
     );
 }
+
+
+// export { UpdateUsername, UpdatePassword };
