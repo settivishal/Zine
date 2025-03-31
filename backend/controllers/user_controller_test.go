@@ -22,6 +22,22 @@ type MockHandleUpdateImage struct {
 	mock.Mock
 }
 
+type MockHandleUpdateProfile struct {
+	mock.Mock
+}
+
+type MockHandleUpdateHobbies struct {
+	mock.Mock
+}
+
+type MockHandleUpdateSocials struct {
+	mock.Mock
+}
+
+type MockHandleGetGrid struct {
+	mock.Mock
+}
+
 func (m *MockHandleProfile) MockHandleProfile(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
@@ -33,6 +49,26 @@ func (m *MockHandleChangePassword) MockHandleChangePassword(w http.ResponseWrite
 }
 
 func (m *MockHandleUpdateImage) MockHandleUpdateImage(w http.ResponseWriter, r *http.Request) (interface{},error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHandleUpdateProfile) MockHandleUpdateProfile(w http.ResponseWriter, r *http.Request) (interface{},error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHandleUpdateHobbies) MockHandleUpdateHobbies(w http.ResponseWriter, r *http.Request) (interface{},error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHandleUpdateSocials) MockHandleUpdateSocials(w http.ResponseWriter, r *http.Request) (interface{},error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHandleGetGrid) MockHandleGetGrid(w http.ResponseWriter, r *http.Request) (interface{},error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
 }
@@ -222,6 +258,182 @@ func TestUpdateImage(t *testing.T) {
 		// Assertions	
 		assert.Nil(t, response)	
 		assert.EqualError(t, err, "Error updating image")
+		assert.Equal(t, 400, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+}
+
+func TestUpdateProfile(t *testing.T) {
+	// Test case 1: Update profile successfully
+	t.Run("Update profile successfully", func(t *testing.T) {
+		mockSuccessHandler := new(MockHandleUpdateProfile)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/profile", nil)	
+
+		mockSuccessHandler.On("MockHandleUpdateProfile", req).Return("Profile updated successfully", nil, http.StatusOK)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockSuccessHandler.MockHandleUpdateProfile(w, req)
+
+		// Assertions
+		assert.Equal(t, "Profile updated successfully", response)
+		assert.NoError(t, err)
+		assert.Equal(t, 200, statusCode)
+
+		// Verify that the expected call was made
+		mockSuccessHandler.AssertExpectations(t)
+	})
+
+	// Test case 2: Error updating profile
+	t.Run("Error updating profile", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleUpdateProfile)
+
+		req := httptest.NewRequest(http.MethodPost, "/profile", nil)
+
+		mockFailureHandler.On("MockHandleUpdateProfile", req).Return(nil, errors.New("Error updating profile"), http.StatusBadRequest)
+
+		// Call the mock method	
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockFailureHandler.MockHandleUpdateProfile(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err, "Error updating profile")	
+		assert.Equal(t, 400, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+}
+
+func TestUpdateHobbies(t *testing.T) {
+	// Test case 1: Update hobbies successfully
+	t.Run("Update hobbies successfully", func(t *testing.T) {
+		mockSuccessHandler := new(MockHandleUpdateHobbies)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/hobbies", nil)	
+
+		mockSuccessHandler.On("MockHandleUpdateHobbies", req).Return("Hobbies updated successfully", nil, http.StatusOK)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockSuccessHandler.MockHandleUpdateHobbies(w, req)
+
+		// Assertions
+		assert.Equal(t, "Hobbies updated successfully", response)
+		assert.NoError(t, err)	
+		assert.Equal(t, 200, statusCode)
+
+		// Verify that the expected call was made
+		mockSuccessHandler.AssertExpectations(t)
+	})
+
+	// Test case 2: Error updating hobbies
+	t.Run("Error updating hobbies", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleUpdateHobbies)
+
+		req := httptest.NewRequest(http.MethodPost, "/hobbies", nil)
+
+		mockFailureHandler.On("MockHandleUpdateHobbies", req).Return(nil, errors.New("Error updating hobbies"), http.StatusBadRequest)
+
+		// Call the mock method	
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockFailureHandler.MockHandleUpdateHobbies(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err, "Error updating hobbies")	
+		assert.Equal(t, 400, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+}
+
+func TestUpdateSocials(t *testing.T) {
+	// Test case 1: Update socials successfully
+	t.Run("Update socials successfully", func(t *testing.T) {
+		mockSuccessHandler := new(MockHandleUpdateSocials)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/socials", nil)	
+
+		mockSuccessHandler.On("MockHandleUpdateSocials", req).Return("Socials updated successfully", nil, http.StatusOK)	
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockSuccessHandler.MockHandleUpdateSocials(w, req)
+
+		// Assertions
+		assert.Equal(t, "Socials updated successfully", response)
+		assert.NoError(t, err)
+		assert.Equal(t, 200, statusCode)
+
+		// Verify that the expected call was made
+		mockSuccessHandler.AssertExpectations(t)
+	})
+
+	// Test case 2: Error updating socials
+	t.Run("Error updating socials", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleUpdateSocials)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/socials", nil)
+
+		mockFailureHandler.On("MockHandleUpdateSocials", req).Return(nil, errors.New("Error updating socials"), http.StatusBadRequest)	
+
+		// Call the mock method	
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockFailureHandler.MockHandleUpdateSocials(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err, "Error updating socials")	
+		assert.Equal(t, 400, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+}
+
+func TestGetGrid(t *testing.T) {
+	// Test case 1: Get grid successfully
+	t.Run("Get grid successfully", func(t *testing.T) {
+		mockSuccessHandler := new(MockHandleGetGrid)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/profile/grid", nil)	
+
+		mockSuccessHandler.On("MockHandleGetGrid", req).Return("Grid fetched successfully", nil, http.StatusOK)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockSuccessHandler.MockHandleGetGrid(w, req)
+
+		// Assertions
+		assert.Equal(t, "Grid fetched successfully", response)
+		assert.NoError(t, err)
+		assert.Equal(t, 200, statusCode)
+
+		// Verify that the expected call was made
+		mockSuccessHandler.AssertExpectations(t)
+	})
+
+	// Test case 2: Error getting grid
+	t.Run("Error getting grid", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleGetGrid)	
+
+		req := httptest.NewRequest(http.MethodPost, "/api/profile/grid", nil)	
+
+		mockFailureHandler.On("MockHandleGetGrid", req).Return(nil, errors.New("Error getting grid"), http.StatusBadRequest)
+
+		// Call the mock method	
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockFailureHandler.MockHandleGetGrid(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err, "Error getting grid")	
 		assert.Equal(t, 400, statusCode)
 
 		// Verify that the expected call was made
