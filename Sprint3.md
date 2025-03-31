@@ -50,7 +50,8 @@ Unit tests are written for each controller to ensure API functionality.
 | `mailing_service.go`         | `mailing_service_test.go`         | Tests email-related features, including sending and receiving emails. |
 | `tags_service.go`            | `tags_service_test.go`            | Tests CRUD operations for managing tags. |
 | `user_service.go`            | `user_service_test.go`            | Tests user-related operations, including profile updates, deletion, and management. |
-<!-- add more -->
+| `blog_service.go`            | `blog_service_test.go`            | Tests blog-related operations. |
+| `tag_service.go`             | `tag_service_test.go`             | Tests blog-related operations. |
 
 ### Middleware with Unit Tests
 
