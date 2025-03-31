@@ -4,11 +4,13 @@ import { Button, Card, CardContent, Typography, Box, Chip, Dialog, DialogTitle, 
 import AddIcon from '@mui/icons-material/Add';
 import Image from 'next/image';
 import { useAuth } from '../hooks/authcontext';
+import { useTags } from '../hooks/tagsContext';
 //import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 
-const BlogList = ({ availableTags, onTagsUpdate }) => {
+const BlogList = () => {
     const { accessToken } = useAuth();
+    const { tags, fetchTags } = useTags();
     const [realBlogs, setRealBlogs] = useState({});  // Initialize as empty object instead of array
     const [openTagDialog, setOpenTagDialog] = useState(false);
     const [selectedBlogId, setSelectedBlogId] = useState(null);
@@ -60,6 +62,12 @@ const BlogList = ({ availableTags, onTagsUpdate }) => {
         fetchBlogs();
     }, [accessToken]);
 
+    useEffect(() => {
+        if (accessToken) {
+            fetchTags();
+        }
+    }, [accessToken, fetchTags]);
+
     const handleCreateBlog = async () => {
         try {
             // Get today's date in YYYY-MM-DD format
@@ -99,6 +107,7 @@ const BlogList = ({ availableTags, onTagsUpdate }) => {
     const handleAddTags = (blogId) => {
         setSelectedBlogId(blogId);
         setOpenTagDialog(true);
+        fetchTags();
     };
 
     const handleCloseDialog = () => {
@@ -121,7 +130,6 @@ const BlogList = ({ availableTags, onTagsUpdate }) => {
             return blog;
         }));
         handleCloseDialog();
-        onTagsUpdate(); // Refresh tags after selection if needed
     };
 
     // Add this function to check if blog exists for today
@@ -188,7 +196,7 @@ const BlogList = ({ availableTags, onTagsUpdate }) => {
                                 }}
                             >
                                 {(blog.tagIds || []).map((tagId, index) => {
-                                    const tag = availableTags.find(t => t.id === tagId);
+                                    const tag = tags.find(t => t.id === tagId);
                                     if (!tag) return null;
                                     return (
                                         <Chip
@@ -242,7 +250,7 @@ const BlogList = ({ availableTags, onTagsUpdate }) => {
                             </Typography>
                             <Box className="flex justify-end text-sm text-gray-500">
                                 <Typography variant="caption">
-                                    {new Date(date).toLocaleDateString()} {/* Using the date from the object key */}
+                                    {new Date(date.replace(/-/g, '/')).toLocaleDateString()}
                                 </Typography>
                             </Box>
                         </CardContent>
@@ -255,7 +263,8 @@ const BlogList = ({ availableTags, onTagsUpdate }) => {
                 <DialogTitle>Select a Tag</DialogTitle>
                 <DialogContent>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 2 }}>
-                        {availableTags.map((tag, index) => (
+                        {console.log('Available tags in dialog:', tags)}  {/* Debug log */}
+                        {tags && tags.map((tag, index) => (
                             <Chip
                                 key={index}
                                 label={tag.text}
