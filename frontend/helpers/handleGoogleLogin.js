@@ -16,7 +16,6 @@ export const handleGoogleLogin = async (e) => {
     const data = await response.json();
 
     if (data.auth_url) {
-      console.log("Redirecting to Google login page:", data.auth_url);
       window.location.href = data.auth_url;
     } else {
       throw new Error("Invalid authentication URL");

@@ -111,7 +111,7 @@ export default function Blog() {
 
             <div className='p-5'>
                 <h1>Blog {id}</h1>
-                <Navbar />
+                <Navbar Page={'Home'} />
                 {/* cover image like in notion use NEXT IMAGE */}
                 <div className='w-full h-[35vh] bg-gray-200 border rounded-t-md'>
                     {/* cover image */}
