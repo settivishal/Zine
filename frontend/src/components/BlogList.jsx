@@ -138,21 +138,20 @@ const BlogList = ({ availableTags, onTagsUpdate }) => {
         <div className="h-full flex flex-col gap-4">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-black">My Blogs</h2>
-                {!blogExistsForToday() && (
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={handleCreateBlog}
-                        sx={{
-                            backgroundColor: '#1a73e8',
-                            '&:hover': {
-                                backgroundColor: '#1557b0'
-                            }
-                        }}
-                    >
-                        Create New Blog
-                    </Button>
-                )}
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={blogExistsForToday() ? undefined : handleCreateBlog}
+                    disabled={blogExistsForToday()}
+                    sx={{
+                        backgroundColor: blogExistsForToday() ? '#e0e0e0' : '#1a73e8',
+                        '&:hover': {
+                            backgroundColor: blogExistsForToday() ? '#e0e0e0' : '#1557b0'
+                        }
+                    }}
+                >
+                    Create New Blog
+                </Button>
             </div>
 
             <div className="overflow-y-auto">
