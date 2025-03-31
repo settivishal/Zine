@@ -15,6 +15,7 @@ const BlogList = () => {
     const [blogTags, setBlogTags] = useState({}); // New state to store tags for each blog
     const [openTagDialog, setOpenTagDialog] = useState(false);
     const [selectedBlogId, setSelectedBlogId] = useState(null);
+    const [hoveredTag, setHoveredTag] = useState(null); // Add this new state
 
     const fetchTagsByIds = async (tagIds) => {
         if (!tagIds || tagIds.length === 0) return [];
@@ -43,51 +44,54 @@ const BlogList = () => {
         }
     };
 
-    useEffect(() => {
-        const fetchBlogs = async () => {
-            if (!accessToken) {
-                console.log('Waiting for access token...');
-                return;
-            }
+    // Move fetchBlogs outside useEffect so we can reuse it
+    const fetchBlogs = async () => {
+        if (!accessToken) {
+            console.log('Waiting for access token...');
+            return;
+        }
 
-            try {
-                const response = await fetch("http://localhost:8080/api/blogs?page=1&limit=7", {
-                    method: "GET",
-                    headers: { Authorization: `Bearer ${accessToken}` },
-                });
+        try {
+            const response = await fetch("http://localhost:8080/api/blogs?page=1&limit=7", {
+                method: "GET",
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
 
-                if (response.ok) {
-                    const data = await response.json();
+            if (response.ok) {
+                const data = await response.json();
 
-                    if (data.blogs) {
-                        setRealBlogs(data.blogs);
+                if (data.blogs) {
+                    setRealBlogs(data.blogs);
 
-                        // Collect all unique tag IDs from all blogs
-                        const allTagIds = Object.values(data.blogs)
-                            .filter(blog => blog.tagIds)
-                            .flatMap(blog => blog.tagIds);
+                    // Collect all unique tag IDs from all blogs
+                    const allTagIds = Object.values(data.blogs)
+                        .filter(blog => blog.tagIds)
+                        .flatMap(blog => blog.tagIds);
 
-                        if (allTagIds.length > 0) {
-                            const tags = await fetchTagsByIds(allTagIds);
-                            // Create a mapping of blog IDs to their tags
-                            const tagMapping = {};
-                            Object.values(data.blogs).forEach(blog => {
-                                if (blog.tagIds) {
-                                    tagMapping[blog.id] = tags.filter(tag =>
-                                        blog.tagIds.includes(tag.ID)  // Note: Changed to match the API's ID field
-                                    );
-                                }
-                            });
-                            setBlogTags(tagMapping);
-                        }
+                    if (allTagIds.length > 0) {
+                        const tags = await fetchTagsByIds(allTagIds);
+                        // Create a mapping of blog IDs to their tags
+                        const tagMapping = {};
+                        Object.values(data.blogs).forEach(blog => {
+                            if (blog.tagIds) {
+                                tagMapping[blog.id] = tags.filter(tag =>
+                                    blog.tagIds.includes(tag.ID)
+                                );
+                            }
+                        });
+                        setBlogTags(tagMapping);
                     }
                 }
-                // ... existing error handling ...
-            } catch (error) {
-                console.error('Error fetching blogs:', error);
+            } else {
+                console.error('Failed to fetch blogs');
             }
-        };
+        } catch (error) {
+            console.error('Error fetching blogs:', error);
+        }
+    };
 
+    // Update useEffect to use the new fetchBlogs function
+    useEffect(() => {
         fetchBlogs();
     }, [accessToken]);
 
@@ -144,16 +148,14 @@ const BlogList = () => {
         setSelectedBlogId(null);
     };
 
-    // Add new function to make the API call
+    // Update addTagToBlog to use the new fetchBlogs function
     const addTagToBlog = async (tagText, blogDate) => {
         try {
-            // No need to format the date since it's already in YYYY-MM-DD format
             const payload = {
                 text: tagText,
                 date: blogDate
             };
 
-            // Log the payload for debugging
             console.log('Adding tag with payload:', payload);
 
             const response = await fetch('http://localhost:8080/api/tag/set', {
@@ -167,10 +169,7 @@ const BlogList = () => {
 
             if (response.ok) {
                 console.log('Successfully added tag to blog');
-                // Refresh the blogs to get updated tag information
-                const fetchBlogs = async () => {
-                    // ... copy your existing fetchBlogs function here ...
-                };
+                // Refresh the blogs data immediately after adding tag
                 await fetchBlogs();
             } else {
                 const errorData = await response.json().catch(() => null);
@@ -213,6 +212,40 @@ const BlogList = () => {
         console.log('Checking for blog on date:', formattedDate); // Debug log
         console.log('Available blog dates:', Object.keys(realBlogs)); // Debug log
         return Object.keys(realBlogs).includes(formattedDate);
+    };
+
+    // Add new function to remove tag
+    const removeTagFromBlog = async (tagText, blogDate) => {
+        try {
+            const payload = {
+                text: tagText,
+                date: blogDate
+            };
+
+            console.log('Removing tag with payload:', payload);
+
+            const response = await fetch('http://localhost:8080/api/tag/remove', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                console.log('Successfully removed tag from blog');
+                await fetchBlogs(); // Refresh the blogs data
+            } else {
+                const errorData = await response.json().catch(() => null);
+                console.error('Failed to remove tag from blog:', {
+                    status: response.status,
+                    error: errorData
+                });
+            }
+        } catch (error) {
+            console.error('Error removing tag from blog:', error);
+        }
     };
 
     return (
@@ -269,25 +302,43 @@ const BlogList = () => {
                                 }}
                             >
                                 {blogTags[blog.id]?.map((tag, index) => (
-                                    <Chip
+                                    <div
                                         key={tag.ID}
-                                        label={tag.text}
-                                        size="small"
-                                        onClick={() => handleTagClick(tag.text)}
-                                        sx={{
-                                            backgroundColor: tag.color || '#666',
-                                            color: 'white',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s ease',
-                                            '&:hover': {
-                                                transform: 'translateY(-2px)',
-                                                boxShadow: 2
-                                            },
-                                            '&:active': {
-                                                transform: 'translateY(0)'
-                                            }
-                                        }}
-                                    />
+                                        className="relative"
+                                        onMouseEnter={() => setHoveredTag(`${blog.id}-${tag.ID}`)}
+                                        onMouseLeave={() => setHoveredTag(null)}
+                                    >
+                                        <Chip
+                                            label={tag.text}
+                                            size="small"
+                                            onClick={() => handleTagClick(tag.text)}
+                                            sx={{
+                                                backgroundColor: tag.color || '#666',
+                                                color: 'white',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease',
+                                                '&:hover': {
+                                                    transform: 'translateY(-2px)',
+                                                    boxShadow: 2
+                                                },
+                                                '&:active': {
+                                                    transform: 'translateY(0)'
+                                                }
+                                            }}
+                                        />
+                                        {hoveredTag === `${blog.id}-${tag.ID}` && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); // Prevent triggering the tag click
+                                                    removeTagFromBlog(tag.text, date);
+                                                }}
+                                                className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center bg-red-500 text-white rounded-full text-xs hover:bg-red-700"
+                                                style={{ zIndex: 2 }}
+                                            >
+                                                ×
+                                            </button>
+                                        )}
+                                    </div>
                                 ))}
                                 <Chip
                                     icon={<AddIcon />}
