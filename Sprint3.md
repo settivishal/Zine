@@ -38,7 +38,8 @@ Unit tests are written for each controller to ensure API functionality.
 | `swagger_controller.go`         | `swagger_controller_test.go`         | Verifies Swagger API documentation endpoints. |
 | `tags_controller.go`            | `tags_controller_test.go`            | Tests CRUD operations for tags. |
 | `user_controller.go`            | `user_controller_test.go`            | Tests user-related operations (profile update, deletion, etc.). |
-<!-- add more -->
+| `blog_controller.go`            | `blog_controller_test.go`            | Tests blog-related operations (create blog, get blogs, get blogs by IDs, upload cover image). |
+| `tag_controller.go`             | `tag_controller_test.go`             | Tests tags related operations. |
 
 ### Services with Unit Tests
 
