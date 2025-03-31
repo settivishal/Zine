@@ -30,6 +30,10 @@ type MockHandleGetTags struct {
 	mock.Mock
 }
 
+type MockHandleGetTagsByIDs struct {
+	mock.Mock
+}
+
 func (m *MockHandleCreateTag) MockHandleCreateTag(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
@@ -51,6 +55,11 @@ func (m *MockHandleRemoveTag) MockHandleRemoveTag(w http.ResponseWriter, r *http
 }
 
 func (m *MockHandleGetTags) MockHandleGetTags(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHandleGetTagsByIDs) MockHandleGetTagsByIDs(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
 }
@@ -361,5 +370,50 @@ func TestGetTags(t *testing.T) {
 
 		// Verify that the expected call was made
 		mockHandleGetTags.AssertExpectations(t)
+	})
+}
+
+func TestGetTagsByIDs(t *testing.T) {
+	// Test case 1: tags retrieved successfully
+	t.Run("Successful GetTagsByIDs Response", func(t *testing.T) {
+		// Mock dependencies
+		mockHandleGetTagsByIDs := new(MockHandleGetTagsByIDs)	
+
+		req := httptest.NewRequest(http.MethodGet, "/api/tags/getByIDs", nil)	
+
+		mockHandleGetTagsByIDs.On("MockHandleGetTagsByIDs", req).Return("Tags retrieved successfully", nil, http.StatusOK)
+
+		// Call the mock method	
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockHandleGetTagsByIDs.MockHandleGetTagsByIDs(w, req)	
+
+		// Assertions
+		assert.Equal(t, "Tags retrieved successfully", response)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		// Verify that the expected call was made
+		mockHandleGetTagsByIDs.AssertExpectations(t)
+	})
+
+	// Test case 2: Error getting tags	
+	t.Run("Error GetTagsByIDs Response", func(t *testing.T) {
+		mockHandleGetTagsByIDs := new(MockHandleGetTagsByIDs)	
+
+		req := httptest.NewRequest(http.MethodGet, "/api/tags/getByIDs", nil)
+
+		mockHandleGetTagsByIDs.On("MockHandleGetTagsByIDs", req).Return(nil, errors.New("Error getting tags"), http.StatusInternalServerError)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockHandleGetTagsByIDs.MockHandleGetTagsByIDs(w, req)	
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err, "Error getting tags")
+		assert.Equal(t, http.StatusInternalServerError, statusCode)
+
+		// Verify that the expected call was made
+		mockHandleGetTagsByIDs.AssertExpectations(t)
 	})
 }
