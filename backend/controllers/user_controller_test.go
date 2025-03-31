@@ -30,6 +30,10 @@ type MockHandleUpdateHobbies struct {
 	mock.Mock
 }
 
+type MockHandleUpdateSocials struct {
+	mock.Mock
+}
+
 func (m *MockHandleProfile) MockHandleProfile(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
@@ -51,6 +55,11 @@ func (m *MockHandleUpdateProfile) MockHandleUpdateProfile(w http.ResponseWriter,
 }
 
 func (m *MockHandleUpdateHobbies) MockHandleUpdateHobbies(w http.ResponseWriter, r *http.Request) (interface{},error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHandleUpdateSocials) MockHandleUpdateSocials(w http.ResponseWriter, r *http.Request) (interface{},error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
 }
@@ -328,6 +337,50 @@ func TestUpdateHobbies(t *testing.T) {
 		// Assertions
 		assert.Nil(t, response)
 		assert.EqualError(t, err, "Error updating hobbies")	
+		assert.Equal(t, 400, statusCode)
+
+		// Verify that the expected call was made
+		mockFailureHandler.AssertExpectations(t)
+	})
+}
+
+func TestUpdateSocials(t *testing.T) {
+	// Test case 1: Update socials successfully
+	t.Run("Update socials successfully", func(t *testing.T) {
+		mockSuccessHandler := new(MockHandleUpdateSocials)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/socials", nil)	
+
+		mockSuccessHandler.On("MockHandleUpdateSocials", req).Return("Socials updated successfully", nil, http.StatusOK)	
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockSuccessHandler.MockHandleUpdateSocials(w, req)
+
+		// Assertions
+		assert.Equal(t, "Socials updated successfully", response)
+		assert.NoError(t, err)
+		assert.Equal(t, 200, statusCode)
+
+		// Verify that the expected call was made
+		mockSuccessHandler.AssertExpectations(t)
+	})
+
+	// Test case 2: Error updating socials
+	t.Run("Error updating socials", func(t *testing.T) {
+		mockFailureHandler := new(MockHandleUpdateSocials)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/socials", nil)
+
+		mockFailureHandler.On("MockHandleUpdateSocials", req).Return(nil, errors.New("Error updating socials"), http.StatusBadRequest)	
+
+		// Call the mock method	
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockFailureHandler.MockHandleUpdateSocials(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.EqualError(t, err, "Error updating socials")	
 		assert.Equal(t, 400, statusCode)
 
 		// Verify that the expected call was made
