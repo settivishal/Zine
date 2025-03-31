@@ -57,6 +57,15 @@ func (m *MockHandleGetTags) MockHandleGetTags(w http.ResponseWriter, r *http.Req
 	return args.Get(0).([]models.Tag), args.Error(1), args.Int(2)
 }
 
+type MockHandleGetTagsByIDs struct {
+	mock.Mock
+}
+
+func (m *MockHandleGetTagsByIDs) MockHandleGetTagsByIDs(w http.ResponseWriter, r *http.Request) ([]models.Tag, error, int) {
+	args := m.Called(r)
+	return args.Get(0).([]models.Tag), args.Error(1), args.Int(2)
+}
+
 func TestHandleCreateTag(t *testing.T) {
 	// Test case 1: Successful creation
 	t.Run("Successful Creation", func(t *testing.T) {
