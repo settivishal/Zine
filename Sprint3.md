@@ -39,7 +39,6 @@ Unit tests are written for each controller to ensure API functionality.
 | `tags_controller.go`            | `tags_controller_test.go`            | Tests CRUD operations for tags. |
 | `user_controller.go`            | `user_controller_test.go`            | Tests user-related operations (profile update, deletion, etc.). |
 | `blog_controller.go`            | `blog_controller_test.go`            | Tests blog-related operations (create blog, get blogs, get blogs by IDs, upload cover image). |
-| `tag_controller.go`             | `tag_controller_test.go`             | Tests tags related operations. |
 
 ### Services with Unit Tests
 
@@ -51,7 +50,6 @@ Unit tests are written for each controller to ensure API functionality.
 | `tags_service.go`            | `tags_service_test.go`            | Tests CRUD operations for managing tags. |
 | `user_service.go`            | `user_service_test.go`            | Tests user-related operations, including profile updates, deletion, and management. |
 | `blog_service.go`            | `blog_service_test.go`            | Tests blog-related operations. |
-| `tag_service.go`             | `tag_service_test.go`             | Tests blog-related operations. |
 
 ### Middleware with Unit Tests
 
