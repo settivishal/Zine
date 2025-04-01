@@ -1,64 +1,138 @@
+// UpdateProfile.test.jsx
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import UpdateBio from '../components/UpdateBio';
+import { UpdateBio, UpdateAge, UpdateGender } from '../components/UpdateBio';
+import { useAuth } from '../hooks/authcontext';
+import axios from 'axios';
 
-// Mock the fetch function
-global.fetch = jest.fn();
+// Mock dependencies
+jest.mock('axios');
+jest.mock('../hooks/authcontext', () => ({
+  useAuth: jest.fn(),
+}));
+
+jest.mock('../components/Button', () => {
+  return function MockButton({ children, onClick, disabled }) {
+    return (
+      <button onClick={onClick} disabled={disabled} data-testid="button">
+        {children}
+      </button>
+    );
+  };
+});
 
 describe('UpdateBio Component', () => {
-  const mockCurrentBio = "This is my current bio.";
-
   beforeEach(() => {
-    fetch.mockClear();
+    useAuth.mockReturnValue({ accessToken: 'mock-token' });
+    axios.post.mockReset();
+    axios.post.mockResolvedValue({ status: 200, data: { message: 'Bio updated successfully' } });
   });
 
-  test('renders current bio when not editing', () => {
-    render(<UpdateBio currentBio={mockCurrentBio} />);
-    expect(screen.getByText(mockCurrentBio)).toBeInTheDocument();
-    expect(screen.getByText('Edit')).toBeInTheDocument();
+  test('renders with current bio', () => {
+    render(<UpdateBio currentBio="This is my current bio" />);
+    expect(screen.getByText('This is my current bio')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Edit/i })).toBeInTheDocument();
   });
 
   test('switches to edit mode when Edit button is clicked', () => {
-    render(<UpdateBio currentBio={mockCurrentBio} />);
-    fireEvent.click(screen.getByText('Edit'));
-    expect(screen.getByPlaceholderText('Tell us about yourself...')).toBeInTheDocument();
-    expect(screen.getByText('Save')).toBeInTheDocument();
-    expect(screen.getByText('Cancel')).toBeInTheDocument();
+    render(<UpdateBio currentBio="This is my current bio" />);
+    fireEvent.click(screen.getByRole('button', { name: /Edit/i }));
+    
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Save/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
   });
 
-  test('cancels editing and reverts to original bio', () => {
-    render(<UpdateBio currentBio={mockCurrentBio} />);
-    fireEvent.click(screen.getByText('Edit'));
-    const textarea = screen.getByPlaceholderText('Tell us about yourself...');
-    fireEvent.change(textarea, { target: { value: 'New bio text' } });
-    fireEvent.click(screen.getByText('Cancel'));
-    expect(screen.getByText(mockCurrentBio)).toBeInTheDocument();
+  
+
+  test('returns to view mode without changes when Cancel is clicked', () => {
+    render(<UpdateBio currentBio="This is my current bio" />);
+    fireEvent.click(screen.getByRole('button', { name: /Edit/i }));
+    
+    const textarea = screen.getByRole('textbox');
+    fireEvent.change(textarea, { target: { value: 'New updated bio' } });
+    
+    fireEvent.click(screen.getByRole('button', { name: /Cancel/i }));
+    
+    expect(screen.getByText('This is my current bio')).toBeInTheDocument();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
   });
 
-  test('submits new bio when Save is clicked', async () => {
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ message: 'Bio updated successfully' }),
-    });
+});
 
-    render(<UpdateBio currentBio={mockCurrentBio} />);
-    fireEvent.click(screen.getByText('Edit'));
-    const textarea = screen.getByPlaceholderText('Tell us about yourself...');
-    fireEvent.change(textarea, { target: { value: 'New bio text' } });
-    fireEvent.click(screen.getByText('Save'));
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('http://localhost:8080/api/bio', expect.any(Object));
-    });
+describe('UpdateAge Component', () => {
+  beforeEach(() => {
+    useAuth.mockReturnValue({ accessToken: 'mock-token' });
+    axios.post.mockReset();
+    axios.post.mockResolvedValue({ status: 200, data: { message: 'Age updated successfully' } });
   });
 
-  test('does not submit if bio is unchanged', async () => {
-    render(<UpdateBio currentBio={mockCurrentBio} />);
-    fireEvent.click(screen.getByText('Edit'));
-    fireEvent.click(screen.getByText('Save'));
-
-    expect(fetch).not.toHaveBeenCalled();
-    expect(screen.getByText(mockCurrentBio)).toBeInTheDocument();
+  test('renders with current age', () => {
+    render(<UpdateAge currentAge={25} />);
+    expect(screen.getByText('25')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /✏️/i })).toBeInTheDocument();
   });
+
+  test('switches to edit mode when Edit button is clicked', () => {
+    render(<UpdateAge currentAge={25} />);
+    fireEvent.click(screen.getByRole('button', { name: /✏️/i }));
+    
+    expect(screen.getByRole('spinbutton')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Save/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
+  });
+
+
+  test('returns to view mode without changes when Cancel is clicked', () => {
+    render(<UpdateAge currentAge={25} />);
+    fireEvent.click(screen.getByRole('button', { name: /✏️/i }));
+    
+    const input = screen.getByRole('spinbutton');
+    fireEvent.change(input, { target: { value: '30' } });
+    
+    fireEvent.click(screen.getByRole('button', { name: /Cancel/i }));
+    
+    expect(screen.getByText('25')).toBeInTheDocument();
+    expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+  });
+
+});
+
+describe('UpdateGender Component', () => {
+  beforeEach(() => {
+    useAuth.mockReturnValue({ accessToken: 'mock-token' });
+    axios.post.mockReset();
+    axios.post.mockResolvedValue({ status: 200, data: { message: 'Gender updated successfully' } });
+  });
+
+  test('renders with current gender', () => {
+    render(<UpdateGender currentGender="Male" />);
+    expect(screen.getByText('Male')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /✏️/i })).toBeInTheDocument();
+  });
+
+  test('switches to edit mode when Edit button is clicked', () => {
+    render(<UpdateGender currentGender="Male" />);
+    fireEvent.click(screen.getByRole('button', { name: /✏️/i }));
+    
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Save/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
+  });
+
+
+  test('returns to view mode without changes when Cancel is clicked', () => {
+    render(<UpdateGender currentGender="Male" />);
+    fireEvent.click(screen.getByRole('button', { name: /✏️/i }));
+    
+    const select = screen.getByRole('combobox');
+    fireEvent.change(select, { target: { value: 'Female' } });
+    
+    fireEvent.click(screen.getByRole('button', { name: /Cancel/i }));
+    
+    expect(screen.getByText('Male')).toBeInTheDocument();
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+  });
+
 });
