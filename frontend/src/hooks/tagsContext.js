@@ -20,6 +20,7 @@ export function TagsProvider({ children }) {
 
       if (response.ok) {
         const data = await response.json();
+        setTags(Array.isArray(data) ? data : []);
       } else {
         console.error("Failed to fetch tags");
         setTags([]);
