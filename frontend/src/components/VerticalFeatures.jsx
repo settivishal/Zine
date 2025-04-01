@@ -1,4 +1,3 @@
-// import VerticalFeatureRow from './VerticalFeatureRow';
 import Section from './Section';
 import React from 'react';
 import classNames from 'classnames';
@@ -61,4 +60,4 @@ const VerticalFeatures = () => (
   </div>
 );
 
-export default VerticalFeatures;
+export { VerticalFeatures, VerticalFeatureRow };

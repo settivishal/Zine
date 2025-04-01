@@ -22,7 +22,7 @@ export default function Tags() {
   const handleAddTag = async () => {
     if (newTag.trim()) {
       const payload = { text: newTag, color: color };
-      console.log("Creating tag with payload:", JSON.stringify(payload));
+      
 
       try {
         const response = await fetch("http://localhost:8080/api/tag/create", {
@@ -34,10 +34,10 @@ export default function Tags() {
           body: JSON.stringify(payload),
         });
 
-        console.log("Create tag response status:", response.status);
+        
 
         const responseData = await response.json();
-        console.log("Create tag response:", responseData);
+        
 
         if (response.ok) {
           await fetchTags();
