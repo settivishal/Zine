@@ -19,6 +19,12 @@ Video Demo:
 
 <!-- objectives -->
 
+**Frontend:**
+- To fix all the bugs from past sprints 
+- UI enhancements to make all pages consistent make design intuitive
+- Add new features to Profile page and Blog page and settings page
+  
+
 ## Accomplishments
 
 **Backend:**
@@ -35,6 +41,21 @@ Video Demo:
 
 
 **Frontend:**
+
+- Added route protection using Middleware
+- Authentication and Navigation Flow improvements, fixed bugs from sprint2 
+- Improved homepage UI to let users create Blogs and fetch their existing Blogs
+- Feature to delete user tags, and to Set and Remove tags from particular Blogs
+- Added Custom Hooks to get Access Tokens (from cookies) and Tags
+- Designed Settings page to let users update their credentials
+- Added functionality to set default profile pics if user did not upload a picture
+- Improved UI of activity grid
+- Features to Update Profile pic, update Bio
+- Features to update Age, Gender in profile
+- Added new component Hobbies with add, delete functionalities to the Profile page
+- Improved the UI of Profile Page overall.
+- Altered the async post api function call to work for all the profile components
+
 
 ## Unit Tests for Backend
 
@@ -81,6 +102,21 @@ Unit tests are written for each controller to ensure API functionality.
 ## Unit Tests and Cypress for Frontend
 
 <!-- add unit test and cypress details here -->
+ ### Cypress
+  - added more test cases to homepage and profile page
+  
+  ### Unit Tests
+  - Created tests for Banner.jsx to test proper rendering
+  - Created tests for Base.jsx, Section.jsx to test proper rendering of child components
+  - Created tests for CenteredFooter.jsx, Footer.jsx to test proper rendering of logo, navigation links, icon list and children components
+  - Created tests Hero.jsx to check working and rendering of buttons
+  - Added new tests to Tags.jsx to test removal of tags and new tag hooks and tag selection
+  - Created tests for BlogList.jsx to test fetching blogs, creating blogs, and tags 
+  - Added tests to Navbar to check proper redirecting
+  - Added tests for ProfileDropDown.jsx, ProfilePicture.jsx to check proper icon and profile pic rendering and working of logout functionality
+- Added tests to UpdateBio to test : UpdateBio Component (current, edit, cancel) , UpdateAge Component , UpdateGender Component
+- Added tests to UpdateUserCreds.jsx to test update of credentials, form submission , error handling
+- Created tests for VerticalFeatures.jsx to test proper rendering and correct prop passing.
 
 ## API Documentation
 

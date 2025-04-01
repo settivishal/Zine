@@ -27,7 +27,7 @@ export default function ProfilePage({ children }) {
         if (file) {
             const formData = new FormData();
             formData.append("image", file);
-            console.log("formData")
+            
 
             try {
                 const response = await fetch("http://localhost:8080/api/image/update", {
@@ -82,7 +82,6 @@ export default function ProfilePage({ children }) {
             fetchProfileData();
         }
         const mockActivity = generateMockActivityData();
-        console.log(mockActivity);
         setActivityData(mockActivity);
     }, [accessToken]);
     
