@@ -2,19 +2,17 @@
 import axios from 'axios';
 
 import {
-    Avatar,
     Chip,
     Typography,
     LinearProgress,
-    Button,
 } from "@mui/material";
 import { useState, useEffect } from "react";
-import { compileFunction } from "vm";
 import { useAuth } from '../../hooks/authcontext';
 
-import {UpdateBio, UpdateAge, UpdateGender} from "../../components/UpdateBio";
+import {UpdateBio, UpdateAge, UpdateGender, UpdateHobbies} from "../../components/UpdateBio";
 import ActivityGrid from "../../components/ActivityGrid";
 import Navbar from "../../components/Navbar";
+import ProfilePicture from "../../components/ProfilePicture";
 
 export default function ProfilePage({ children }) {
     const [image, setImage] = useState();
@@ -57,76 +55,37 @@ export default function ProfilePage({ children }) {
     };
 
 
-    // useEffect(() => {
-    //     const fetchProfileData = () => {
-    //         const config = {
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //                 Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-    //             },
-    //         };
-
-    //         axios
-    //             .get("http://localhost:8080/api/profile", config)
-    //             .then((response) => {
-    //                 setProfileData(response.data); // Set profile data (username, email, etc.)
-    //             })
-    //             .catch((error) => {
-    //                 if (error.response && error.response.data) {
-    //                     setErrorMessage(error.response.data.message || "Failed to fetch profile data.");
-    //                 } else {
-    //                     setErrorMessage("Failed to fetch profile data.");
-    //                 }
-    //             });
-    //     };
-
-    //     fetchProfileData();
-
-    //     const mockActivity = generateMockActivityData();
-    //     console.log(mockActivity);
-    //     setActivityData(mockActivity);
-    // }, []);
-    
-
     useEffect(() => {
-        console.log("accessToken" + accessToken);
-        if (accessToken) {
-            (async () => {
-                // Fetch user data and activity data from API
-                // This would typically be an API call to your backend
-                // For demo purposes, we're using mock data
-                const response = await fetch("http://localhost:8080/api/profile", {
-                    method: "GET",
+        if(accessToken) {
+            const fetchProfileData = () => {
+                const config = {
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${accessToken}`, // Assuming you have a token in your auth context
+                        Authorization: `Bearer ${accessToken}`, // Include the access token in the headers
                     },
-                });
+                };
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    setErrorMessage(
-                        errorData.message || "Failed to fetch profile data."
-                    );
-                    return;
-                }
+                axios
+                    .get("http://localhost:8080/api/profile", config)
+                    .then((response) => {
+                        setProfileData(response.data); // Set profile data (username, email, etc.)
+                    })
+                    .catch((error) => {
+                        if (error.response && error.response.data) {
+                            setErrorMessage(error.response.data.message || "Failed to fetch profile data.");
+                        } else {
+                            setErrorMessage("Failed to fetch profile data.");
+                        }
+                    });
+            };
 
-                const data = await response.json();
-                // console.log("data" + data)
-
-                setProfileData(data); // Set profile data (username, email, etc.)
-                // Mock activity data - array of objects with date and count
-                // const mockActivity = generateMockActivityData();
-                // setActivityData(mockActivity);
-            })()
-    }
-
+            fetchProfileData();
+        }
         const mockActivity = generateMockActivityData();
         console.log(mockActivity);
         setActivityData(mockActivity);
     }, [accessToken]);
-
-
+    
     
     return (
         <>
@@ -134,74 +93,39 @@ export default function ProfilePage({ children }) {
             <div className="min-h-screen px-16 flex items-center justify-center">
                 <div className="bg-amber-100 shadow-xl rounded-lg w-full p-8 grid grid-cols-1 md:grid-cols-4 gap-6">
                     {/* Left Section */}
-                    <div className="bg-orange-50 p-6 rounded-lg flex flex-col items-center">
-                        <Avatar
-                            alt={profileData?.name}
-                            src={profileData?.image}
-                            sx={{ width: 200, height: 200 }}
-                            className="border-4 text-gray-900 border-white shadow-lg"
-                        />
-                        <Button
-                            variant="contained"
-                            component="label"
-                            className="m-4">
-                            Upload Picture
-                            <input
-                                type="file"
-                                hidden
-                                onChange={handleImageUpload}
-                            />
-                        </Button>
+                    <div className="bg-orange-50 p-6 rounded-lg flex flex-col items-center gap-4">
+                        <ProfilePicture currentPic={profileData?.image} />
                         <Typography
                             variant="h5"
                             className="my-4 text-gray-900 font-bold">
                             {profileData?.name}
                         </Typography>
-                        <Typography className="text-orange-500 text-sm">
-                            UI Designer
-                        </Typography>
                         
                         <div className="mt-6 text-left w-full">
                             <Typography
-                                variant="body2"
+                                variant="h6"
                                 className="font-bold text-gray-700">
-                                Age: {profileData?.age}
+                                Age:
                             </Typography>
                             <div className="flex items-center gap-2">
                                 <UpdateAge currentAge={profileData?.age} />
                             </div>
                             <Typography
-                                variant="body2"
+                                variant="h6"
                                 className="font-bold text-gray-700 mt-2">
-                                Gender: {profileData?.gender}
+                                Gender:
                             </Typography>
                             <div className="flex items-center gap-2">
                                 <UpdateGender currentGender={profileData?.gender} />
                             </div>
                             <Typography
-                                variant="body2"
+                                variant="h6"
                                 className="font-bold text-gray-700 mt-2">
                                 Hobbies:
                             </Typography>
-                            <Chip label="Frequent Flyer" color="primary" />
+                            {/* <Chip label="Frequent Flyer" color="primary" /> */}
                         </div>
-                        <div className="mt-6 flex flex-wrap gap-2">
-                            {[
-                                "Organized",
-                                "Practical",
-                                "Hardworking",
-                                "Passionate",
-                                "Protective",
-                                "Punctual",
-                            ].map((trait) => (
-                                <Chip
-                                    key={trait}
-                                    label={trait}
-                                    color="secondary"
-                                    size="small"
-                                />
-                            ))}
-                        </div>
+                        <UpdateHobbies currentHobbies={profileData?.hobbies} />
                     </div>
 
                     {/* Right Section */}
@@ -209,7 +133,7 @@ export default function ProfilePage({ children }) {
                         {/* Bio Section */}
                         <div>
                             <Typography
-                                variant="h6"
+                                variant="h5"
                                 className="font-bold text-gray-800">
                                 Bio
                             </Typography>
@@ -218,7 +142,7 @@ export default function ProfilePage({ children }) {
                         {/* Motivations Section */}
                         <div>
                             <Typography
-                                variant="h6"
+                                variant="h5"
                                 className="font-bold text-gray-800">
                                 Activity Grid
                             </Typography>
@@ -231,7 +155,7 @@ export default function ProfilePage({ children }) {
                         </div>
                         <div className="shadow-xl rounded-lg w-full p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Personality Section */}
-                            <div className="p-8">
+                            {/* <div className="p-8">
                                 <Typography
                                     variant="h6"
                                     className="font-bold text-gray-800">
@@ -261,10 +185,10 @@ export default function ProfilePage({ children }) {
                                         />
                                     </div>
                                 ))}
-                            </div>
+                            </div> */}
 
                             {/* Frustrations Section */}
-                            <div className="p-8">
+                            {/* <div className="p-8">
                                 <Typography
                                     variant="h6"
                                     className="font-bold text-gray-800">
@@ -280,10 +204,10 @@ export default function ProfilePage({ children }) {
                                         Not tech-savvy – dislikes the process
                                     </li>
                                 </ul>
-                            </div>
+                            </div> */}
 
                             {/* Goals Section */}
-                            <div className="p-8">
+                            {/* <div className="p-8">
                                 <Typography
                                     variant="h6"
                                     className="font-bold text-gray-800">
@@ -293,10 +217,10 @@ export default function ProfilePage({ children }) {
                                     <li>To spend less time booking travel</li>
                                     <li>To narrow her options quickly</li>
                                 </ul>
-                            </div>
+                            </div> */}
 
                             {/* Favorite Brands Section */}
-                            <div className="p-8">
+                            {/* <div className="p-8">
                                 <Typography
                                     variant="h6"
                                     className="font-bold text-gray-800">
@@ -319,7 +243,7 @@ export default function ProfilePage({ children }) {
                                         />
                                     ))}
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

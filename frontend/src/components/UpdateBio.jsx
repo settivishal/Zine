@@ -3,26 +3,35 @@
 import axios from "axios";
 import { useState, useEffect} from "react";
 import { useAuth } from "../hooks/authcontext";
+import {
+    TextField,
+    Chip,
+} from "@mui/material";
 
 import Button from "./Button";
+import exp from "constants";
 
 const updateProfileField = async (
     field,
     value,
+    endpoint,
+    accessToken,
+    setSuccess,
     setError,
     setIsEditing,
     setIsSubmitting
 ) => {
-    const [success, setSuccess] = useState("");
-    const { accessToken } = useAuth();
+    
+    console.log("accessToken", accessToken);
     if (!accessToken) {
         setError("Access token is missing.");
+        setIsSubmitting(false);
         return;
     }
     try {
         const payload = { [field]: value };
         const response = await axios.post(
-            "http://localhost:8080/api/profile/update",
+            `http://localhost:8080/${endpoint}`,
             payload, // Ensure the payload matches the server's expected format
             {
                 headers: {
@@ -56,10 +65,13 @@ function UpdateBio({ currentBio }) {
     const [isEditing, setIsEditing] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
-
+    const [success, setSuccess] = useState("");
+    const { accessToken } = useAuth();
     useEffect(() => {
-        setBio(currentBio);
-    })
+        if(currentBio) {
+            setBio(currentBio);
+        }
+    }, [currentBio]);
 
     const handleBio = async (e) => {
         e.preventDefault();
@@ -74,6 +86,9 @@ function UpdateBio({ currentBio }) {
         updateProfileField(
             "bio",
             bio,
+            "api/profile/update",
+            accessToken,
+            setSuccess,
             setError,
             setIsEditing,
             setIsSubmitting
@@ -122,8 +137,14 @@ function UpdateBio({ currentBio }) {
                     <div>
                         <p className="mt-1 text-4xl text-gray-900">{bio}</p>
                     </div>
-
-                    <Button onClick={() => setIsEditing(true)}>Edit</Button>
+                    <Button
+                        onClick={() => setIsEditing(true)}
+                        variant="text"
+                        size="small"
+                        className="text-gray-500">
+                        ✏️
+                    </Button>
+                    {/* <Button onClick={() => setIsEditing(true)}>Edit</Button> */}
                 </div>
             )}
         </div>
@@ -135,12 +156,14 @@ function UpdateAge({ currentAge }) {
     const [isEditing, setIsEditing] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
-
-    // const [success, setSuccess] = useState("");
+    const { accessToken } = useAuth();
+    const [success, setSuccess] = useState("");
 
     useEffect(() => {
-        setAge(currentAge);
-    })
+        if (currentAge && accessToken) {
+            setAge(currentAge);
+        }
+    },[currentAge, accessToken]);
 
     console.log("cage", currentAge);
     console.log("age", age);
@@ -158,6 +181,9 @@ function UpdateAge({ currentAge }) {
         updateProfileField(
             "age",
             age,
+            "api/profile/update",
+            accessToken,
+            setSuccess,
             setError,
             setIsEditing,
             setIsSubmitting
@@ -204,7 +230,7 @@ function UpdateAge({ currentAge }) {
             ) : (
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="mt-1 text-4xl text-gray-900">{age}</p>
+                        <p className="mt-1 text-2xl text-gray-900">{age}</p>
                     </div>
                     <Button
                         onClick={() => setIsEditing(true)}
@@ -224,10 +250,15 @@ function UpdateGender({ currentGender }) {
     const [isEditing, setIsEditing] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+    const { accessToken } = useAuth();
 
     useEffect(() => {
-        setGender(currentGender);
-    });
+        if (currentGender && accessToken) {
+            setGender(currentGender);
+        }
+    },[currentGender, accessToken]);
+
     const handleGender = async (e) => {
         e.preventDefault();
 
@@ -241,6 +272,9 @@ function UpdateGender({ currentGender }) {
         updateProfileField(
             "gender",
             gender,
+            "api/profile/update",
+            accessToken,
+            setSuccess,
             setError,
             setIsEditing,
             setIsSubmitting
@@ -290,7 +324,7 @@ function UpdateGender({ currentGender }) {
             ) : (
                 <div className="flex justify-between items-center">
                     <div>
-                        <p className="mt-1 text-4xl text-gray-900">{gender}</p>
+                        <p className="mt-1 text-2xl text-gray-900">{gender}</p>
                     </div>
                     <Button
                         onClick={() => setIsEditing(true)}
@@ -305,4 +339,151 @@ function UpdateGender({ currentGender }) {
     );
 }
 
-export { UpdateBio, UpdateAge, UpdateGender };
+
+
+
+
+function UpdateHobbies({ currentHobbies }) {
+    const [hobbies, setHobbies] = useState([]); // Default value is an empty array
+    const [newHobby, setNewHobby] = useState(""); // Input for adding a new hobby
+    const [isEditing, setIsEditing] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+    const { accessToken } = useAuth();
+
+    useEffect(() => {
+        if (currentHobbies) {
+            setHobbies(currentHobbies); // Initialize hobbies from props
+        }
+    }, [currentHobbies]);
+
+    const handleAddHobby = () => {
+        if (newHobby.trim() && !hobbies.includes(newHobby.trim())) {
+            setHobbies([...hobbies, newHobby.trim()]);
+            setNewHobby(""); // Clear the input field
+        }
+    };
+
+    const handleDeleteHobby = (hobbyToDelete) => {
+        setHobbies(hobbies.filter((hobby) => hobby !== hobbyToDelete));
+    };
+
+    const handleHobbiesUpdate = async (e) => {
+        e.preventDefault();
+
+        if (JSON.stringify(hobbies) === JSON.stringify(currentHobbies)) {
+            setIsEditing(false);
+            return;
+        }
+        const newHobbies = hobbies.filter((hobby) => !currentHobbies.includes(hobby));
+
+        // If there are no new hobbies, exit early
+        if (newHobbies.length === 0) {
+            setIsEditing(false);
+            return;
+        }
+
+        setError("");
+        setIsSubmitting(true);
+        await updateProfileField(
+            "hobbies",
+            newHobbies,
+            "api/profile/update_hobbies",
+            accessToken,
+            setSuccess,
+            setError,
+            setIsEditing,
+            setIsSubmitting
+        );
+    };
+
+    return (
+        <div className="space-y-4">
+            {isEditing ? (
+                <form onSubmit={handleHobbiesUpdate} className="space-y-4">
+                    <div className="flex flex-wrap gap-2">
+                        {hobbies.map((hobby) => (
+                            <Chip
+                                key={hobby}
+                                label={hobby}
+                                color="secondary"
+                                size="small"
+                                onDelete={() => handleDeleteHobby(hobby)} // Allow deletion
+                            />
+                        ))}
+                    </div>
+                    <div className="mt-4 flex gap-2">
+                        <TextField
+                            label="Add a hobby"
+                            variant="outlined"
+                            size="small"
+                            value={newHobby}
+                            onChange={(e) => setNewHobby(e.target.value)}
+                            className="flex-grow"
+                        />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleAddHobby}
+                            disabled={!newHobby.trim()}
+                        >
+                            Add
+                        </Button>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? "Saving..." : "Save"}
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            onClick={() => {
+                                setHobbies(currentHobbies);
+                                setIsEditing(false);
+                                setError("");
+                            }}
+                            disabled={isSubmitting}
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                    {error && (
+                        <p className="mt-1 text-sm text-red-600">{error}</p>
+                    )}
+                    {success && (
+                        <p className="mt-1 text-sm text-green-600">{success}</p>
+                    )}
+                </form>
+            ) : (
+                <div>
+                    <div className="flex flex-wrap gap-2">
+                        {hobbies.map((hobby, index) => (
+                            <Chip
+                                key={index}
+                                label={hobby}
+                                color="secondary"
+                                size="small"
+                            />
+                        ))}
+                    </div>
+                    <Button
+                        onClick={() => setIsEditing(true)}
+                        variant="text"
+                        size="small"
+                        className="text-gray-500 mt-4"
+                    >
+                        ✏️
+                    </Button>
+                </div>
+            )}
+        </div>
+    );
+}
+
+
+export { UpdateBio, UpdateAge, UpdateGender, UpdateHobbies };

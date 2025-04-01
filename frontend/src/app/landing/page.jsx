@@ -33,10 +33,6 @@ export default function LandingPage() {
     return (
         <>
             <Base openAuthModal={openAuthModal} />
-            {/* <AuthModal
-                isOpen={isModalOpen}
-                onClose={closeAuthModal}
-            /> */}
         </>
     );
 }

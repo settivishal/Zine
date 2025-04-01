@@ -1,9 +1,3 @@
-// import { ReactNode } from 'react';
-
-// import FooterCopyright from './FooterCopyright';
-// import FooterIconList from './FooterIconList';
-
-
 const FooterIconList = (props) => (
   <div className="footer-icon-list flex flex-wrap">
     {props.children}
