@@ -273,7 +273,7 @@ const BlogList = () => {
             </div>
 
             <div className="overflow-y-auto">
-                {Object.entries(realBlogs).map(([date, blog]) => (
+                {realBlogs && Object.entries(realBlogs).map(([date, blog]) => (
                     <Card
                         data-testid="blog-card"
                         key={blog.id}
