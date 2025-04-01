@@ -1,129 +1,253 @@
 "use client";
+import axios from 'axios';
 
-import { useState, useEffect, createContext } from "react";
+import {
+    Chip,
+    Typography,
+    LinearProgress,
+} from "@mui/material";
+import { useState, useEffect } from "react";
+import { useAuth } from '../../hooks/authcontext';
+
+import {UpdateBio, UpdateAge, UpdateGender, UpdateHobbies} from "../../components/UpdateBio";
 import ActivityGrid from "../../components/ActivityGrid";
-import UpdateUsername from "../../components/UpdateUsername";
-import UpdatePassword from "../../components/UpdatePassword";
-import ProfilePicture from "../../components/ProfilePic";
-import UpdateBio from "../../components/bio";
+import Navbar from "../../components/Navbar";
+import ProfilePicture from "../../components/ProfilePicture";
 
-
-const ProfileContext = createContext();
-
-export default function ProfilePage({children}) {
+export default function ProfilePage({ children }) {
+    const [image, setImage] = useState();
     const [profileData, setProfileData] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
 
     const [activityData, setActivityData] = useState([]);
+    const { accessToken } = useAuth();
     
+    const handleImageUpload = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append("image", file);
+            
+
+            try {
+                const response = await fetch("http://localhost:8080/api/image/update", {
+                    method: "POST",
+                    headers: {
+                        // "Content-Type": "multipart/form-data", // Do not set this header; the browser will set it automatically
+                        Authorization: `Bearer ${accessToken}` // Include the access token in the headers
+                        
+                    },
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    setErrorMessage(errorData.message || "Failed to upload image.");
+                    return;
+                }
+
+                const data = await response.json();
+                setImage(data.image); // Assuming the response contains the URL of the uploaded image
+            } catch (error) {
+                setErrorMessage("An error occurred while uploading the image.");
+            }
+        }
+    };
+
 
     useEffect(() => {
-        (async () => {
-            // Fetch user data and activity data from API
-            // This would typically be an API call to your backend
-            // For demo purposes, we're using mock data
-            const response = await fetch("http://localhost:8080/api/profile", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer" + " " + localStorage.getItem("accessToken")
-                },
-            });
-        
-            if (!response.ok) {
-                const errorData = await response.json();
-                setErrorMessage(errorData.message || "Failed to fetch profile data.");
-                return;
-            }
-        
-            const data = await response.json();
-            // console.log("data" + data)
-            
-            setProfileData(data); // Set profile data (username, email, etc.)
-            // Mock activity data - array of objects with date and count
-            // const mockActivity = generateMockActivityData();
-            // setActivityData(mockActivity);
-        })()
+        if(accessToken) {
+            const fetchProfileData = () => {
+                const config = {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${accessToken}`, // Include the access token in the headers
+                    },
+                };
 
+                axios
+                    .get("http://localhost:8080/api/profile", config)
+                    .then((response) => {
+                        setProfileData(response.data); // Set profile data (username, email, etc.)
+                    })
+                    .catch((error) => {
+                        if (error.response && error.response.data) {
+                            setErrorMessage(error.response.data.message || "Failed to fetch profile data.");
+                        } else {
+                            setErrorMessage("Failed to fetch profile data.");
+                        }
+                    });
+            };
+
+            fetchProfileData();
+        }
         const mockActivity = generateMockActivityData();
-        console.log(mockActivity)
         setActivityData(mockActivity);
-    }, []);
-
-    // const handleUsernameUpdate = (newUsername) => {
-    //     setUser({ ...user, username: newUsername });
-    //     // In a real app, you would save this to your backend
-    // };
-
-    // const handleProfilePictureUpdate = (newPictureUrl) => {
-    //     setUser({ ...user, profilePicture: newPictureUrl });
-    //     // In a real app, you would upload the image and save the URL
-    // };
-
-
+    }, [accessToken]);
+    
+    
     return (
-        <main className="container bg-zinc-600 mx-auto px-2 py-8 max-w-full">
-            <h1 className="text-3xl font-bold mb-8">Your Profile</h1>
+        <>
+            <Navbar Page={"Home"} />
+            <div className="min-h-screen px-16 flex items-center justify-center">
+                <div className="bg-amber-100 shadow-xl rounded-lg w-full p-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+                    {/* Left Section */}
+                    <div className="bg-orange-50 p-6 rounded-lg flex flex-col items-center gap-4">
+                        <ProfilePicture currentPic={profileData?.image} />
+                        <Typography
+                            variant="h5"
+                            className="my-4 text-gray-900 font-bold">
+                            {profileData?.name}
+                        </Typography>
+                        
+                        <div className="mt-6 text-left w-full">
+                            <Typography
+                                variant="h6"
+                                className="font-bold text-gray-700">
+                                Age:
+                            </Typography>
+                            <div className="flex items-center gap-2">
+                                <UpdateAge currentAge={profileData?.age} />
+                            </div>
+                            <Typography
+                                variant="h6"
+                                className="font-bold text-gray-700 mt-2">
+                                Gender:
+                            </Typography>
+                            <div className="flex items-center gap-2">
+                                <UpdateGender currentGender={profileData?.gender} />
+                            </div>
+                            <Typography
+                                variant="h6"
+                                className="font-bold text-gray-700 mt-2">
+                                Hobbies:
+                            </Typography>
+                            {/* <Chip label="Frequent Flyer" color="primary" /> */}
+                        </div>
+                        <UpdateHobbies currentHobbies={profileData?.hobbies} />
+                    </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {/* Left sidebar with profile picture and basic info */}
-                <div className="md:col-span-1 space-y-6">
-                    <div className="bg-slate-900 p-20 rounded-lg shadow">
-                        <ProfilePicture
-                            currentPicture={""}
-                            // onUpdate={handleProfilePictureUpdate}
-                        />
+                    {/* Right Section */}
+                    <div className="col-span-3 grid grid-cols-1 md:grid-cols-1 gap-6">
+                        {/* Bio Section */}
+                        <div>
+                            <Typography
+                                variant="h5"
+                                className="font-bold text-gray-800">
+                                Bio
+                            </Typography>
+                            <UpdateBio currentBio={profileData?.bio} />
+                        </div>
+                        {/* Motivations Section */}
+                        <div>
+                            <Typography
+                                variant="h5"
+                                className="font-bold text-gray-800">
+                                Activity Grid
+                            </Typography>
+                            <div className="container mx-auto px-4 py-8 bg-white p-6 rounded-lg shadow h-96">
+                                <h2 className="text-slate-600 text-xl font-semibold mb-4">
+                                    Your Activity
+                                </h2>
+                                <ActivityGrid activityData={activityData} />
+                            </div>
+                        </div>
+                        <div className="shadow-xl rounded-lg w-full p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Personality Section */}
+                            {/* <div className="p-8">
+                                <Typography
+                                    variant="h6"
+                                    className="font-bold text-gray-800">
+                                    Personality
+                                </Typography>
+                                {[
+                                    "Introvert",
+                                    "Analytical",
+                                    "Loyal",
+                                    "Passive",
+                                ].map((trait, index) => (
+                                    <div
+                                        key={index}
+                                        className="flex items-center gap-4 mt-1">
+                                        <span className="text-sm text-gray-600">
+                                            {trait}
+                                        </span>
+                                        <LinearProgress
+                                            variant="determinate"
+                                            value={(index + 1) * 20}
+                                            sx={{ width: "100%", height: 8 }}
+                                            color={
+                                                index % 2 === 0
+                                                    ? "primary"
+                                                    : "secondary"
+                                            }
+                                        />
+                                    </div>
+                                ))}
+                            </div> */}
 
-                        <div className="mt-4">
-                            <h2 className="text-gray-500 text-2xl font-semibold">
-                                {profileData?.name}
-                            </h2>
-                            <p className="text-2xl text-gray-600">{profileData?.email}</p>
+                            {/* Frustrations Section */}
+                            {/* <div className="p-8">
+                                <Typography
+                                    variant="h6"
+                                    className="font-bold text-gray-800">
+                                    Frustrations
+                                </Typography>
+                                <ul className="list-disc list-inside mt-2 text-sm text-gray-600 space-y-1">
+                                    <li>
+                                        Too much time spent booking – she’s
+                                        busy!
+                                    </li>
+                                    <li>Too many websites visited per trip</li>
+                                    <li>
+                                        Not tech-savvy – dislikes the process
+                                    </li>
+                                </ul>
+                            </div> */}
+
+                            {/* Goals Section */}
+                            {/* <div className="p-8">
+                                <Typography
+                                    variant="h6"
+                                    className="font-bold text-gray-800">
+                                    Goals
+                                </Typography>
+                                <ul className="list-disc list-inside mt-2 text-sm text-gray-600 space-y-1">
+                                    <li>To spend less time booking travel</li>
+                                    <li>To narrow her options quickly</li>
+                                </ul>
+                            </div> */}
+
+                            {/* Favorite Brands Section */}
+                            {/* <div className="p-8">
+                                <Typography
+                                    variant="h6"
+                                    className="font-bold text-gray-800">
+                                    Favourite Brands
+                                </Typography>
+                                <div className="flex gap-4 mt-4 items-center justify-start flex-wrap">
+                                    {[
+                                        "Adidas",
+                                        "Nike",
+                                        "Netflix",
+                                        "Airbnb",
+                                        "Zara",
+                                    ].map((brand) => (
+                                        // Replace with brand logos if available
+                                        <Chip
+                                            key={brand}
+                                            label={brand}
+                                            color={"default"}
+                                            size={"medium"}
+                                        />
+                                    ))}
+                                </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
-
-                {/* Main content area */}
-                <div className="md:col-span-2 lg:col-span-3 space-y-4">
-                    {/* Bio */}
-                    <div className="bg-white p-6 rounded-lg shadow h-96">
-                        <h2 className="text-slate-600 text-xl font-semibold mb-4">
-                            BIO
-                        </h2>
-                        <label
-                            htmlFor="About"
-                            className="block text-lg font-medium text-gray-700">
-                            About
-                        </label>
-                        <UpdateBio currentBio={profileData?.bio} />
-                    </div>
-                    {/* Activity grid */}
-                    <div className="container mx-auto px-4 py-8 bg-white p-6 rounded-lg shadow h-96">
-                        <h2 className="text-slate-600 text-xl font-semibold mb-4">
-                            Your Activity
-                        </h2>
-                        <ActivityGrid activityData={activityData} />
-                    </div>
-                    {/* Update profile section */}
-                    <div className="w-1/2 bg-white p-6 rounded-lg shadow">
-                        <h2 className="text-slate-600 text-xl font-semibold mb-4">
-                            Update Username
-                        </h2>
-                        <UpdateUsername
-                            currentUsername={profileData?.name}
-                            // onUpdate={handleUsernameUpdate}
-                        />
-                    </div>
-                    {/* Update password section */}
-                    <div className="w-1/2 bg-white p-6 rounded-lg shadow">
-                        <h2 className="text-slate-600 text-xl font-semibold mb-4">
-                            Security
-                        </h2>
-                        <UpdatePassword />
-                    </div>
-                </div>
             </div>
-        </main>
+        </>
     );
 }
 

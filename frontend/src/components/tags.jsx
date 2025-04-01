@@ -1,74 +1,83 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { SketchPicker } from 'react-color';
+"use client";
 
-export default function TagsComponent() {
-    const [tags, setTags] = useState([]);
-    const [newTag, setNewTag] = useState('');
-    const [color, setColor] = useState('#000000');
-    const [showInput, setShowInput] = useState(false);
-    const [jwt_token, setJwtToken] = useState(null);
-    
-    // Fetch JWT token first, then fetch tags when token is available
-    useEffect(() => {
-      const token = localStorage.getItem("accessToken");
-      if (token) {
-        setJwtToken(token); // Update state
-      }
-    }, []);
-    
-    useEffect(() => {
-      if (jwt_token) {
-        fetchTags();
-      }
-    }, [jwt_token]); // Runs when jwt_token is updated
-    
-    const fetchTags = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/api/tags', {
-          method: 'GET',
-          headers: { 'Authorization': `Bearer ${jwt_token}` },
-        });
-    
-        if (response.ok) {
-          const data = await response.json();
-          setTags(data);
-        } else {
-          console.error('Failed to fetch tags');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
+import React, { useState, useEffect } from "react";
+import { SketchPicker } from "react-color";
+import { useAuth } from '../hooks/authcontext';
+import { useTags } from '../hooks/tagsContext';
+
+export default function Tags() {
+  const [newTag, setNewTag] = useState("");
+  const [color, setColor] = useState("#000000");
+  const [showInput, setShowInput] = useState(false);
+  const [selectedTag, setSelectedTag] = useState(null);
+  const { accessToken } = useAuth();
+  const { tags, fetchTags } = useTags();
+
+  useEffect(() => {
+    if (accessToken) {
+      fetchTags();
+    }
+  }, [accessToken, fetchTags]);
 
   const handleAddTag = async () => {
     if (newTag.trim()) {
       const payload = { text: newTag, color: color };
+      
+
       try {
-        const response = await fetch('http://localhost:8080/api/tag/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt_token}` },
+        const response = await fetch("http://localhost:8080/api/tag/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
           body: JSON.stringify(payload),
         });
 
+        
+
+        const responseData = await response.json();
+        
+
         if (response.ok) {
-          fetchTags(); // Fetch updated tags after creating a new one
-          setNewTag('');
-          setColor('#000000');
+          await fetchTags();
+          setNewTag("");
+          setColor("#000000");
           setShowInput(false);
         } else {
-          console.error('Failed to create tag');
+          console.error("Failed to create tag:", response.status, responseData);
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error creating tag:", error.message, error.stack);
       }
+    }
+  };
+
+  const handleDeleteTag = async (tagText) => {
+    try {
+      const response = await fetch("http://localhost:8080/api/tag/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ text: tagText }),
+      });
+
+      if (response.ok) {
+        fetchTags(); // Refresh the tags list after deletion
+      } else {
+        console.error("Failed to delete tag");
+      }
+    } catch (error) {
+      console.error("Error deleting tag:", error);
     }
   };
 
   return (
     <div className="p-4 bg-white border rounded shadow-md">
       <h2 className="text-lg text-black font-semibold mb-2">Tags</h2>
-      
+
       {!showInput && (
         <button
           onClick={() => setShowInput(true)}
@@ -109,18 +118,27 @@ export default function TagsComponent() {
         </div>
       )}
 
-        <div className="flex flex-wrap max-w-[200px] gap-2 ">
-        {tags.map((tag, index) => (
+      <div className="flex flex-wrap max-w-[200px] gap-2 ">
+        {tags?.map((tag, index) => (
+          <div key={index} className="relative">
             <span
-            key={index}
-            style={{ backgroundColor: tag.color }}
-            className="inline-block px-3 py-1 text-sm text-white rounded-full shadow-md"
+              onClick={() => setSelectedTag(selectedTag === tag.text ? null : tag.text)}
+              style={{ backgroundColor: tag.color }}
+              className="inline-block px-3 py-1 text-sm text-white rounded-full shadow-md cursor-pointer"
             >
-            {tag.text}
+              {tag.text}
             </span>
+            {selectedTag === tag.text && (
+              <button
+                onClick={() => handleDeleteTag(tag.text)}
+                className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center bg-red-500 text-white rounded-full text-xs hover:bg-red-700"
+              >
+                ×
+              </button>
+            )}
+          </div>
         ))}
-        </div>
-
+      </div>
     </div>
   );
 }

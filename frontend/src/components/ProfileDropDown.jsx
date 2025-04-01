@@ -1,24 +1,60 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
-import profileImage from './profile2.jpg';
 import { User, Gear, Question, SignOut } from "@phosphor-icons/react";
+import useProfile from '../hooks/useProfile';
+import { useAuth } from '../hooks/authcontext';
 
-const ProfileDropdown = () => {
+const ProfileDropDown = ({ Page }) => {
   const [toggle, setToggle] = useState(false);
+  const { profileImage, loading, error } = useProfile();
+  const { accessToken } = useAuth();
+
   const options = [
-    { label: "Profile", icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick("Profile") },
+    { label: Page, icon: <User size={16} className="mr-2" />, onClick: () => handleOptionClick(Page) },
     { label: "Settings", icon: <Gear size={16} className="mr-2" />, onClick: () => handleOptionClick("Settings") },
     { label: "Help", icon: <Question size={16} className="mr-2" />, onClick: () => handleOptionClick("Help") },
     { label: "Logout", icon: <SignOut size={16} className="mr-2 text-red-500" />, onClick: () => handleOptionClick("Logout") }
   ];
 
-  const handleOptionClick = (option) => {
-    if(option === "Profile") {
-      window.location.href = "/Profile";
+  const deleteCookie = (name) => {
+    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  };
+
+  const handleOptionClick = async (option) => {
+    if (option === Page) {
+      window.location.href = "/" + Page.toLowerCase();
     }
-    // Add your logic here for each option
-    setToggle(false); // Close the dropdown after clicking an option
+    else if (option === "Settings") {
+      window.location.href = "/settings";
+    }
+    else if (option === "Logout") {
+      try {
+        
+
+        const response = await fetch('http://localhost:8080/consumer/logout', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+
+        // Debug logs
+        
+        const responseText = await response.text();
+        
+
+        if (response.ok) {
+          deleteCookie('accessToken');
+          window.location.href = "/";
+        } else {
+          console.error('Logout failed:', response.status, responseText);
+        }
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
+    }
+    setToggle(false);
   };
 
   return (
@@ -28,13 +64,22 @@ const ProfileDropdown = () => {
         className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-gray-200 transition-all"
         onClick={() => setToggle(!toggle)}
       >
-        <Image 
-          src={profileImage} 
-          alt="Profile"
-          width={32}
-          height={32}
-          className="rounded-full object-cover"
-        />
+        {loading ? (
+          <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+        ) : error ? (
+          <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+            <User size={20} />
+          </div>
+        ) : (
+          <Image
+            src={profileImage}
+            alt="Profile"
+            width={32}
+            height={32}
+            className="rounded-full object-cover w-8 h-8 aspect-square"
+            unoptimized
+          />
+        )}
       </div>
 
       {/* Dropdown Menu */}
@@ -56,4 +101,4 @@ const ProfileDropdown = () => {
   );
 };
 
-export default ProfileDropdown;
+export default ProfileDropDown;

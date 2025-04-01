@@ -1,17 +1,17 @@
 package services
 
 import (
+	"backend/database"
+	"backend/models"
+	"backend/utils"
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"net/http"
+	"os"
 	"strings"
 	"time"
-
-	"backend/database"
-	"backend/models"
-	"backend/utils"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,12 +19,12 @@ import (
 // Return Access and Refesh Tokens
 func GenerateTokens(credentials utils.Credentials, w http.ResponseWriter) (string, time.Time, string) {
 	// Generate JWT Tokens
-	accessToken, accessExpiry, err := utils.GenerateJWT(credentials.Email, "access_token", time.Minute*5)
+	accessToken, accessExpiry, err := utils.GenerateJWT(credentials.Email, "access_token", time.Hour*24*7)
 	if err != nil {
 		utils.SendErrorResponse(w, "Error generating access token", err, http.StatusInternalServerError)
 	}
 
-	refreshToken, _, err := utils.GenerateJWT(credentials.Email, "refresh_token", time.Hour*24*7)
+	refreshToken, _, err := utils.GenerateJWT(credentials.Email, "refresh_token", time.Hour*24*7*30)
 	if err != nil {
 		utils.SendErrorResponse(w, "Error generating refresh token", err, http.StatusInternalServerError)
 	}
@@ -95,8 +95,27 @@ func HandleRegister(r *http.Request) (*utils.RegisterResponse, error, int) {
 		return nil, errors.New(err.Error() + ": Error saving user"), http.StatusInternalServerError
 	}
 
-	// send email
-	SendMailSimple("Welcome to Zine!"+" "+credentials.Name, "<h1>Thank you for signing up!<h1> We are glad you joined us!", []string{credentials.Email})
+	// Read HTML template from file
+	templatePath := "templates/onboarding.html"
+	htmlContent, err := os.ReadFile(templatePath)
+	if err != nil {
+		return nil, errors.New("error reading email template: " + err.Error()), http.StatusInternalServerError
+	}
+
+	// Convert HTML content to string
+	emailBody := string(htmlContent)
+
+	// Send email
+	SendMailSimple("Welcome to Zine! "+credentials.Name, emailBody, []string{credentials.Email})
+
+	// Create a grid for the user with user_id
+	user, err = database.GetUser(credentials.Email)
+	if err != nil {
+		return nil, errors.New("error getting user ID: " + err.Error()), http.StatusInternalServerError
+	}
+	if err := database.CreateGrid(user.ID); err != nil {
+		return nil, errors.New("error creating grid: " + err.Error()), http.StatusInternalServerError
+	}
 
 	// Return structured response
 	return &utils.RegisterResponse{
@@ -124,7 +143,7 @@ func HandleLogout(r *http.Request) (error, int) {
 	// Invalidate JWT Token
 	err := utils.InvalidateJWT(token)
 	if err != nil {
-		return errors.New(err.Error() + ": Failed to logout"), http.StatusInternalServerError
+		return errors.New(err.Error()), http.StatusInternalServerError
 	}
 
 	return nil, http.StatusOK
@@ -172,19 +191,19 @@ func HandleForgotPassword(email string) error {
 		// We don't reveal if the email exists
 		return nil
 	}
-	
+
 	// Generate a secure random token
 	token, err := generateRandomToken(32)
 	if err != nil {
 		return err
 	}
-	
+
 	// Store token in database
 	err = database.CreatePasswordResetToken(user.ID, token)
 	if err != nil {
 		return err
 	}
-	
+
 	// Send reset email
 	resetURL := "http://localhost:3000/reset-password?token=" + token
 	return SendPasswordResetEmail(user.Email, user.Name, resetURL)
@@ -197,19 +216,19 @@ func HandleResetPassword(token, newPassword string) error {
 	if err != nil {
 		return errors.New("invalid or expired token")
 	}
-	
+
 	// Hash the new password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
-	
+
 	// Update user's password
 	err = database.UpdateUserPassword(resetToken.UserID, string(hashedPassword))
 	if err != nil {
 		return err
 	}
-	
+
 	// Mark token as used
 	return database.MarkTokenAsUsed(resetToken.ID)
 }

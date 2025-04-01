@@ -28,7 +28,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "cypress/e2e/home.cy.js"  ],
   "exclude": [
     "node_modules"
   ]

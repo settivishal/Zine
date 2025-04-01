@@ -1,11 +1,21 @@
 "use client";
 import { useState } from "react";
-import SignUp from "../Signin/signup";
-import SignIn from "../Signin/signin";
-
+import SignUp from "../signin/signup";
+import SignIn from "../signin/signin";
+import { useAuth } from '../../hooks/authcontext';
 
 export default function AuthModal({ isOpen, onClose }) {
+    const { accessToken } = useAuth();
     const [activeTab, setActiveTab] = useState("signin"); // 'signin' or 'signup'
+    const [registrationSuccess, setRegistrationSuccess] = useState(false);
+
+    // Handler to change tab and optionally show registration success message
+    const handleTabChange = (tab, showSuccessMessage = false) => {
+        setActiveTab(tab);
+        setRegistrationSuccess(showSuccessMessage);
+    };
+
+    // Add token expiration check function
 
     if (!isOpen) return null;
 
@@ -23,30 +33,40 @@ export default function AuthModal({ isOpen, onClose }) {
                 {/* Tabs Header */}
                 <div className="flex border-b border-gray-300 mb-4">
                     <button
-                        onClick={() => setActiveTab("signin")}
-                        className={`flex-1 py-2 text-center ${
-                            activeTab === "signin"
+                            onClick={() => handleTabChange("signin")}
+                            className={`flex-1 py-2 text-center ${activeTab === "signin"
                                 ? "text-blue-500 border-b-2 border-blue-500 font-semibold"
                                 : "text-gray-500 hover:text-blue-500"
-                        }`}>
-                        Sign In
-                    </button>
+                                }`}>
+                            Sign In
+                        </button>
+
                     <button
-                        onClick={() => setActiveTab("signup")}
-                        className={`flex-1 py-2 text-center ${
-                            activeTab === "signup"
-                                ? "text-blue-500 border-b-2 border-blue-500 font-semibold"
-                                : "text-gray-500 hover:text-blue-500"
-                        }`}>
+                        onClick={() => handleTabChange("signup")}
+                        className={`flex-1 py-2 text-center ${activeTab === "signup"
+                            ? "text-blue-500 border-b-2 border-blue-500 font-semibold"
+                            : "text-gray-500 hover:text-blue-500"
+                            }`}>
                         Sign Up
                     </button>
                 </div>
+
+                {/* Registration Success Message */}
+                {registrationSuccess && activeTab === "signin" && (
+                    <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded text-sm">
+                        Registration successful! Please sign in with your credentials.
+                    </div>
+                )}
 
                 {/* Tabs Content */}
                 {/* Sign in Tab */}
                 {activeTab === "signin" && <SignIn />}
                 {/* Sign up Tab */}
-                {activeTab === "signup" && <SignUp />}
+                {activeTab === "signup" && (
+                    <SignUp
+                        onTabChange={(tab) => handleTabChange(tab, true)}
+                    />
+                )}
             </div>
         </div>
     );
