@@ -6,7 +6,7 @@ import ProfilePicture from "../../components/ProfilePicture";
 import { useAuth } from "../../hooks/authcontext";
 import Navbar from "../../components/Navbar";
 
-export default function ProfilePage({ children }) {
+export default function SettingsPage({ children }) {
     const [profileData, setProfileData] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
 
