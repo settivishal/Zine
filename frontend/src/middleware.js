@@ -31,7 +31,16 @@ export function middleware(request) {
     // If trying to access protected route without token, redirect to login
     if (isProtectedRoute && (!token || isTokenExpired())) {
         console.log('Redirecting to login...')
-        return NextResponse.redirect(new URL('/landing', request.url))
+        const response = NextResponse.redirect(new URL('/landing', request.url));
+
+        // If token exists but is expired, remove it from cookies
+        if (token && isTokenExpired()) {
+            response.cookies.delete('accessToken');
+            response.cookies.delete('expires_at');
+            console.log('Expired token removed from cookies');
+        }
+
+        return response;
     }
 
     // Allow the request to continue
