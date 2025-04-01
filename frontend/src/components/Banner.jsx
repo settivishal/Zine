@@ -3,7 +3,7 @@ import React from 'react';
 
 // import { Button } from './Components/Button';
 // import CTABanner from './Components/CTABanner';
-import Section from '../layout/Section';
+import Section from './Section';
 
 
 const CTABanner = (props) => (
