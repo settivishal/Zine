@@ -1,4 +1,3 @@
-//import { useEffect } from "react";
 import { handleGoogleLogin } from "../../helpers/handleGoogleLogin";
 
 export default function GoogleLoginButton({ setErrorMessage }) {
