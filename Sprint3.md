@@ -21,8 +21,19 @@ Video Demo:
 
 ## Accomplishments
 
-<!-- frontend and backend objectives -->
 **Backend:**
+
+- Profile Page Endpoints (Update Profile, Bio, Image)
+- Redis Cloud Setup 
+- AWS Upload Methods
+- Improved Email Templates
+- Home Page Endpoints (Get Blogs, Create Blog, Get tags by ID)
+- Blog Page Endpoints (Get Blog, Save Blog)
+- Unit tests for new Methods
+- Swagger updated
+
+
+
 **Frontend:**
 
 ## Unit Tests for Backend
@@ -572,3 +583,6 @@ Unit tests are written for each controller to ensure API functionality.
         "message": "Profile updated successfully"
     }
     ```
+
+
+
