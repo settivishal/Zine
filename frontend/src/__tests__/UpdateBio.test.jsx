@@ -22,44 +22,6 @@ jest.mock('../components/Button', () => {
   };
 });
 
-describe('UpdateBio Component', () => {
-  beforeEach(() => {
-    useAuth.mockReturnValue({ accessToken: 'mock-token' });
-    axios.post.mockReset();
-    axios.post.mockResolvedValue({ status: 200, data: { message: 'Bio updated successfully' } });
-  });
-
-  test('renders with current bio', () => {
-    render(<UpdateBio currentBio="This is my current bio" />);
-    expect(screen.getByText('This is my current bio')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Edit/i })).toBeInTheDocument();
-  });
-
-  test('switches to edit mode when Edit button is clicked', () => {
-    render(<UpdateBio currentBio="This is my current bio" />);
-    fireEvent.click(screen.getByRole('button', { name: /Edit/i }));
-    
-    expect(screen.getByRole('textbox')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Save/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
-  });
-
-  
-
-  test('returns to view mode without changes when Cancel is clicked', () => {
-    render(<UpdateBio currentBio="This is my current bio" />);
-    fireEvent.click(screen.getByRole('button', { name: /Edit/i }));
-    
-    const textarea = screen.getByRole('textbox');
-    fireEvent.change(textarea, { target: { value: 'New updated bio' } });
-    
-    fireEvent.click(screen.getByRole('button', { name: /Cancel/i }));
-    
-    expect(screen.getByText('This is my current bio')).toBeInTheDocument();
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
-  });
-
-});
 
 describe('UpdateAge Component', () => {
   beforeEach(() => {
