@@ -8,7 +8,7 @@ https://github.com/settivishal/Zine
 
 ## Video Link
 
-Video Demo: 
+Video Demo: https://drive.google.com/file/d/1wlqkZzrSATRPi1kTcLThvR0gw4-MJA9H/view?usp=sharing
 
 ## Authors
 
@@ -55,6 +55,17 @@ Video Demo:
 - Added new component Hobbies with add, delete functionalities to the Profile page
 - Improved the UI of Profile Page overall.
 - Altered the async post api function call to work for all the profile components
+
+## Spill Over
+
+**Backend:**
+
+- API endpoint for saving the blog content
+
+**Frontend:**
+
+- Integration of Save API Endpoint
+- Footer Integration in all pages
 
 
 ## Unit Tests for Backend
