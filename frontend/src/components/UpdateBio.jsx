@@ -375,7 +375,7 @@ function UpdateHobbies({ currentHobbies }) {
             setIsEditing(false);
             return;
         }
-        const newHobbies = hobbies.filter((hobby) => !currentHobbies.includes(hobby));
+        const newHobbies = hobbies.filter((hobby) => !currentHobbies?.includes(hobby));
 
         // If there are no new hobbies, exit early
         if (newHobbies.length === 0) {
