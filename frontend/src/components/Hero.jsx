@@ -3,13 +3,11 @@ import React from "react";
 import { useAuth } from '../hooks/authcontext';
 
 import Button from "./Button";
-// import HeroOneButton from "./HeroOneButton";
+
 import Section from "./Section";
-// import NavbarTwoColumns from "./Components/NavbarTwoColumns";
 
 import Image from "next/image";
 import myImg from "../../public/zine.png";
-// import Logo from "./Logo";
 
 
 import AuthModal from "../app/Modal/page";

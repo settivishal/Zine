@@ -1,5 +1,3 @@
-// import { AppConfig } from '../utils/AppConfig';
-
 const Logo = (props) => {
   const size = props.xl ? '44' : '32';
   const fontStyle = props.xl

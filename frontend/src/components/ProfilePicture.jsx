@@ -6,8 +6,6 @@ import { Avatar, Button } from "@mui/material";
 import { useAuth } from "../hooks/authcontext";
 
 export default function ProfilePicture({ currentPic }) {
-    // const fileInputRef = useRef(null);
-    
     const [selectedImage, setSelectedImage] = useState(null);
     const [error, setError] = useState("");
 

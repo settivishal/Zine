@@ -2,9 +2,7 @@
 
 import { useState, useEffect, createContext } from "react";
 import UpdatePassword from "../../components/UpdateUserCreds";
-// import UpdatePassword from "../../components/UpdatePassword";
 import ProfilePicture from "../../components/ProfilePicture";
-// const ProfileContext = createContext();
 import { useAuth } from "../../hooks/authcontext";
 import Navbar from "../../components/Navbar";
 
@@ -15,35 +13,6 @@ export default function ProfilePage({ children }) {
     const [activityData, setActivityData] = useState([]);
     const { accessToken } = useAuth();
 
-    // useEffect(() => {
-    //     if(accessToken){
-    //         (async () => {
-    //             // Fetch user data and activity data from API
-    //             // This would typically be an API call to your backend
-    //             // For demo purposes, we're using mock data
-    //             const response = await fetch("http://localhost:8080/api/profile", {
-    //                 method: "GET",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     Authorization: `Bearer ${accessToken}`, // Assuming you have a token in your auth context
-    //                 },
-    //             });
-
-    //             if (!response.ok) {
-    //                 const errorData = await response.json();
-    //                 setErrorMessage(
-    //                     errorData.message || "Failed to fetch profile data."
-    //                 );
-    //                 return;
-    //             }
-
-    //             const data = await response.json();
-    //             console.log("data" + data)
-
-    //             setProfileData(data); // Set profile data (username, email, etc.)
-    //         })();
-    //     }
-    // }, [accessToken]);
 
     return (
         <>

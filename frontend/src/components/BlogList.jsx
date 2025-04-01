@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useAuth } from '../hooks/authcontext';
 import { useTags } from '../hooks/tagsContext';
 import { useRouter } from 'next/navigation';
-//import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 
 const BlogList = () => {
