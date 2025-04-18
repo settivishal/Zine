@@ -11,14 +11,15 @@ import (
 	"strings"
 
 	"backend/database"
+	"backend/models"
 	"backend/services/awsservice"
 	"backend/utils"
-	
-	"github.com/gorilla/mux"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/gorilla/mux"
 )
 
 // Handle Get Blog - _id is there in the query
@@ -202,51 +203,40 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResp
 	}, nil, http.StatusOK
 }
 
-func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResponse, error, int) {
+func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlogResponse, error, int) {
 	email, ok := r.Context().Value("email").(string)
 
 	if !ok {
 		return nil, errors.New("Error getting email"), http.StatusBadRequest
 	}
 
-	// var payload utils.GetBlogsByDateRequest
-
-	// err := json.NewDecoder(r.Body).Decode(&payload)
-	// if err != nil {
-	// 	return nil, errors.New("error decoding request payload"), http.StatusBadRequest
-	// }
-
-	// if payload.Date == "" {
-	// 	return nil, errors.New("date is required"), http.StatusBadRequest
-	// }
-
 	// Extract date from URL path
-    vars := mux.Vars(r)
-    date := vars["date"]
-    if date == "" {
-        return nil, errors.New("date is required in URL path"), http.StatusBadRequest
-    }
+	vars := mux.Vars(r)
+	date := vars["date"]
+	if date == "" {
+		return nil, errors.New("date is required in URL path"), http.StatusBadRequest
+	}
 
 	// Get blogs for the user on the specified date
 	blog, err := database.GetBlogByDate(email, date)
 	if err != nil {
-        return nil, errors.New("Error fetching blog: " + err.Error()), http.StatusInternalServerError
-    }
+		return nil, errors.New("Error fetching blog: " + err.Error()), http.StatusInternalServerError
+	}
 
 	if blog == nil {
-        return nil, errors.New("No blog found for this date"), http.StatusNotFound
-    }
+		return nil, errors.New("No blog found for this date"), http.StatusNotFound
+	}
 
 	// Prepare response
-    blogResponse := utils.BlogResponse{
-        ID:     blog.ID,
-        Title:  blog.Title,
-        Cover:  blog.Cover,
-        TagIDs: blog.TagIDs,
-    }
+	blogModel := models.Blog{
+		ID:     blog.ID,
+		Title:  blog.Title,
+		Cover:  blog.Cover,
+		TagIDs: blog.TagIDs,
+	}
 
-    return &utils.GetBlogsResponse{
-        Message: "Blog fetched successfully",
-        Blogs:   map[string]utils.BlogResponse{date: blogResponse},
-    }, nil, http.StatusOK
+	return &utils.GetBlogResponse{
+		Message: "Blog fetched successfully",
+		Blog:    blogModel,
+	}, nil, http.StatusOK
 }
