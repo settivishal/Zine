@@ -280,7 +280,27 @@ const BlogList = () => {
     };
 
     return (
-        <div className="h-full flex flex-col gap-4">
+        <div
+            id="blog-list-main"
+            className="h-full flex flex-col gap-4 hide-scrollbar"
+            style={{
+                overflow: 'auto'
+            }}
+        >
+            <style jsx global>{`
+                /* Hide scrollbar for Chrome, Safari and Opera */
+                #blog-list-main::-webkit-scrollbar,
+                .hide-scrollbar::-webkit-scrollbar {
+                    display: none !important;
+                }
+                
+                /* Hide scrollbar for IE, Edge and Firefox */
+                #blog-list-main,
+                .hide-scrollbar {
+                    -ms-overflow-style: none !important;  /* IE and Edge */
+                    scrollbar-width: none !important;  /* Firefox */
+                }
+            `}</style>
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-black">My Blogs</h2>
                 <div className="flex items-center gap-2">
@@ -328,7 +348,7 @@ const BlogList = () => {
                 </div>
             </div>
 
-            <div className="overflow-y-auto">
+            <div className="overflow-y-auto hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {realBlogs && Object.entries(realBlogs).map(([date, blog]) => (
                     <Card
                         data-testid="blog-card"
