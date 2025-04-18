@@ -193,7 +193,7 @@ func GetBlogByDate(email, date string) (*models.Blog, error) {
 
 	if err != nil {
         if err == mongo.ErrNoDocuments {
-            return nil, nil // Return nil without error if no blog found
+            return nil, nil
         }
         return nil, fmt.Errorf("database error: %v", err)
     }

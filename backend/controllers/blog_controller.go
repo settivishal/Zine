@@ -126,8 +126,8 @@ func GetBlogs(w http.ResponseWriter, r *http.Request) {
 }
 
 // Get blogs by specific date
-func GetBlogsByDate(w http.ResponseWriter, r *http.Request) {
-	response, err, status := services.HandleGetBlogsByDate(w, r)
+func GetBlogByDate(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleGetBlogByDate(w, r)
 	if err != nil {
 		utils.SendErrorResponse(w, "Error getting blog", err, status)
 		return
