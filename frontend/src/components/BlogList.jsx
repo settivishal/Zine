@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { Button, Card, CardContent, Typography, Box, Chip, Dialog, DialogTitle, DialogContent } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Image from 'next/image';
 import { useAuth } from '../hooks/authcontext';
 import { useTags } from '../hooks/tagsContext';
@@ -263,20 +265,45 @@ const BlogList = () => {
         <div className="h-full flex flex-col gap-4">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-black">My Blogs</h2>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={blogExistsForToday() ? undefined : handleCreateBlog}
-                    disabled={blogExistsForToday()}
-                    sx={{
-                        backgroundColor: blogExistsForToday() ? '#e0e0e0' : '#1a73e8',
-                        '&:hover': {
-                            backgroundColor: blogExistsForToday() ? '#e0e0e0' : '#1557b0'
-                        }
-                    }}
-                >
-                    Create New Blog
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<ArrowBackIcon />}
+                        sx={{
+                            minWidth: '40px',
+                            padding: '4px 8px',
+                        }}
+                    >
+                        Prev
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        endIcon={<ArrowForwardIcon />}
+                        sx={{
+                            minWidth: '40px',
+                            padding: '4px 8px',
+                        }}
+                    >
+                        Next
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<AddIcon />}
+                        onClick={blogExistsForToday() ? undefined : handleCreateBlog}
+                        disabled={blogExistsForToday()}
+                        sx={{
+                            backgroundColor: blogExistsForToday() ? '#e0e0e0' : '#1a73e8',
+                            '&:hover': {
+                                backgroundColor: blogExistsForToday() ? '#e0e0e0' : '#1557b0'
+                            }
+                        }}
+                    >
+                        Create New Blog
+                    </Button>
+                </div>
             </div>
 
             <div className="overflow-y-auto">
