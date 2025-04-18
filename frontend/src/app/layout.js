@@ -3,6 +3,12 @@ import "./globals.css";
 import { AuthProvider } from '../hooks/authcontext';
 import { TagsProvider } from '../hooks/tagsContext';
 
+import "@blocknote/core/fonts/inter.css";
+import "@blocknote/mantine/style.css";
+import "@liveblocks/react-ui/styles.css";
+import "@liveblocks/react-ui/styles/dark/media-query.css";
+import "@liveblocks/react-tiptap/styles.css";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

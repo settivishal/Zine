@@ -4,7 +4,7 @@ const nextConfig = {
         forceSwcTransforms: true,
     },
     images: {
-        domains: ['images.unsplash.com'], // Add this line to configure the domain
+        domains: ['images.unsplash.com', 'd9amksc9hkkpj.cloudfront.net'], // Add this line to configure the domain
       },
 };
 
