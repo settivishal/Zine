@@ -71,7 +71,7 @@ export default function Blog() {
         const [year, month, day] = date.split("-");
         const formattedDate = `${parseInt(day)} ${months[parseInt(month) - 1]}`;
 
-        return <span className="text-gray-700 bg-gray-200 text-2xl font-bold rounded p-2">{formattedDate}</span>;
+        return <span suppressHydrationWarning className="text-gray-700 bg-gray-200 text-2xl font-bold rounded p-2">{formattedDate}</span>;
     }
     return (
         <>
