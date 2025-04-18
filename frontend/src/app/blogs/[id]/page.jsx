@@ -6,6 +6,9 @@ import axios from 'axios';
 import Navbar from '../../../components/Navbar';
 import Image from 'next/image';
 import { useAuth } from '../../../hooks/authcontext';
+import { useTags } from '../../../hooks/tagsContext';
+import { Chip, Box, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 import "@blocknote/mantine/style.css";
 import "@blocknote/core/fonts/inter.css";
@@ -16,10 +19,12 @@ export default function Blog() {
     const params = useParams();
     const id = params.id;
     const { accessToken } = useAuth();
+    const { tags, fetchTags } = useTags();
     const [data, setData] = useState(null);
     const [uploading, setUploading] = useState(false);
-
-
+    const [blogTags, setBlogTags] = useState([]);
+    const [hoveredTag, setHoveredTag] = useState(null);
+    const [openTagDialog, setOpenTagDialog] = useState(false);
 
     const fetchContentFromBackend = async (id) => {
         try {
@@ -36,6 +41,11 @@ export default function Blog() {
                 const data = response.data;
                 console.log('Fetched content:', data);
                 setData(data.blog); // Set the fetched data to state
+
+                // Fetch tags for this blog if it has tag IDs
+                if (data.blog?.TagIDs && data.blog.TagIDs.length > 0) {
+                    fetchTagsByIds(data.blog.TagIDs);
+                }
             }
 
         } catch (error) {
@@ -43,11 +53,36 @@ export default function Blog() {
         }
     };
 
+    const fetchTagsByIds = async (tagIds) => {
+        if (!tagIds || tagIds.length === 0) return;
+
+        try {
+            const response = await fetch("http://localhost:8080/api/tags/getByIDs", {
+                method: "POST",
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tag_ids: tagIds })
+            });
+
+            if (response.ok) {
+                const tags = await response.json();
+                setBlogTags(tags || []);
+            } else {
+                console.error('Failed to fetch tags by IDs');
+            }
+        } catch (error) {
+            console.error('Error fetching tags by IDs:', error);
+        }
+    };
+
     useEffect(() => {
         if (id && accessToken) {
             fetchContentFromBackend(id);
-        } // Fetch content when the component mounts
-    }, [id, accessToken]);
+            fetchTags();
+        }
+    }, [id, accessToken, fetchTags]);
 
     const handleCoverImageUpload = async (e) => {
         const file = e.target.files[0];
@@ -81,16 +116,93 @@ export default function Blog() {
         }
     };
 
-    // editor.uploadFile = async (file) => {
-    //     const reader = new FileReader();
-    //     return new Promise((resolve, reject) => {
-    //         reader.onload = () => {
-    //             resolve(reader.result); // Resolve with the base64 image data
-    //         };
-    //         reader.onerror = reject;
-    //         reader.readAsDataURL(file); // Convert the file to base64
-    //     });
-    // };
+    const handleAddTags = () => {
+        setOpenTagDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenTagDialog(false);
+    };
+
+    const handleTagSelect = async (selectedTag) => {
+        if (!data) return;
+
+        // Check if tag already exists for this blog
+        const tagExists = blogTags.some(tag => tag.text === selectedTag.text);
+
+        if (!tagExists) {
+            await addTagToBlog(selectedTag.text);
+        }
+
+        handleCloseDialog();
+    };
+
+    const addTagToBlog = async (tagText) => {
+        try {
+            const payload = {
+                text: tagText,
+                date: data.Date
+            };
+
+            const response = await fetch('http://localhost:8080/api/tag/set', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                // Refresh the blog data to get updated tags
+                fetchContentFromBackend(id);
+            } else {
+                const errorData = await response.json().catch(() => null);
+                console.error('Failed to add tag to blog:', {
+                    status: response.status,
+                    error: errorData
+                });
+            }
+        } catch (error) {
+            console.error('Error adding tag to blog:', error);
+        }
+    };
+
+    const removeTagFromBlog = async (tagText) => {
+        try {
+            const payload = {
+                text: tagText,
+                date: data.Date
+            };
+
+            const response = await fetch('http://localhost:8080/api/tag/remove', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                // Immediately update UI by filtering out the removed tag
+                const updatedTags = blogTags.filter(tag => tag.text !== tagText);
+                setBlogTags(updatedTags);
+
+                // Also refresh the blog data in the background
+                fetchContentFromBackend(id);
+            } else {
+                const errorData = await response.json().catch(() => null);
+                console.error('Failed to remove tag from blog:', {
+                    status: response.status,
+                    error: errorData
+                });
+            }
+        } catch (error) {
+            console.error('Error removing tag from blog:', error);
+        }
+    };
+
     function FormattedDate({ date }) {
         if (!date) return null;
 
@@ -106,12 +218,12 @@ export default function Blog() {
     }
     return (
         <>
-
             <div className='p-5'>
                 <Navbar Page={'Home'} />
 
-
-                <FormattedDate date={data?.Date} />
+                <div className="flex items-center mb-4">
+                    <FormattedDate date={data?.Date} />
+                </div>
 
                 <div className="relative">
                     <Image
@@ -121,6 +233,78 @@ export default function Blog() {
                         width={1000}
                         height={1000}
                     />
+
+                    {/* Tags positioned at the top left of the cover image */}
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: 10,
+                            left: 10,
+                            zIndex: 1,
+                            display: 'flex',
+                            gap: 1,
+                            flexWrap: 'wrap',
+                            alignItems: 'center'
+                        }}
+                    >
+                        {blogTags.map((tag) => (
+                            <div
+                                key={tag.ID}
+                                className="relative"
+                                onMouseEnter={() => setHoveredTag(tag.ID)}
+                                onMouseLeave={() => setHoveredTag(null)}
+                            >
+                                <Chip
+                                    label={tag.text}
+                                    size="small"
+                                    sx={{
+                                        backgroundColor: tag.color || '#666',
+                                        color: 'white',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        '&:hover': {
+                                            transform: 'translateY(-2px)',
+                                            boxShadow: 2
+                                        },
+                                        '&:active': {
+                                            transform: 'translateY(0)'
+                                        }
+                                    }}
+                                />
+                                {hoveredTag === tag.ID && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeTagFromBlog(tag.text);
+                                        }}
+                                        className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center bg-red-500 text-white rounded-full text-xs hover:bg-red-700"
+                                        style={{ zIndex: 2 }}
+                                    >
+                                        ×
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        <Chip
+                            icon={<AddIcon />}
+                            label="Add Tag"
+                            size="small"
+                            onClick={handleAddTags}
+                            sx={{
+                                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                color: '#666',
+                                cursor: 'pointer',
+                                '&:hover': {
+                                    backgroundColor: 'rgba(255, 255, 255, 1)',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: 2
+                                },
+                                '&:active': {
+                                    transform: 'translateY(0)'
+                                }
+                            }}
+                        />
+                    </Box>
 
                     <label className="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-all transform hover:scale-105">
                         <input
@@ -145,6 +329,30 @@ export default function Blog() {
                     <Editor />
                 </Room>
 
+                {/* Dialog for adding tags */}
+                <Dialog open={openTagDialog} onClose={handleCloseDialog}>
+                    <DialogTitle>Select a Tag</DialogTitle>
+                    <DialogContent>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 2 }}>
+                            {tags && tags.map((tag, index) => (
+                                <Chip
+                                    key={index}
+                                    label={tag.text}
+                                    onClick={() => handleTagSelect(tag)}
+                                    sx={{
+                                        backgroundColor: tag.color,
+                                        color: 'white',
+                                        cursor: 'pointer',
+                                        '&:hover': {
+                                            opacity: 0.9,
+                                            transform: 'translateY(-2px)'
+                                        }
+                                    }}
+                                />
+                            ))}
+                        </Box>
+                    </DialogContent>
+                </Dialog>
             </div>
         </>
     );
