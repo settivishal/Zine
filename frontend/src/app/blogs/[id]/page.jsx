@@ -2,48 +2,24 @@
 
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { useCreateBlockNote } from "@blocknote/react";
 import axios from 'axios';
-import { BlockNoteView } from "@blocknote/mantine";
 import Navbar from '../../../components/Navbar';
 import Image from 'next/image';
 import { useAuth } from '../../../hooks/authcontext';
 
 import "@blocknote/mantine/style.css";
 import "@blocknote/core/fonts/inter.css";
+import { Room } from '../../../components/Room';
+import { Editor } from '../../../components/Editor';
 
 export default function Blog() {
-    const [blocks, setBlocks] = useState([]);
     const params = useParams();
     const id = params.id;
     const { accessToken } = useAuth();
-    const [editorContent, setEditorContent] = useState([
-        {
-            type: "heading",
-            content: "BlockNote Example",
-        },
-        {
-            type: "paragraph",
-            content: "Welcome to this demo!",
-        },
-    ]);
+    const [data, setData] = useState(null);
+    
 
-    const editor = useCreateBlockNote({
-        initialContent: editorContent,
-    });
 
-    // const fetchContentFromBackend = async () => {
-    //     try {
-    //         const response = await fetch('/api/getContent');
-    //         if (!response.ok) {
-    //             throw new Error('Failed to fetch content');
-    //         }
-    //         const data = await response.json();
-    //         setEditorContent(data.content); // Update the editor content with data from backend
-    //     } catch (error) {
-    //         console.error('Error fetching content:', error);
-    //     }
-    // };
     const fetchContentFromBackend = async (id) => {
         try {
             const response = await axios.get(`http://localhost:8080/api/blog/${id}`,
@@ -54,8 +30,15 @@ export default function Blog() {
                     },
                 }
             ); // Use axios to make the GET request
-            setEditorContent(response.data?.blog?.Content); // Update the editor content with data from backend
+
+            if (response) {
+                const data = response.data;
+                console.log('Fetched content:', data);
+                setData(data.blog); // Set the fetched data to state
+            }
+            
         } catch (error) {
+
             console.error('Error fetching content:', error);
         }
     };
@@ -67,68 +50,49 @@ export default function Blog() {
     }, [id, accessToken]);
     
 
-    editor.uploadFile = async (file) => {
-        const reader = new FileReader();
-        return new Promise((resolve, reject) => {
-            reader.onload = () => {
-                resolve(reader.result); // Resolve with the base64 image data
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file); // Convert the file to base64
-        });
-    };
+    // editor.uploadFile = async (file) => {
+    //     const reader = new FileReader();
+    //     return new Promise((resolve, reject) => {
+    //         reader.onload = () => {
+    //             resolve(reader.result); // Resolve with the base64 image data
+    //         };
+    //         reader.onerror = reject;
+    //         reader.readAsDataURL(file); // Convert the file to base64
+    //     });
+    // };
+    function FormattedDate({ date }) {
+        if (!date) return null;
 
-    const saveToBackend = async (content) => {
-        try {
-            const response = await fetch('/api/save', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify({ content }),
-            });
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
 
-            if (!response.ok) {
-                throw new Error('Failed to save content');
-            }
+        const [year, month, day] = date.split("-");
+        const formattedDate = `${parseInt(day)} ${months[parseInt(month) - 1]}`;
 
-        } catch (error) {
-            console.error('Error saving content:', error);
-        }
-    };
-
-    const handleSave = async () => {
-        //console.log(editor);
-    };
-
+        return <span suppressHydrationWarning className="text-gray-700 bg-gray-200 text-2xl font-bold rounded p-2">{formattedDate}</span>;
+    }
     return (
         <>
 
             <div className='p-5'>
-                <h1>Blog {id}</h1>
                 <Navbar Page={'Home'} />
-                {/* cover image like in notion use NEXT IMAGE */}
-                <div className='w-full h-[35vh] bg-gray-200 border rounded-t-md'>
-                    {/* cover image */}
-                    {/* <Image  
-            src= "https://images.unsplash.com/random/landscape"
-            alt="Cover image" 
-            fill
-            className='object-cover'
-            sizes='100vw'
-            /> */}
+                
 
-                </div>
+                <FormattedDate date={data?.Date} />
 
-                <BlockNoteView
-                    editor={editor}
-                    onChange={() => {
-                    }}
-                    className='mb-5'
+                <Image  
+                    src= {data?.Cover || '/images/alps.jpg'}
+                    alt="Cover image" 
+                    className='w-full h-[35vh] bg-gray-200 my-4 rounded-t-md'
+                    width={1000}
+                    height={1000}
                 />
 
-                <button className='bg-amber-500 text-white px-4 py-2 rounded hover:bg-amber-600 transition' onClick={handleSave}>Save</button>
+                <Room room_id={`room-${id}`}>
+                    <Editor />
+                </Room>
 
             </div>
         </>
