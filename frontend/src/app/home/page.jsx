@@ -9,6 +9,7 @@ import { useAuth } from '../../hooks/authcontext';
 export default function Page() {
     const [tags, setTags] = useState([]);
     const { accessToken } = useAuth();
+    console.log(accessToken);
 
     useEffect(() => {
         if (accessToken) {

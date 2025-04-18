@@ -61,10 +61,18 @@ const BlogList = () => {
                 const data = await response.json();
 
                 if (data.blogs) {
-                    setRealBlogs(data.blogs);
+                    // Convert blogs object to array of entries, reverse it, and convert back to object
+                    const reversedBlogs = Object.entries(data.blogs)
+                        .reverse()
+                        .reduce((acc, [date, blog]) => {
+                            acc[date] = blog;
+                            return acc;
+                        }, {});
+
+                    setRealBlogs(reversedBlogs);
 
                     // Collect all unique tag IDs from all blogs
-                    const allTagIds = Object.values(data.blogs)
+                    const allTagIds = Object.values(reversedBlogs)
                         .filter(blog => blog.tagIds)
                         .flatMap(blog => blog.tagIds);
 
@@ -72,7 +80,7 @@ const BlogList = () => {
                         const tags = await fetchTagsByIds(allTagIds);
                         // Create a mapping of blog IDs to their tags
                         const tagMapping = {};
-                        Object.values(data.blogs).forEach(blog => {
+                        Object.values(reversedBlogs).forEach(blog => {
                             if (blog.tagIds) {
                                 tagMapping[blog.id] = tags.filter(tag =>
                                     blog.tagIds.includes(tag.ID)
@@ -119,7 +127,7 @@ const BlogList = () => {
             });
 
             const data = await response.json();
-            
+
             if (response.ok) {
                 // Extract just the path from blog_url and combine with origin
                 const blogPath = data.blog_url.replace('localhost:3000', '');
@@ -156,7 +164,7 @@ const BlogList = () => {
                 date: blogDate
             };
 
-            
+
 
             const response = await fetch('http://localhost:8080/api/tag/set', {
                 method: 'POST',
@@ -208,7 +216,7 @@ const BlogList = () => {
         const today = new Date();
         // Format date as YYYY-MM-DD
         const formattedDate = today.toISOString().split('T')[0];
-     
+
         return Object.keys(realBlogs).includes(formattedDate);
     };
 
@@ -220,7 +228,7 @@ const BlogList = () => {
                 date: blogDate
             };
 
-            
+
 
             const response = await fetch('http://localhost:8080/api/tag/remove', {
                 method: 'POST',
@@ -232,7 +240,7 @@ const BlogList = () => {
             });
 
             if (response.ok) {
-                
+
                 await fetchBlogs(); // Refresh the blogs data
             } else {
                 const errorData = await response.json().catch(() => null);
@@ -391,7 +399,7 @@ const BlogList = () => {
                 <DialogTitle>Select a Tag</DialogTitle>
                 <DialogContent>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 2 }}>
-                        
+
                         {tags && tags.map((tag, index) => (
                             <Chip
                                 key={index}
