@@ -191,3 +191,7 @@ type GetGridResponse struct {
 	Message string      `json:"message"`
 	Grid    models.Grid `json:"grid"`
 }
+
+type GetBlogsByDateRequest struct {
+	Date string `json:"date"`
+}

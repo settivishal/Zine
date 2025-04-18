@@ -200,3 +200,32 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResp
 		TotalPages: totalPages,
 	}, nil, http.StatusOK
 }
+
+func HandleGetBlogsByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResponse, error, int) {
+	email, ok := r.Context().Value("email").(string)
+
+	if !ok {
+		return nil, errors.New("Error getting email"), http.StatusBadRequest
+	}
+
+	var payload utils.GetBlogsByDateRequest
+
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		return nil, errors.New("error decoding request payload"), http.StatusBadRequest
+	}
+
+	if payload.Date == "" {
+		return nil, errors.New("date is required"), http.StatusBadRequest
+	}
+
+	// Get blogs for the user on the specified date
+	blog, err := database.GetBlogByDate(email, payload.Date)
+	if err != nil {
+        return nil, errors.New("Error fetching blog: " + err.Error()), http.StatusInternalServerError
+    }
+
+	if blog == nil {
+        return nil, errors.New("No blog found for this date"), http.StatusNotFound
+    }
+}
