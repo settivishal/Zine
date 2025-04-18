@@ -19,6 +19,8 @@ const BlogList = () => {
     const [openTagDialog, setOpenTagDialog] = useState(false);
     const [selectedBlogId, setSelectedBlogId] = useState(null);
     const [hoveredTag, setHoveredTag] = useState(null); // Add this new state
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const fetchTagsByIds = async (tagIds) => {
         if (!tagIds || tagIds.length === 0) return [];
@@ -48,13 +50,13 @@ const BlogList = () => {
     };
 
     // Move fetchBlogs outside useEffect so we can reuse it
-    const fetchBlogs = async () => {
+    const fetchBlogs = async (page = currentPage) => {
         if (!accessToken) {
             return;
         }
 
         try {
-            const response = await fetch("http://localhost:8080/api/blogs?page=1&limit=7", {
+            const response = await fetch(`http://localhost:8080/api/blogs?page=${page}&limit=7`, {
                 method: "GET",
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
@@ -62,6 +64,9 @@ const BlogList = () => {
             if (response.ok) {
                 const data = await response.json();
 
+                if (data.total_pages) {
+                    setTotalPages(data.total_pages);
+                }
                 if (data.blogs) {
                     // Convert blogs object to array of entries, reverse it, and convert back to object
                     const reversedBlogs = Object.entries(data.blogs)
@@ -102,8 +107,8 @@ const BlogList = () => {
 
     // Update useEffect to use the new fetchBlogs function
     useEffect(() => {
-        fetchBlogs();
-    }, [accessToken]);
+        fetchBlogs(currentPage);
+    }, [accessToken, currentPage]);
 
     useEffect(() => {
         if (accessToken) {
@@ -261,6 +266,19 @@ const BlogList = () => {
         router.push(`/blogs/${blogId}`);
     };
 
+    // Add handlers for pagination buttons
+    const handleNextPage = () => {
+        if (currentPage - 1 >= 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage + 1 >= totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
     return (
         <div className="h-full flex flex-col gap-4">
             <div className="flex justify-between items-center mb-6">
@@ -270,6 +288,8 @@ const BlogList = () => {
                         variant="outlined"
                         size="small"
                         startIcon={<ArrowBackIcon />}
+                        onClick={handlePrevPage}
+                        disabled={currentPage >= totalPages}
                         sx={{
                             minWidth: '40px',
                             padding: '4px 8px',
@@ -281,6 +301,8 @@ const BlogList = () => {
                         variant="outlined"
                         size="small"
                         endIcon={<ArrowForwardIcon />}
+                        onClick={handleNextPage}
+                        disabled={currentPage <= 1}
                         sx={{
                             minWidth: '40px',
                             padding: '4px 8px',
