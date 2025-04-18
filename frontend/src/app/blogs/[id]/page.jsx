@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import axios from 'axios';
 import Navbar from '../../../components/Navbar';
 import Image from 'next/image';
@@ -14,6 +14,110 @@ import "@blocknote/mantine/style.css";
 import "@blocknote/core/fonts/inter.css";
 import { Room } from '../../../components/Room';
 import { Editor } from '../../../components/Editor';
+
+// Memoized tag component to prevent unnecessary re-renders
+const TagItem = memo(({ tag, isHovered, onMouseEnter, onMouseLeave, onRemove }) => {
+    return (
+        <div
+            className="relative"
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+        >
+            <Chip
+                label={tag.text}
+                size="small"
+                sx={{
+                    backgroundColor: tag.color || '#666',
+                    color: 'white',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: 2
+                    },
+                    '&:active': {
+                        transform: 'translateY(0)'
+                    }
+                }}
+            />
+            {isHovered && (
+                <button
+                    onClick={onRemove}
+                    className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center bg-red-500 text-white rounded-full text-xs hover:bg-red-700"
+                    style={{ zIndex: 2 }}
+                >
+                    ×
+                </button>
+            )}
+        </div>
+    );
+});
+
+TagItem.displayName = 'TagItem';
+
+// Memoized TagsContainer component
+const TagsContainer = memo(({ blogTags, hoveredTag, setHoveredTag, handleAddTags, removeTagFromBlog }) => {
+    return (
+        <Box
+            sx={{
+                position: 'absolute',
+                top: 10,
+                left: 10,
+                zIndex: 1,
+                display: 'flex',
+                gap: 1,
+                flexWrap: 'wrap',
+                alignItems: 'center'
+            }}
+        >
+            {blogTags.map((tag) => (
+                <TagItem
+                    key={tag.ID}
+                    tag={tag}
+                    isHovered={hoveredTag === tag.ID}
+                    onMouseEnter={() => setHoveredTag(tag.ID)}
+                    onMouseLeave={() => setHoveredTag(null)}
+                    onRemove={(e) => {
+                        e.stopPropagation();
+                        removeTagFromBlog(tag.text);
+                    }}
+                />
+            ))}
+            <Chip
+                icon={<AddIcon />}
+                label="Add Tag"
+                size="small"
+                onClick={handleAddTags}
+                sx={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    color: '#666',
+                    cursor: 'pointer',
+                    '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 1)',
+                        transform: 'translateY(-2px)',
+                        boxShadow: 2
+                    },
+                    '&:active': {
+                        transform: 'translateY(0)'
+                    }
+                }}
+            />
+        </Box>
+    );
+});
+
+TagsContainer.displayName = 'TagsContainer';
+
+// Memoized editor wrapper
+const MemoizedEditor = memo(({ roomId }) => {
+    return (
+        <Room room_id={`room-${roomId}`}>
+            <Editor />
+        </Room>
+    );
+});
+
+MemoizedEditor.displayName = 'MemoizedEditor';
 
 export default function Blog() {
     const params = useParams();
@@ -116,15 +220,15 @@ export default function Blog() {
         }
     };
 
-    const handleAddTags = () => {
+    const handleAddTags = useCallback(() => {
         setOpenTagDialog(true);
-    };
+    }, []);
 
-    const handleCloseDialog = () => {
+    const handleCloseDialog = useCallback(() => {
         setOpenTagDialog(false);
-    };
+    }, []);
 
-    const handleTagSelect = async (selectedTag) => {
+    const handleTagSelect = useCallback(async (selectedTag) => {
         if (!data) return;
 
         // Check if tag already exists for this blog
@@ -135,7 +239,7 @@ export default function Blog() {
         }
 
         handleCloseDialog();
-    };
+    }, [data, blogTags, handleCloseDialog]);
 
     const addTagToBlog = async (tagText) => {
         try {
@@ -168,7 +272,7 @@ export default function Blog() {
         }
     };
 
-    const removeTagFromBlog = async (tagText) => {
+    const removeTagFromBlog = useCallback(async (tagText) => {
         try {
             const payload = {
                 text: tagText,
@@ -201,7 +305,7 @@ export default function Blog() {
         } catch (error) {
             console.error('Error removing tag from blog:', error);
         }
-    };
+    }, [data, blogTags, id, accessToken]);
 
     function FormattedDate({ date }) {
         if (!date) return null;
@@ -235,76 +339,13 @@ export default function Blog() {
                     />
 
                     {/* Tags positioned at the top left of the cover image */}
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: 10,
-                            left: 10,
-                            zIndex: 1,
-                            display: 'flex',
-                            gap: 1,
-                            flexWrap: 'wrap',
-                            alignItems: 'center'
-                        }}
-                    >
-                        {blogTags.map((tag) => (
-                            <div
-                                key={tag.ID}
-                                className="relative"
-                                onMouseEnter={() => setHoveredTag(tag.ID)}
-                                onMouseLeave={() => setHoveredTag(null)}
-                            >
-                                <Chip
-                                    label={tag.text}
-                                    size="small"
-                                    sx={{
-                                        backgroundColor: tag.color || '#666',
-                                        color: 'white',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s ease',
-                                        '&:hover': {
-                                            transform: 'translateY(-2px)',
-                                            boxShadow: 2
-                                        },
-                                        '&:active': {
-                                            transform: 'translateY(0)'
-                                        }
-                                    }}
-                                />
-                                {hoveredTag === tag.ID && (
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            removeTagFromBlog(tag.text);
-                                        }}
-                                        className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center bg-red-500 text-white rounded-full text-xs hover:bg-red-700"
-                                        style={{ zIndex: 2 }}
-                                    >
-                                        ×
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-                        <Chip
-                            icon={<AddIcon />}
-                            label="Add Tag"
-                            size="small"
-                            onClick={handleAddTags}
-                            sx={{
-                                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                color: '#666',
-                                cursor: 'pointer',
-                                '&:hover': {
-                                    backgroundColor: 'rgba(255, 255, 255, 1)',
-                                    transform: 'translateY(-2px)',
-                                    boxShadow: 2
-                                },
-                                '&:active': {
-                                    transform: 'translateY(0)'
-                                }
-                            }}
-                        />
-                    </Box>
+                    <TagsContainer
+                        blogTags={blogTags}
+                        hoveredTag={hoveredTag}
+                        setHoveredTag={setHoveredTag}
+                        handleAddTags={handleAddTags}
+                        removeTagFromBlog={removeTagFromBlog}
+                    />
 
                     <label className="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-all transform hover:scale-105">
                         <input
@@ -325,9 +366,7 @@ export default function Blog() {
                     </label>
                 </div>
 
-                <Room room_id={`room-${id}`}>
-                    <Editor />
-                </Room>
+                <MemoizedEditor roomId={id} />
 
                 {/* Dialog for adding tags */}
                 <Dialog open={openTagDialog} onClose={handleCloseDialog}>
