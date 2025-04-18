@@ -374,12 +374,24 @@ const BlogList = () => {
                                 style={{ objectFit: 'cover' }}
                                 priority={false}
                             />
+                            {/* Gradient overlay at the top */}
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: '25%',
+                                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)',
+                                    zIndex: 1
+                                }}
+                            />
                             <Box
                                 sx={{
                                     position: 'absolute',
                                     top: 10,
                                     left: 10,
-                                    zIndex: 1,
+                                    zIndex: 2,
                                     display: 'flex',
                                     gap: 1,
                                     flexWrap: 'wrap',
@@ -448,10 +460,7 @@ const BlogList = () => {
                         </div>
                         <CardContent>
                             <Typography variant="h6" component="h3" className="mb-2">
-                                {blog.title || 'Untitled Blog Post'} {/* Default title if none exists */}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary" className="mb-2">
-                                {blog.excerpt || 'No content yet...'} {/* Default excerpt if none exists */}
+                                {blog.title || new Date(date.replace(/-/g, '/')).toLocaleDateString(undefined, { weekday: 'long' })} {/* Get day name if no title */}
                             </Typography>
                             <Box className="flex justify-end text-sm text-gray-500">
                                 <Typography variant="caption">
