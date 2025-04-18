@@ -2,9 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { useCreateBlockNote } from "@blocknote/react";
 import axios from 'axios';
-import { BlockNoteView } from "@blocknote/mantine";
 import Navbar from '../../../components/Navbar';
 import Image from 'next/image';
 import { useAuth } from '../../../hooks/authcontext';

@@ -7,13 +7,9 @@ import {
   ClientSideSuspense,
 } from "@liveblocks/react/suspense";
 
-const publicApiKey = process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_API_KEY!;
-
-if (!publicApiKey) {
-  throw new Error("Missing NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_API_KEY");
-}
 
 export function Room({ children, room_id }: { children: ReactNode; room_id: string }) {
+  const publicApiKey = process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY;
   return (
     <LiveblocksProvider publicApiKey={publicApiKey}>
       <RoomProvider id={room_id}>
