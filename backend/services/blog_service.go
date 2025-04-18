@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"backend/database"
-	"backend/models"
+	// "backend/models"
 	"backend/services/awsservice"
 	"backend/utils"
 
@@ -203,7 +203,7 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResp
 	}, nil, http.StatusOK
 }
 
-func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlogResponse, error, int) {
+func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsByDateResponse, error, int) {
 	email, ok := r.Context().Value("email").(string)
 
 	if !ok {
@@ -227,16 +227,15 @@ func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlog
 		return nil, errors.New("No blog found for this date"), http.StatusNotFound
 	}
 
-	// Prepare response
-	blogModel := models.Blog{
+	blogResponse := utils.BlogResponse{
 		ID:     blog.ID,
 		Title:  blog.Title,
 		Cover:  blog.Cover,
 		TagIDs: blog.TagIDs,
 	}
 
-	return &utils.GetBlogResponse{
+	return &utils.GetBlogsByDateResponse{
 		Message: "Blog fetched successfully",
-		Blog:    blogModel,
+		Blog:    blogResponse,
 	}, nil, http.StatusOK
 }
