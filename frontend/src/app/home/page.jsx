@@ -7,7 +7,6 @@ import TagsComponent from '../../components/Tags';
 import { useAuth } from '../../hooks/authcontext';
 
 export default function Page() {
-    const [calendarView, setCalendarView] = useState('dayGridMonth');
     const [tags, setTags] = useState([]);
     const { accessToken } = useAuth();
 
