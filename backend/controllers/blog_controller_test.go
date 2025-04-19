@@ -291,22 +291,43 @@ func TestGetBlogs(t *testing.T) {
 
 func TestGetBlogByDate(t *testing.T) {
 	// Test case 1: get blogs successfuly by date
-	t.Run("Successful GetBlog Response", func(t *testing.T) {
+	t.Run("Successful GetBlogsByDate Response", func(t *testing.T) {
 		// Mock dependencies
 		mockHandleGetBlogByDate := new(MockHandleGetBlogByDate)
 
-		req := httptest.NewRequest(http.MethodGet, "/api/blogs", nil)		
+		req := httptest.NewRequest(http.MethodGet, "/api/blog/date/2025-03-24", nil)		
 
-		mockHandleGetBlogByDate.On("MockHandleGetBlogByDate", req).Return("Blogs fetched successfully", nil, http.StatusOK)
+		mockHandleGetBlogByDate.On("MockHandleGetBlogByDate", req).Return("Blog fetched successfully", nil, http.StatusOK)
 
 		// Call the mock method
 		w := httptest.NewRecorder()
 		response, err, statusCode := mockHandleGetBlogByDate.MockHandleGetBlogByDate(w, req)
 
 		// Assertions
-		assert.Equal(t, "Blogs fetched successfully", response)
+		assert.Equal(t, "Blog fetched successfully", response)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, statusCode)
+
+		// Verify that the expected call was made		
+		mockHandleGetBlogByDate.AssertExpectations(t)
+	})
+
+	// Test case 2: error getting blogs
+	t.Run("Error GetBlogsByDate Response", func(t *testing.T) {
+		mockHandleGetBlogByDate := new(MockHandleGetBlogByDate)
+
+		req := httptest.NewRequest(http.MethodGet, "/api/blog/date/2025-03-24", nil)		
+
+		mockHandleGetBlogByDate.On("MockHandleGetBlogByDate", req).Return(nil, errors.New("Error getting blog"), http.StatusInternalServerError)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockHandleGetBlogByDate.MockHandleGetBlogByDate(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.Equal(t, "Error getting blog", err.Error())		
+		assert.Equal(t, http.StatusInternalServerError, statusCode)
 
 		// Verify that the expected call was made		
 		mockHandleGetBlogByDate.AssertExpectations(t)
