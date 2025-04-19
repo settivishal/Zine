@@ -34,6 +34,10 @@ type MockHandleGetBlogByDate struct {
 	mock.Mock
 }
 
+type MockHandleGetBlogsByTagIDs struct {
+	mock.Mock
+}
+
 func (m *MockHandleGetBlog) MockHandleGetBlog(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
@@ -60,6 +64,11 @@ func (m *MockHandleGetBlogs) MockHandleGetBlogs(w http.ResponseWriter, r *http.R
 }
 
 func (m *MockHandleGetBlogByDate) MockHandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHandleGetBlogsByTagIDs) MockHandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
 }
@@ -332,5 +341,29 @@ func TestGetBlogByDate(t *testing.T) {
 
 		// Verify that the expected call was made		
 		mockHandleGetBlogByDate.AssertExpectations(t)
+	})
+}
+
+func TestGetBlogsByTagIDs(t *testing.T) {
+	// Test case 1: get blogs successfuly by tag ids
+	t.Run("Successful GetBlogsByTagIDs Response", func(t *testing.T) {
+		// Mock dependencies
+		mockHandleGetBlogsByTagIDs := new(MockHandleGetBlogsByTagIDs)
+
+		req := httptest.NewRequest(http.MethodGet, "/api/blogs/getByTagIDs", nil)		
+
+		mockHandleGetBlogsByTagIDs.On("MockHandleGetBlogsByTagIDs", req).Return("Blogs fetched successfully", nil, http.StatusOK)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockHandleGetBlogsByTagIDs.MockHandleGetBlogsByTagIDs(w, req)
+
+		// Assertions
+		assert.Equal(t, "Blogs fetched successfully", response)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		// Verify that the expected call was made		
+		mockHandleGetBlogsByTagIDs.AssertExpectations(t)
 	})
 }
