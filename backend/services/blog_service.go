@@ -334,6 +334,14 @@ func HandleChangeVisibility(w http.ResponseWriter, r *http.Request) (*utils.Chan
 		return nil, errors.New("Error sending email: " + err.Error()), http.StatusInternalServerError
 	}
 
+	// Send Email to Users who have got access to the blog
+	for _, user := range Request.Users {
+		err = SendBlogInvitationEmail(user, email, Request.BlogID)
+		if err != nil {
+			return nil, errors.New("Error sending email to user: " + err.Error()), http.StatusInternalServerError
+		}
+	}
+
 	// Return structured response
 	return &utils.ChangeVisibilityResponse{
 		Message: "Visibility changed successfully",
