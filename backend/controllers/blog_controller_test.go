@@ -30,6 +30,10 @@ type MockHandleGetBlogs struct {
 	mock.Mock
 }
 
+type MockHandleGetBlogByDate struct {
+	mock.Mock
+}
+
 func (m *MockHandleGetBlog) MockHandleGetBlog(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
@@ -51,6 +55,11 @@ func (m *MockHandleUploadCover) MockHandleUploadCover(w http.ResponseWriter, r *
 }
 
 func (m *MockHandleGetBlogs) MockHandleGetBlogs(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHandleGetBlogByDate) MockHandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
 }
@@ -236,7 +245,7 @@ func TestUploadCover(t *testing.T) {
 }
 
 func TestGetBlogs(t *testing.T) {
-	// Test case 1: tag created successfully
+	// Test case 1: get blogs successfuly
 	t.Run("Successful GetBlogs Response", func(t *testing.T) {
 		// Mock dependencies
 		mockHandleGetBlogs := new(MockHandleGetBlogs)
@@ -258,7 +267,7 @@ func TestGetBlogs(t *testing.T) {
 		mockHandleGetBlogs.AssertExpectations(t)
 	})
 
-	// Test case 2: error creating tag
+	// Test case 2: error getting blogs
 	t.Run("Error GetBlogs Response", func(t *testing.T) {
 		mockHandleGetBlogs := new(MockHandleGetBlogs)
 
@@ -277,5 +286,29 @@ func TestGetBlogs(t *testing.T) {
 
 		// Verify that the expected call was made		
 		mockHandleGetBlogs.AssertExpectations(t)
+	})
+}
+
+func TestGetBlogByDate(t *testing.T) {
+	// Test case 1: get blogs successfuly by date
+	t.Run("Successful GetBlog Response", func(t *testing.T) {
+		// Mock dependencies
+		mockHandleGetBlogByDate := new(MockHandleGetBlogByDate)
+
+		req := httptest.NewRequest(http.MethodGet, "/api/blogs", nil)		
+
+		mockHandleGetBlogByDate.On("MockHandleGetBlogByDate", req).Return("Blogs fetched successfully", nil, http.StatusOK)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockHandleGetBlogByDate.MockHandleGetBlogByDate(w, req)
+
+		// Assertions
+		assert.Equal(t, "Blogs fetched successfully", response)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		// Verify that the expected call was made		
+		mockHandleGetBlogByDate.AssertExpectations(t)
 	})
 }
