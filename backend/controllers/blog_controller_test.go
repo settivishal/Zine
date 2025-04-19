@@ -373,7 +373,7 @@ func TestGetBlogsByTagIDs(t *testing.T) {
 
 		req := httptest.NewRequest(http.MethodGet, "/api/blogs/getByTagIDs", nil)		
 
-		mockHandleGetBlogsByTagIDs.On("MockHandleGetBlogsByTagIDs", req).Return(nil, errors.New("Error getting blog"), http.StatusInternalServerError)
+		mockHandleGetBlogsByTagIDs.On("MockHandleGetBlogsByTagIDs", req).Return(nil, errors.New("Error getting blogs"), http.StatusInternalServerError)
 
 		// Call the mock method
 		w := httptest.NewRecorder()
