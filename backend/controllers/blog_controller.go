@@ -32,6 +32,7 @@ func GetBlog(w http.ResponseWriter, r *http.Request) {
 }
 
 // Create a new blog
+//
 //	@Summary		Create Blog
 //	@Description	Create a new blog
 //	@Tags			blogs
@@ -103,22 +104,46 @@ func UploadCover(w http.ResponseWriter, r *http.Request) {
 
 // Get Blogs for a specific user with pagination
 
-//	@Summary		Get Blogs
-//	@Description	Get a list of blogs for a specific user with pagination.
-//	@Tags			blogs
-//	@Accept			json
-//	@Produce		json
-//	@Param			page			query		int		false	"Page number"		default(1)
-//	@Param			limit			query		int		false	"Limit per page"	default(10)
-//	@Param			Authorization	header		string	true	"Bearer <token>"	
-//	@Success		200				{object}	map[string]models.Blog
-//	@Failure		400				{object}	utils.ErrorResponse
-//	@Failure		500				{object}	utils.ErrorResponse
-//	@Router			/api/blogs [get]
+// @Summary		Get Blogs
+// @Description	Get a list of blogs for a specific user with pagination.
+// @Tags			blogs
+// @Accept			json
+// @Produce		json
+// @Param			page			query		int		false	"Page number"		default(1)
+// @Param			limit			query		int		false	"Limit per page"	default(10)
+// @Param			Authorization	header		string	true	"Bearer <token>"
+// @Success		200				{object}	map[string]models.Blog
+// @Failure		400				{object}	utils.ErrorResponse
+// @Failure		500				{object}	utils.ErrorResponse
+// @Router			/api/blogs [get]
 func GetBlogs(w http.ResponseWriter, r *http.Request) {
 	response, err, status := services.HandleGetBlogs(w, r)
 	if err != nil {
 		utils.SendErrorResponse(w, "Error getting blogs", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+}
+
+// Delete Cover Image
+//
+//	@Summary		Delete Cover Image
+//	@Description	Delete a cover image for a blog
+//	@Tags			blogs
+//	@Accept			json
+//	@Produce		json
+//	@Param			_id	body		string	true	"Blog ID"
+//	@Success		200	{object}	utils.TagResponse
+//	@Failure		400	{object}	utils.ErrorResponse	"Invalid request format"
+//	@Failure		401	{object}	utils.ErrorResponse	"Unauthorized"
+//	@Failure		500	{object}	utils.ErrorResponse	"Error deleting cover"
+//	@Failure		500	{object}	utils.ErrorResponse	"Internal server error"
+//	@Router			/api/cover/delete [POST]
+func DeleteCover(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleDeleteCover(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error deleting cover", err, status)
 		return
 	}
 

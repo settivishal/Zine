@@ -1,10 +1,8 @@
 package services
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -13,11 +11,6 @@ import (
 	"backend/database"
 	"backend/services/awsservice"
 	"backend/utils"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 // Handle Get Blog - _id is there in the query
@@ -119,20 +112,7 @@ func HandleUploadCover(w http.ResponseWriter, r *http.Request) (*utils.UploadCov
 	}
 	defer file.Close()
 
-	// Initialize S3 and CloudFront clients
-	AWS_ACCESS_KEY := os.Getenv("AWS_ACCESS_KEY")
-	AWS_SECRET_ACCESS_KEY := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	AWS_REGION := os.Getenv("AWS_REGION")
-
-	cfg, err := config.LoadDefaultConfig(context.TODO(),
-		config.WithRegion(AWS_REGION),
-		config.WithCredentialsProvider(aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, ""))),
-	)
-	if err != nil {
-		log.Fatalf("Unable to load SDK config, %v", err)
-	}
-
-	s3Client := s3.NewFromConfig(cfg)
+	s3Client := awsservice.GetS3Client()
 	S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
 
 	// Upload file to S3
@@ -198,5 +178,30 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResp
 		Blogs:      blogResponses,
 		Count:      count,
 		TotalPages: totalPages,
+	}, nil, http.StatusOK
+}
+
+func HandleDeleteCover(w http.ResponseWriter, r *http.Request) (*utils.TagResponse, error, int) {
+	blogId := r.FormValue("blog_id")
+	if blogId == "" {
+		return nil, errors.New("Blog ID is required"), http.StatusBadRequest
+	}
+
+	// Initialize S3 client
+	s3Client := awsservice.GetS3Client()
+	S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
+
+	err := awsservice.DeleteFileFromS3(s3Client, S3_BUCKET_NAME, blogId)
+	if err != nil {
+		return nil, errors.New("Error deleting image from S3"), http.StatusInternalServerError
+	}
+
+	err = database.DeleteCover(blogId)
+	if err != nil {
+		return nil, errors.New("Error deleting image from database"), http.StatusInternalServerError
+	}
+
+	return &utils.TagResponse{
+		Message: "Image deleted successfully",
 	}, nil, http.StatusOK
 }

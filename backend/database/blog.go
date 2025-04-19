@@ -2,10 +2,10 @@ package database
 
 import (
 	"context"
-	"fmt"
-	"time"
-	"math"
 	"errors"
+	"fmt"
+	"math"
+	"time"
 
 	"backend/models"
 	"backend/utils"
@@ -163,4 +163,18 @@ func GetBlogs(email string, page, limit int) ([]models.Blog, error, int, int) {
 	totalPages := int(math.Ceil(float64(count) / float64(limit)))
 
 	return blogs, nil, int(count), totalPages
+}
+
+func DeleteCover(BlogId string) error {
+	collection := client.Database("zine").Collection("blogs")
+	// Convert BlogId to MongoDB ObjectID
+	objectID, err := primitive.ObjectIDFromHex(BlogId)
+	if err != nil {
+		return fmt.Errorf("invalid blog ID: %v", err)
+	}
+
+	filter := bson.M{"_id": objectID}
+	update := bson.M{"$set": bson.M{"cover": ""}}
+	_, err = collection.UpdateOne(context.TODO(), filter, update)
+	return err
 }
