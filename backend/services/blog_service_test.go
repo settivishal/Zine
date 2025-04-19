@@ -358,4 +358,20 @@ func TestHandleDeleteCover(t *testing.T) {
 		assert.NotNil(t, blogs)
 		mockHandleDeleteCover.AssertExpectations(t)
 	})
+
+	// Error case
+	t.Run("error case", func(t *testing.T) {
+		mockHandleDeleteCover := new(MockHandleDeleteCover)
+		// Arrange
+		req := httptest.NewRequest(http.MethodGet, "/api/blog/date/2025-03-24", nil)
+		w := httptest.NewRecorder()
+		mockHandleDeleteCover.On("MockHandleDeleteCover", req).Return(http.StatusInternalServerError, errors.New("error"), []models.Blog{})
+		// Act
+		response, err, _ := mockHandleDeleteCover.MockHandleDeleteCover(w, req)
+
+		// Assert
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusInternalServerError, response)
+		mockHandleDeleteCover.AssertExpectations(t)
+	})
 }
