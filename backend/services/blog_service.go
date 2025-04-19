@@ -245,3 +245,60 @@ func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlog
 		Blog:    blogResponse,
 	}, nil, http.StatusOK
 }
+
+func HandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResponse, error, int) {
+	email, ok := r.Context().Value("email").(string)
+
+    if !ok {
+        return nil, errors.New("Error getting email"), http.StatusBadRequest
+    }
+
+	var payload utils.TagsRequestPayload
+
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		return nil, errors.New("error decoding request payload"), http.StatusBadRequest
+	}
+
+	if len(payload.TagIDs) == 0 {
+        return nil, errors.New("At least one tag ID is required"), http.StatusBadRequest
+    }
+
+	// Get pagination parameters
+    query := r.URL.Query()
+    page, _ := strconv.Atoi(query.Get("page"))
+    if page < 1 {
+        page = 1
+    }
+    limit, _ := strconv.Atoi(query.Get("limit"))
+    if limit < 1 {
+        limit = 10 // Default page size
+    }
+
+	// Fetch blogs by tag IDs
+    blogs, err, count, totalPages := database.GetBlogsByTagIDs(email, payload.TagIDs, page, limit)
+    if err != nil {
+		return nil, errors.New("Error fetching blog: " + err.Error()), http.StatusNotFound
+	}
+
+	if len(blogs) == 0 {
+        return nil, errors.New("No blogs found with these tags"), http.StatusNotFound
+    }
+
+	blogResponse := make(map[string]utils.BlogResponse)
+    for _, blog := range blogs {
+        blogResponse[blog.Date] = utils.BlogResponse{
+            ID:     blog.ID,
+            Title:  blog.Title,
+            Cover:  blog.Cover,
+            TagIDs: blog.TagIDs,
+        }
+    }
+
+    return &utils.GetBlogsResponse{
+        Message:    "Blogs fetched successfully",
+        Blogs:      blogResponse,
+        Count:      count,
+        TotalPages: totalPages,
+    }, nil, http.StatusOK
+}
