@@ -165,7 +165,6 @@ func GetBlogs(email string, page, limit int) ([]models.Blog, error, int, int) {
 	return blogs, nil, int(count), totalPages
 }
 
-<<<<<<< HEAD
 func DeleteCover(BlogId string) error {
 	collection := client.Database("zine").Collection("blogs")
 	// Convert BlogId to MongoDB ObjectID
@@ -178,7 +177,8 @@ func DeleteCover(BlogId string) error {
 	update := bson.M{"$set": bson.M{"cover": ""}}
 	_, err = collection.UpdateOne(context.TODO(), filter, update)
 	return err
-=======
+}
+
 func GetBlogByDate(email, date string) (*models.Blog, error) {
 	collection := client.Database("zine").Collection("blogs")
 
@@ -206,12 +206,11 @@ func GetBlogByDate(email, date string) (*models.Blog, error) {
 	).Decode(&blog)
 
 	if err != nil {
-        if err == mongo.ErrNoDocuments {
-            return nil, nil
-        }
-        return nil, fmt.Errorf("database error: %v", err)
-    }
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("database error: %v", err)
+	}
 
 	return &blog, nil
->>>>>>> 06bc96230d67615ae3bab8db2611b092c301f44d
 }
