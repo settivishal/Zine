@@ -340,6 +340,7 @@ func TestHandleGetBlogsByTagIDs(t *testing.T) {
 	})
 }
 
+// TestHandleDeleteCover tests the HandleDeleteCover function
 func TestHandleDeleteCover(t *testing.T) {
 	// Successful case
 	t.Run("successful case", func(t *testing.T) {
