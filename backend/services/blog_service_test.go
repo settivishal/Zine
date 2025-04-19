@@ -56,6 +56,15 @@ func (m *MockHandleGetBlogs) MockHandleGetBlogs(w http.ResponseWriter, r *http.R
 	return args.Int(0), args.Error(1), args.Get(2).([]models.Blog)
 }
 
+type MockHandleGetBlogByDate struct {
+	mock.Mock
+}
+
+func (m *MockHandleGetBlogByDate) MockHandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (int, error, []models.Blog) {
+	args := m.Called(r)
+	return args.Int(0), args.Error(1), args.Get(2).([]models.Blog)
+}
+
 func TestHandleGetBlog(t *testing.T) {
 	// Successful case
 	t.Run("successful case", func(t *testing.T) {
@@ -236,5 +245,25 @@ func TestHandleGetBlogs(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, http.StatusInternalServerError, response)
 		mockFailureHandler.AssertExpectations(t)
+	})
+}
+
+func TestHandleGetBlogsByDate(t *testing.T) {
+	// Successful case
+	t.Run("successful case", func(t *testing.T) {
+		mockHandleGetBlogByDate := new(MockHandleGetBlogByDate)
+		// Arrange
+		req := httptest.NewRequest(http.MethodGet, "/blog/get", nil)
+		w := httptest.NewRecorder()
+		mockHandleGetBlogByDate.On("MockHandleGetBlogByDate", req).Return(http.StatusOK, nil, []models.Blog{})
+
+		// Act
+		response, err, blogs := mockHandleGetBlogByDate.MockHandleGetBlogByDate(w, req)
+
+		// Assert
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, response)
+		assert.NotNil(t, blogs)
+		mockHandleGetBlogByDate.AssertExpectations(t)
 	})
 }
