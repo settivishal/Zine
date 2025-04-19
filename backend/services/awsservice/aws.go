@@ -21,8 +21,6 @@ func Config() {
 	AWS_ACCESS_KEY := os.Getenv("AWS_ACCESS_KEY")
 	AWS_SECRET_ACCESS_KEY := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	AWS_REGION := os.Getenv("AWS_REGION")
-	// S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
-	// CLOUDFRONT_DOMAIN := os.Getenv("CLOUDFRONT_DOMAIN")
 
 	_, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithRegion(AWS_REGION),
@@ -49,4 +47,26 @@ func UploadFileToS3(s3Client *s3.Client, bucket, key string, file io.Reader) err
 // Helper function to get the CloudFront URL for an object
 func GetCloudFrontURL(distributionDomain, objectKey string) string {
 	return fmt.Sprintf("%s/%s", distributionDomain, objectKey)
+}
+
+func GetS3Client() *s3.Client {
+	AWS_ACCESS_KEY := os.Getenv("AWS_ACCESS_KEY")
+	AWS_SECRET_ACCESS_KEY := os.Getenv("AWS_SECRET_ACCESS_KEY")
+	AWS_REGION := os.Getenv("AWS_REGION")
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithRegion(AWS_REGION),
+		config.WithCredentialsProvider(aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, ""))),
+	)
+	if err != nil {
+		log.Fatalf("Unable to load SDK config, %v", err)
+	}
+	return s3.NewFromConfig(cfg)
+}
+
+func DeleteFileFromS3(s3Client *s3.Client, bucket, key string) error {
+	_, err := s3Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	})
+	return err
 }
