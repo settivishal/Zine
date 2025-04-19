@@ -74,6 +74,15 @@ func (m *MockHandleGetBlogByTagIDs) MockHandleGetBlogByTagIDs(w http.ResponseWri
 	return args.Int(0), args.Error(1), args.Get(2).([]models.Blog)
 }
 
+type MockHandleDeleteCover struct {
+	mock.Mock
+}
+
+func (m *MockHandleDeleteCover) MockHandleDeleteCover(w http.ResponseWriter, r *http.Request) (int, error, []models.Blog) {
+	args := m.Called(r)
+	return args.Int(0), args.Error(1), args.Get(2).([]models.Blog)
+}
+
 func TestHandleGetBlog(t *testing.T) {
 	// Successful case
 	t.Run("successful case", func(t *testing.T) {
@@ -328,5 +337,25 @@ func TestHandleGetBlogsByTagIDs(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, http.StatusInternalServerError, response)
 		mockHandleGetBlogByTagIDs.AssertExpectations(t)
+	})
+}
+
+func TestHandleDeleteCover(t *testing.T) {
+	// Successful case
+	t.Run("successful case", func(t *testing.T) {
+		mockHandleDeleteCover := new(MockHandleDeleteCover)
+		// Arrange
+		req := httptest.NewRequest(http.MethodGet, "/api/blog/date/2025-03-24", nil)
+		w := httptest.NewRecorder()
+		mockHandleDeleteCover.On("MockHandleDeleteCover", req).Return(http.StatusOK, nil, []models.Blog{})
+
+		// Act
+		response, err, blogs := mockHandleDeleteCover.MockHandleDeleteCover(w, req)
+
+		// Assert
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, response)
+		assert.NotNil(t, blogs)
+		mockHandleDeleteCover.AssertExpectations(t)
 	})
 }
