@@ -77,6 +77,38 @@ func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateIma
 	return &utils.UpdateImageResponse{Message: "Image updated successfully", Image: cloudFrontURL}, nil, http.StatusOK
 }
 
+func HandleDeleteProfileImage(w http.ResponseWriter, r *http.Request) (*utils.DeleteProfileImageResponse, error, int) {
+	email, ok := r.Context().Value("email").(string)
+    if !ok {
+        return nil, errors.New("Error getting email"), http.StatusBadRequest
+    }
+
+	user, err := database.GetUser(email);
+	if err != nil {
+		return nil, errors.New("User not found"), http.StatusBadRequest
+	}
+
+	userId := user.ID
+
+	// Initialize S3 client
+	s3Client := awsservice.GetS3Client()
+	S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
+
+	err = awsservice.DeleteFileFromS3(s3Client, S3_BUCKET_NAME, userId)
+	if err != nil {
+		return nil, errors.New("Error deleting image from S3"), http.StatusInternalServerError
+	}
+
+	err = database.DeleteCover(userId)
+	if err != nil {
+		return nil, errors.New("Error deleting image from database"), http.StatusInternalServerError
+	}
+
+	return &utils.DeleteProfileImageResponse{
+		Message: "Image deleted successfully",
+	}, nil, http.StatusOK
+}
+
 func HandleUpdateProfile(w http.ResponseWriter, r *http.Request) (*utils.UpdateProfileResponse, error, int) {
 	Email, ok := r.Context().Value("email").(string)
 
