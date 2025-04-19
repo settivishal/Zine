@@ -192,6 +192,10 @@ type GetGridResponse struct {
 	Grid    models.Grid `json:"grid"`
 }
 
+type DeleteCoverResponse struct {
+	Message string `json:"message"`
+}
+
 type GetBlogsByDateRequest struct {
 	Date string `json:"date"`
 }
