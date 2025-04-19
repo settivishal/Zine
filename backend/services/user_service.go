@@ -44,11 +44,22 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) (*utils.UserInfoRespo
 }
 
 func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateImageResponse, error, int) {
-	Email, ok := r.Context().Value("email").(string)
+	email, ok := r.Context().Value("email").(string)
 
 	if !ok {
 		return nil, errors.New("Error getting email"), http.StatusBadRequest
 	}
+
+	user, err := database.GetUser(email);
+	if err != nil {
+		return nil, errors.New("User not found"), http.StatusBadRequest
+	}
+
+	if user.ID == "" {
+		return nil, errors.New("User not found"), http.StatusBadRequest
+	}
+
+	userId := user.ID
 
 	file, header, err := r.FormFile("image")
 	if err != nil {
@@ -60,7 +71,7 @@ func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateIma
 	S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
 
 	// Upload file to S3
-	err = awsservice.UploadFileToS3(s3Client, S3_BUCKET_NAME, header.Filename, file)
+	err = awsservice.UploadFileToS3(s3Client, S3_BUCKET_NAME, userId, file)
 	if err != nil {
 		return nil, errors.New("Error uploading image to S3"), http.StatusInternalServerError
 	}
@@ -69,7 +80,7 @@ func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateIma
 	cloudFrontDomain := os.Getenv("CLOUDFRONT_DOMAIN")
 	cloudFrontURL := awsservice.GetCloudFrontURL(cloudFrontDomain, header.Filename)
 
-	err = database.UpdateImage(Email, cloudFrontURL)
+	err = database.UpdateImage(email, cloudFrontURL)
 	if err != nil {
 		return nil, errors.New("Error updating image in database"), http.StatusInternalServerError
 	}
@@ -85,6 +96,10 @@ func HandleDeleteProfileImage(w http.ResponseWriter, r *http.Request) (*utils.De
 
 	user, err := database.GetUser(email);
 	if err != nil {
+		return nil, errors.New("User not found"), http.StatusBadRequest
+	}
+
+	if user.ID == "" {
 		return nil, errors.New("User not found"), http.StatusBadRequest
 	}
 
