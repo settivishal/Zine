@@ -7,17 +7,11 @@ import (
 	"backend/database"
 	"backend/utils"
 
-	"context"
 	"encoding/json"
 	"log"
 	"os"
 
 	"backend/services/awsservice"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 func HandleProfile(w http.ResponseWriter, r *http.Request) (*utils.UserInfoResponse, error, int) {
@@ -62,21 +56,7 @@ func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateIma
 	}
 	defer file.Close()
 
-	// Initialize S3 and CloudFront clients
-	// Load Variables from Environment
-	AWS_ACCESS_KEY := os.Getenv("AWS_ACCESS_KEY")
-	AWS_SECRET_ACCESS_KEY := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	AWS_REGION := os.Getenv("AWS_REGION")
-
-	cfg, err := config.LoadDefaultConfig(context.TODO(),
-		config.WithRegion(AWS_REGION),
-		config.WithCredentialsProvider(aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, ""))),
-	)
-	if err != nil {
-		log.Fatalf("Unable to load SDK config, %v", err)
-	}
-
-	s3Client := s3.NewFromConfig(cfg)
+	s3Client := awsservice.GetS3Client()
 	S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
 
 	// Upload file to S3

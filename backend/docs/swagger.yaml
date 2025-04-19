@@ -40,6 +40,19 @@ definitions:
       user_id:
         type: string
     type: object
+  utils.BlogResponse:
+    properties:
+      cover:
+        type: string
+      id:
+        type: string
+      tagIds:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+    type: object
   utils.ErrorResponse:
     properties:
       error:
@@ -54,6 +67,13 @@ definitions:
     type: object
   utils.ForgotPasswordResponse:
     properties:
+      message:
+        type: string
+    type: object
+  utils.GetBlogsByDateResponse:
+    properties:
+      blog:
+        $ref: '#/definitions/utils.BlogResponse'
       message:
         type: string
     type: object
@@ -108,6 +128,49 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/blog/{date}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a blog for the authenticated user by specific date (YYYY-MM-DD
+        format)
+      parameters:
+      - description: Date in YYYY-MM-DD format
+        in: path
+        name: date
+        required: true
+        type: string
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.GetBlogsByDateResponse'
+        "400":
+          description: Invalid date format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: No blog found for this date
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Error fetching blog
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get blog by date
+      tags:
+      - blogs
   /api/blog/create:
     post:
       consumes:
@@ -184,6 +247,40 @@ paths:
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
       summary: Get Blogs
+      tags:
+      - blogs
+  /api/cover/delete:
+    post:
+      consumes:
+      - application/json
+      description: Delete a cover image for a blog
+      parameters:
+      - description: Blog ID
+        in: body
+        name: _id
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.TagResponse'
+        "400":
+          description: Invalid request format
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Delete Cover Image
       tags:
       - blogs
   /api/hobbies/update:
