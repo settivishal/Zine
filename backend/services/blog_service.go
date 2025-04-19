@@ -17,7 +17,6 @@ import (
 )
 
 // Handle Get Blog - _id is there in the query
-
 func HandleGetBlog(w http.ResponseWriter, r *http.Request) (*utils.GetBlogResponse, error, int) {
 	// Extract _id from the URL path parameters
 	vars := r.URL.Path
@@ -42,7 +41,6 @@ func HandleGetBlog(w http.ResponseWriter, r *http.Request) (*utils.GetBlogRespon
 }
 
 // Handle Create Blog
-
 func HandleCreateBlog(w http.ResponseWriter, r *http.Request) (*utils.CreateBlogResponse, error, int) {
 	Email, ok := r.Context().Value("email").(string)
 
@@ -78,7 +76,6 @@ func HandleCreateBlog(w http.ResponseWriter, r *http.Request) (*utils.CreateBlog
 }
 
 // HandleSaveBlog - Save the blog content to the database
-
 func HandleSaveBlog(w http.ResponseWriter, r *http.Request) (*utils.SaveBlogContentResponse, error, int) {
 
 	// Parse request body
@@ -99,7 +96,6 @@ func HandleSaveBlog(w http.ResponseWriter, r *http.Request) (*utils.SaveBlogCont
 }
 
 // HandleUploadCover - Upload the cover image to s3
-
 func HandleUploadCover(w http.ResponseWriter, r *http.Request) (*utils.UploadCoverResponse, error, int) {
 
 	// Parse request body
@@ -184,6 +180,7 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResp
 	}, nil, http.StatusOK
 }
 
+// HandleDeleteCover - Delete the cover image from s3 and database
 func HandleDeleteCover(w http.ResponseWriter, r *http.Request) (*utils.DeleteCoverResponse, error, int) {
 	blogId := r.FormValue("blog_id")
 	if blogId == "" {
@@ -209,6 +206,7 @@ func HandleDeleteCover(w http.ResponseWriter, r *http.Request) (*utils.DeleteCov
 	}, nil, http.StatusOK
 }
 
+// HandleGetBlogByDate - Get blog by date
 func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsByDateResponse, error, int) {
 	email, ok := r.Context().Value("email").(string)
 
@@ -249,6 +247,7 @@ func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlog
 	}, nil, http.StatusOK
 }
 
+// HandleGetBlogsByTagIDs - Get blogs by tag IDs
 func HandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResponse, error, int) {
 	email, ok := r.Context().Value("email").(string)
 
