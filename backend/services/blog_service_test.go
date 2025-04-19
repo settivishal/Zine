@@ -253,7 +253,7 @@ func TestHandleGetBlogsByDate(t *testing.T) {
 	t.Run("successful case", func(t *testing.T) {
 		mockHandleGetBlogByDate := new(MockHandleGetBlogByDate)
 		// Arrange
-		req := httptest.NewRequest(http.MethodGet, "/blog/get", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/blog/date/2025-03-24", nil)
 		w := httptest.NewRecorder()
 		mockHandleGetBlogByDate.On("MockHandleGetBlogByDate", req).Return(http.StatusOK, nil, []models.Blog{})
 
@@ -264,6 +264,22 @@ func TestHandleGetBlogsByDate(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, response)
 		assert.NotNil(t, blogs)
+		mockHandleGetBlogByDate.AssertExpectations(t)
+	})
+
+	// Error case
+	t.Run("error case", func(t *testing.T) {
+		mockHandleGetBlogByDate := new(MockHandleGetBlogByDate)
+		// Arrange
+		req := httptest.NewRequest(http.MethodGet, "/api/blog/date/2025-03-24", nil)
+		w := httptest.NewRecorder()
+		mockHandleGetBlogByDate.On("MockHandleGetBlogByDate", req).Return(http.StatusInternalServerError, errors.New("error"), []models.Blog{})
+		// Act
+		response, err, _ := mockHandleGetBlogByDate.MockHandleGetBlogByDate(w, req)
+
+		// Assert
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusInternalServerError, response)
 		mockHandleGetBlogByDate.AssertExpectations(t)
 	})
 }
