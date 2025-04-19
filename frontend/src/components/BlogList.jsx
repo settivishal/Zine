@@ -59,10 +59,27 @@ const BlogList = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/blogs?page=${page}&limit=7`, {
-                method: "GET",
-                headers: { Authorization: `Bearer ${accessToken}` },
-            });
+            let response;
+
+            if (isFiltered && selectedTagIds.length > 0) {
+                // Make a POST request to the filter API with the correct endpoint
+                response = await fetch(`http://localhost:8080/api/blogs/getByTagIDs?page=${page}&limit=7`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tag_ids: selectedTagIds
+                    })
+                });
+            } else {
+                // Make the normal GET request for unfiltered blogs
+                response = await fetch(`http://localhost:8080/api/blogs?page=${page}&limit=7`, {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                });
+            }
 
             if (response.ok) {
                 const data = await response.json();
@@ -111,7 +128,7 @@ const BlogList = () => {
     // Update useEffect to use the new fetchBlogs function
     useEffect(() => {
         fetchBlogs(currentPage);
-    }, [accessToken, currentPage]);
+    }, [accessToken, currentPage, isFiltered, selectedTagIds]);
 
     useEffect(() => {
         if (accessToken) {
@@ -284,15 +301,19 @@ const BlogList = () => {
 
     const handleFilterApply = (tagIds) => {
         setSelectedTagIds(tagIds);
+        console.log(tagIds);
         setIsFiltered(tagIds.length > 0);
-        // Later you'll implement actual filter fetching here
-        // For now, we're just setting up the UI
+        // Reset to first page when filtering
+        setCurrentPage(1);
+        // Fetch the filtered data with the new filter state
+        fetchBlogs();
     };
 
     const handleClearFilters = () => {
         setSelectedTagIds([]);
         setIsFiltered(false);
-        // Later you'll reset to unfiltered view here
+        // Fetch unfiltered data
+        fetchBlogs(currentPage);
     };
 
     return (
