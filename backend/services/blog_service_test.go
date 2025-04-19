@@ -313,4 +313,20 @@ func TestHandleGetBlogsByTagIDs(t *testing.T) {
 		assert.NotNil(t, blogs)
 		mockHandleGetBlogByTagIDs.AssertExpectations(t)
 	})
+
+	// Error case
+	t.Run("error case", func(t *testing.T) {
+		mockHandleGetBlogByTagIDs := new(MockHandleGetBlogByTagIDs)
+		// Arrange
+		req := httptest.NewRequest(http.MethodGet, "/api/blog/date/2025-03-24", nil)
+		w := httptest.NewRecorder()
+		mockHandleGetBlogByTagIDs.On("MockHandleGetBlogByTagIDs", req).Return(http.StatusInternalServerError, errors.New("error"), []models.Blog{})
+		// Act
+		response, err, _ := mockHandleGetBlogByTagIDs.MockHandleGetBlogByTagIDs(w, req)
+
+		// Assert
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusInternalServerError, response)
+		mockHandleGetBlogByTagIDs.AssertExpectations(t)
+	})
 }
