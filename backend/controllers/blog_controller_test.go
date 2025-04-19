@@ -399,7 +399,9 @@ func TestGetBlogsByTagIDs(t *testing.T) {
 	})
 }
 
+// TestDeleteCover tests the DeleteCover function
 func TestDeleteCover(t *testing.T) {
+	// Test case 1: delete cover successfully
 	t.Run("Successful DeleteCover Response", func(t *testing.T) {
 		// Mock dependencies
 		mockHandleDeleteCover := new(MockHandleDeleteCover)
@@ -416,6 +418,27 @@ func TestDeleteCover(t *testing.T) {
 		assert.Equal(t, "Image deleted successfully", response)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, statusCode)
+
+		// Verify that the expected call was made		
+		mockHandleDeleteCover.AssertExpectations(t)
+	})
+
+	// Test case 2: error deleting cover
+	t.Run("Error DeleteCover Response", func(t *testing.T) {
+		mockHandleDeleteCover := new(MockHandleDeleteCover)
+
+		req := httptest.NewRequest(http.MethodDelete, "/api/blog/cover/delete", nil)
+
+		mockHandleDeleteCover.On("MockHandleDeleteCover", req).Return(nil, errors.New("Error deleting cover"), http.StatusInternalServerError)
+
+		// Call the mock method		
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockHandleDeleteCover.MockHandleDeleteCover(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.Equal(t, "Error deleting cover", err.Error())		
+		assert.Equal(t, http.StatusInternalServerError, statusCode)
 
 		// Verify that the expected call was made		
 		mockHandleDeleteCover.AssertExpectations(t)
