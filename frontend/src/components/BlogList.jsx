@@ -333,6 +333,17 @@ const BlogList = () => {
                         sx={{
                             minWidth: '40px',
                             padding: '4px 8px',
+                            borderColor: currentPage >= totalPages ? '#9e9e9e' : 'primary.main',
+                            color: currentPage >= totalPages ? '#616161' : 'primary.main',
+                            '&.Mui-disabled': {
+                                borderColor: '#9e9e9e',
+                                color: '#616161',
+                                opacity: 0.8,
+                            },
+                            '&:hover': {
+                                borderColor: currentPage >= totalPages ? '#757575' : 'primary.dark',
+                                backgroundColor: currentPage >= totalPages ? 'rgba(0, 0, 0, 0.04)' : 'rgba(25, 118, 210, 0.12)',
+                            }
                         }}
                     >
                         Prev
@@ -346,6 +357,17 @@ const BlogList = () => {
                         sx={{
                             minWidth: '40px',
                             padding: '4px 8px',
+                            borderColor: currentPage <= 1 ? '#9e9e9e' : 'primary.main',
+                            color: currentPage <= 1 ? '#616161' : 'primary.main',
+                            '&.Mui-disabled': {
+                                borderColor: '#9e9e9e',
+                                color: '#616161',
+                                opacity: 0.8,
+                            },
+                            '&:hover': {
+                                borderColor: currentPage <= 1 ? '#757575' : 'primary.dark',
+                                backgroundColor: currentPage <= 1 ? 'rgba(0, 0, 0, 0.04)' : 'rgba(25, 118, 210, 0.12)',
+                            }
                         }}
                     >
                         Next

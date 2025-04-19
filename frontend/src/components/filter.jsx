@@ -56,7 +56,7 @@ const Filter = ({ onFilter, onClearFilters }) => {
     const id = open ? 'filter-popover' : undefined;
 
     return (
-        <div>
+        <div className="flex items-center gap-2">
             {/* Filter Button */}
             <Button
                 ref={buttonRef}
@@ -66,46 +66,38 @@ const Filter = ({ onFilter, onClearFilters }) => {
                 size="small"
                 color={activeFilters.length > 0 ? "primary" : "inherit"}
                 sx={{
-                    borderColor: activeFilters.length > 0 ? 'primary.main' : 'grey.300',
+                    borderColor: activeFilters.length > 0 ? 'primary.main' : '#9e9e9e',
+                    color: activeFilters.length > 0 ? 'primary.main' : '#616161',
+                    backgroundColor: activeFilters.length > 0 ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
+                    fontWeight: activeFilters.length > 0 ? 500 : 400,
                     '&:hover': {
-                        borderColor: activeFilters.length > 0 ? 'primary.dark' : 'grey.400',
+                        borderColor: activeFilters.length > 0 ? 'primary.dark' : '#757575',
+                        backgroundColor: activeFilters.length > 0 ? 'rgba(25, 118, 210, 0.12)' : 'rgba(0, 0, 0, 0.04)',
                     }
                 }}
             >
                 Filter {activeFilters.length > 0 && `(${activeFilters.length})`}
             </Button>
 
-            {/* Active Filters Display */}
+            {/* Clear All Button - visible only when filters are active */}
             {activeFilters.length > 0 && (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
-                    {activeFilters.map(tag => (
-                        <Chip
-                            key={tag.ID}
-                            label={tag.text}
-                            size="small"
-                            sx={{
-                                backgroundColor: tag.color,
-                                color: 'white',
-                            }}
-                            onDelete={() => {
-                                const newFilters = activeFilters.filter(t => t.ID !== tag.ID);
-                                setActiveFilters(newFilters);
-                                if (onFilter) {
-                                    onFilter(newFilters.map(t => t.ID));
-                                }
-                            }}
-                        />
-                    ))}
-                    {activeFilters.length > 0 && (
-                        <Chip
-                            label="Clear All"
-                            size="small"
-                            icon={<ClearIcon fontSize="small" />}
-                            onClick={handleClearFilters}
-                            variant="outlined"
-                        />
-                    )}
-                </Box>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<ClearIcon />}
+                    onClick={handleClearFilters}
+                    color="error"
+                    sx={{
+                        borderColor: 'error.light',
+                        color: 'error.main',
+                        '&:hover': {
+                            backgroundColor: 'error.light',
+                            color: 'white'
+                        }
+                    }}
+                >
+                    Clear
+                </Button>
             )}
 
             {/* Filter Popover */}
