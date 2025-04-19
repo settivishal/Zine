@@ -112,18 +112,20 @@ func SendBlogInvitationEmail(email string, owner string, blogID string) error {
 
 	subject := "[ZINE] Blog Invitation"
 
+	blogURL := fmt.Sprintf("http://localhost:3000/blogs/%s", blogID)
+
 	// Create email body
 	body := fmt.Sprintf(`
 	<html>
 	<body>
 		<h2>Hello %s,</h2>
 		<p>You have been invited to join a blog. If you didn't make this request, you can ignore this email.</p>
-		<p>Blog ID: %s</p>
+		<p>Blog Url: %s</p>
 		<p>Owner: %s</p>
 		<p>Thank you,<br>The Team</p>
 	</body>
 	</html>
-	`, email, blogID, owner)
+	`, email, blogURL, owner)
 
 	// Construct message
 	message := fmt.Sprintf("To: %s\r\n"+
