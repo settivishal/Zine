@@ -304,6 +304,12 @@ func HandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (*utils.GetB
 }
 
 func HandleChangeVisibility(w http.ResponseWriter, r *http.Request) (*utils.ChangeVisibilityResponse, error, int) {
+	// Extract email from context
+	email, ok := r.Context().Value("email").(string)
+
+	if !ok {
+		return nil, errors.New("Error getting email"), http.StatusBadRequest
+	}
 	// Parse request body
 	var Request utils.ChangeVisibilityRequest
 	if err := json.NewDecoder(r.Body).Decode(&Request); err != nil {
@@ -320,6 +326,12 @@ func HandleChangeVisibility(w http.ResponseWriter, r *http.Request) (*utils.Chan
 
 	if err != nil {
 		return nil, errors.New("Error changing visibility: " + err.Error()), http.StatusInternalServerError
+	}
+
+	// Send email notification that the blog visibility has changed
+	err = SendVisibilityChangeEmail(email, Request.BlogID, Request.IsPublic)
+	if err != nil {
+		return nil, errors.New("Error sending email: " + err.Error()), http.StatusInternalServerError
 	}
 
 	// Return structured response
