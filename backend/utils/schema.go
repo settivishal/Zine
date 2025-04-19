@@ -200,3 +200,10 @@ type GetBlogsByDateResponse struct {
 	Message string       `json:"message"`
 	Blog    BlogResponse `json:"blog"`
 }
+
+type GetBlogsByTagIDsResponse struct {
+	Message    string         `json:"message"`
+	Blogs      []BlogResponse `json:"blogs"`
+	Count      int            `json:"count"`
+	TotalPages int            `json:"total_pages"`
+}

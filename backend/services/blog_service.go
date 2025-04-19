@@ -240,7 +240,7 @@ func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlog
 	}, nil, http.StatusOK
 }
 
-func HandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResponse, error, int) {
+func HandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsByTagIDsResponse, error, int) {
 	email, ok := r.Context().Value("email").(string)
 
 	if !ok {
@@ -279,19 +279,19 @@ func HandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (*utils.GetB
 		return nil, errors.New("No blogs found with these tags"), http.StatusNotFound
 	}
 
-	blogResponse := make(map[string]utils.BlogResponse)
-	for _, blog := range blogs {
-		blogResponse[blog.Date] = utils.BlogResponse{
-			ID:     blog.ID,
-			Title:  blog.Title,
-			Cover:  blog.Cover,
-			TagIDs: blog.TagIDs,
-		}
-	}
+	var blogResponses []utils.BlogResponse
+    for _, blog := range blogs {
+        blogResponses = append(blogResponses, utils.BlogResponse{
+            ID:     blog.ID,
+            Title:  blog.Title,
+            Cover:  blog.Cover,
+            TagIDs: blog.TagIDs,
+        })
+    }
 
-	return &utils.GetBlogsResponse{
+	return &utils.GetBlogsByTagIDsResponse{
 		Message:    "Blogs fetched successfully",
-		Blogs:      blogResponse,
+		Blogs:      blogResponses,
 		Count:      count,
 		TotalPages: totalPages,
 	}, nil, http.StatusOK
