@@ -56,6 +56,7 @@ func Routes(router *mux.Router) {
 	api.HandleFunc("/blog/date/{date}", controllers.GetBlogByDate).Methods("GET")
 	api.HandleFunc("/blogs/getByTagIDs", controllers.GetBlogsByTagIDs).Methods("POST")
 	api.HandleFunc("/blogs", controllers.GetBlogs).Methods("GET")
+	api.HandleFunc("/blog/change-visibility", controllers.ChangeVisibility).Methods("POST")
 }
 
 func SwaggerRoutes(router *mux.Router) {

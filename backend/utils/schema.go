@@ -204,3 +204,13 @@ type GetBlogsByDateResponse struct {
 	Message string       `json:"message"`
 	Blog    BlogResponse `json:"blog"`
 }
+
+type ChangeVisibilityRequest struct {
+	BlogID   string   `json:"blog_id"`
+	IsPublic bool     `json:"is_public"`
+	Users    []string `json:"users"`
+}
+
+type ChangeVisibilityResponse struct {
+	Message string `json:"message"`
+}
