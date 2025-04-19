@@ -284,24 +284,6 @@ func HandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (*utils.GetB
 		return nil, errors.New("Error fetching blog: " + err.Error()), http.StatusNotFound
 	}
 
-<<<<<<< HEAD
-	if len(blogs) == 0 {
-		return nil, errors.New("No blogs found with these tags"), http.StatusNotFound
-	}
-
-	blogResponse := make(map[string]utils.BlogResponse)
-	for _, blog := range blogs {
-		blogResponse[blog.Date] = utils.BlogResponse{
-			ID:     blog.ID,
-			Title:  blog.Title,
-			Cover:  blog.Cover,
-			TagIDs: blog.TagIDs,
-		}
-	}
-
-	return &utils.GetBlogsResponse{
-		Message:    "Blogs fetched successfully",
-=======
 	blogResponse := make(map[string]utils.BlogResponse)
 	returnMessage := "No Blogs found with these tags"
 
@@ -320,12 +302,10 @@ func HandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (*utils.GetB
 
 	return &utils.GetBlogsResponse{
 		Message:    returnMessage,
->>>>>>> 1ef7fe50b3e10aebf718653e00433f0ea33efc5c
 		Blogs:      blogResponse,
 		Count:      count,
 		TotalPages: totalPages,
 	}, nil, http.StatusOK
-<<<<<<< HEAD
 }
 
 func HandleChangeVisibility(w http.ResponseWriter, r *http.Request) (*utils.ChangeVisibilityResponse, error, int) {
@@ -371,6 +351,4 @@ func HandleChangeVisibility(w http.ResponseWriter, r *http.Request) (*utils.Chan
 	return &utils.ChangeVisibilityResponse{
 		Message: "Visibility changed successfully",
 	}, nil, http.StatusOK
-=======
->>>>>>> 1ef7fe50b3e10aebf718653e00433f0ea33efc5c
 }
