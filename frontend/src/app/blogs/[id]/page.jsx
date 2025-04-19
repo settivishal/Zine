@@ -344,7 +344,7 @@ export default function Blog() {
                                     left: 0,
                                     width: '100%',
                                     height: '25%',
-                                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)',
+                                    background: 'linear-gradient(to bottom, rgb(0, 0, 0, 0.8) 0%, rgba(0,0,0,0) 100%)',
                                     zIndex: 1
                                 }}
                     />

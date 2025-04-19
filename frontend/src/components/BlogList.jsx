@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { useAuth } from '../hooks/authcontext';
 import { useTags } from '../hooks/tagsContext';
 import { useRouter } from 'next/navigation';
+import Filter from './filter';
 
 
 const BlogList = () => {
@@ -21,6 +22,8 @@ const BlogList = () => {
     const [hoveredTag, setHoveredTag] = useState(null); // Add this new state
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedTagIds, setSelectedTagIds] = useState([]);
+    const [isFiltered, setIsFiltered] = useState(false);
 
     const fetchTagsByIds = async (tagIds) => {
         if (!tagIds || tagIds.length === 0) return [];
@@ -279,6 +282,19 @@ const BlogList = () => {
         }
     };
 
+    const handleFilterApply = (tagIds) => {
+        setSelectedTagIds(tagIds);
+        setIsFiltered(tagIds.length > 0);
+        // Later you'll implement actual filter fetching here
+        // For now, we're just setting up the UI
+    };
+
+    const handleClearFilters = () => {
+        setSelectedTagIds([]);
+        setIsFiltered(false);
+        // Later you'll reset to unfiltered view here
+    };
+
     return (
         <div
             id="blog-list-main"
@@ -304,6 +320,10 @@ const BlogList = () => {
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-black">My Blogs</h2>
                 <div className="flex items-center gap-2">
+                    <Filter
+                        onFilter={handleFilterApply}
+                        onClearFilters={handleClearFilters}
+                    />
                     <Button
                         variant="outlined"
                         size="small"
@@ -381,8 +401,8 @@ const BlogList = () => {
                                     top: 0,
                                     left: 0,
                                     width: '100%',
-                                    height: '25%',
-                                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)',
+                                    height: '30%',
+                                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%)',
                                     zIndex: 1
                                 }}
                             />
