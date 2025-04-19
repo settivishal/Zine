@@ -9,8 +9,11 @@ import (
 	"strings"
 
 	"backend/database"
+	// "backend/models"
 	"backend/services/awsservice"
 	"backend/utils"
+
+	"github.com/gorilla/mux"
 )
 
 // Handle Get Blog - _id is there in the query
@@ -203,5 +206,42 @@ func HandleDeleteCover(w http.ResponseWriter, r *http.Request) (*utils.DeleteCov
 
 	return &utils.DeleteCoverResponse{
 		Message: "Image deleted successfully",
+	}, nil, http.StatusOK
+}
+
+func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsByDateResponse, error, int) {
+	email, ok := r.Context().Value("email").(string)
+
+	if !ok {
+		return nil, errors.New("Error getting email"), http.StatusBadRequest
+	}
+
+	// Extract date from URL path
+	vars := mux.Vars(r)
+	date := vars["date"]
+	if date == "" {
+		return nil, errors.New("date is required in URL path"), http.StatusBadRequest
+	}
+
+	// Get blogs for the user on the specified date
+	blog, err := database.GetBlogByDate(email, date)
+	if err != nil {
+		return nil, errors.New("Error fetching blog: " + err.Error()), http.StatusInternalServerError
+	}
+
+	if blog == nil {
+		return nil, errors.New("No blog found for this date"), http.StatusNotFound
+	}
+
+	blogResponse := utils.BlogResponse{
+		ID:     blog.ID,
+		Title:  blog.Title,
+		Cover:  blog.Cover,
+		TagIDs: blog.TagIDs,
+	}
+
+	return &utils.GetBlogsByDateResponse{
+		Message: "Blog fetched successfully",
+		Blog:    blogResponse,
 	}, nil, http.StatusOK
 }

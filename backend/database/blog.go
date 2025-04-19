@@ -165,6 +165,7 @@ func GetBlogs(email string, page, limit int) ([]models.Blog, error, int, int) {
 	return blogs, nil, int(count), totalPages
 }
 
+<<<<<<< HEAD
 func DeleteCover(BlogId string) error {
 	collection := client.Database("zine").Collection("blogs")
 	// Convert BlogId to MongoDB ObjectID
@@ -177,4 +178,40 @@ func DeleteCover(BlogId string) error {
 	update := bson.M{"$set": bson.M{"cover": ""}}
 	_, err = collection.UpdateOne(context.TODO(), filter, update)
 	return err
+=======
+func GetBlogByDate(email, date string) (*models.Blog, error) {
+	collection := client.Database("zine").Collection("blogs")
+
+	user, err := GetUser(email)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve user: %v", err)
+	}
+
+	// Validate and normalize the date
+	parsedDate, err := time.Parse("2006-01-02", date)
+	if err != nil {
+		return nil, errors.New("Error parsing date: " + date)
+	}
+	formattedDate := parsedDate.Format("2006-01-02")
+
+	// Find the blog by user ID and date
+	var blog models.Blog
+
+	err = collection.FindOne(
+		context.TODO(),
+		bson.M{
+			"user_id": user.ID,
+			"date":    formattedDate,
+		},
+	).Decode(&blog)
+
+	if err != nil {
+        if err == mongo.ErrNoDocuments {
+            return nil, nil
+        }
+        return nil, fmt.Errorf("database error: %v", err)
+    }
+
+	return &blog, nil
+>>>>>>> 06bc96230d67615ae3bab8db2611b092c301f44d
 }
