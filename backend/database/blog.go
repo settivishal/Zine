@@ -10,6 +10,7 @@ import (
 	"backend/models"
 	"backend/utils"
 
+	"github.com/labstack/gommon/email"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -199,4 +200,55 @@ func GetBlogByDate(email, date string) (*models.Blog, error) {
     }
 
 	return &blog, nil
+}
+
+func GetBlogsByTagIDs(email string, tagIDs []string, page, limit int) ([]models.Blog, error, int, int) {
+	collection := client.Database("zine").Collection("blogs")
+
+    // First get user ID
+    user, err := GetUser(email)
+    if err != nil {
+        return nil, fmt.Errorf("failed to get user: %v", err), 0, 0
+    }
+
+	// Convert tagIDs to ObjectIDs
+    for _, tagID := range tagIDs {
+        if tagID == "" {
+            return nil, errors.New("empty tag ID provided"), 0, 0
+        }
+    }
+
+	// Build query
+    filter := bson.M{
+        "user_id": user.ID,
+        "tag_ids": bson.M{"$in": tagIDs},
+    }
+
+	// Pagination setup
+    skip := (page - 1) * limit
+    opts := options.Find().
+        SetLimit(int64(limit)).
+        SetSkip(int64(skip)).
+        SetSort(bson.D{{Key: "date", Value: -1}})
+
+    // Execute query
+    cursor, err := collection.Find(context.TODO(), filter, opts)
+    if err != nil {
+        return nil, err, 0, 0
+    }
+    defer cursor.Close(context.TODO())
+
+    var blogs []models.Blog
+    if err = cursor.All(context.TODO(), &blogs); err != nil {
+        return nil, err, 0, 0
+    }
+
+	// Get total count for pagination
+    total, err := collection.CountDocuments(context.TODO(), filter)
+    if err != nil {
+        return nil, err, 0, 0
+    }
+    totalPages := int(math.Ceil(float64(total) / float64(limit)))
+
+    return blogs, nil, int(total), totalPages
 }
