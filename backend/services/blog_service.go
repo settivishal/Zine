@@ -281,11 +281,17 @@ func HandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (*utils.GetB
 		return nil, errors.New("Error fetching blog: " + err.Error()), http.StatusNotFound
 	}
 
+	blogResponse := make(map[string]utils.BlogResponse)
+
 	if len(blogs) == 0 {
-        return nil, errors.New("No blogs found with these tags"), http.StatusNotFound
+        return &utils.GetBlogsResponse{
+			Message:    "No Blogs found with these tags",
+			Blogs:      blogResponse,
+			Count:      count,
+			TotalPages: totalPages,
+		}, nil, http.StatusOK
     }
 
-	blogResponse := make(map[string]utils.BlogResponse)
     for _, blog := range blogs {
         blogResponse[blog.Date] = utils.BlogResponse{
             ID:     blog.ID,
