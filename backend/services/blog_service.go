@@ -239,3 +239,24 @@ func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlog
 		Blog:    blogResponse,
 	}, nil, http.StatusOK
 }
+
+func HandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResponse, error, int) {
+	email, ok := r.Context().Value("email").(string)
+
+    if !ok {
+        return nil, errors.New("Error getting email"), http.StatusBadRequest
+    }
+
+	var payload utils.TagsRequestPayload
+
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		return nil, errors.New("error decoding request payload"), http.StatusBadRequest
+	}
+
+	if len(payload.TagIDs) == 0 {
+        return nil, errors.New("At least one tag ID is required"), http.StatusBadRequest
+    }
+
+	
+}
