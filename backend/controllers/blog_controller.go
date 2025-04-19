@@ -175,6 +175,23 @@ func GetBlogByDate(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, response, status)
 }
 
+// Get Blogs by Tag IDs
+
+//	@Summary		Get blogs by tags
+//	@Description	Retrieve blogs containing any of the specified tag IDs
+//	@Tags			blogs
+//	@Accept			json
+//	@Produce		json
+//	@Param			request			body		object{tag_ids=[]string}	true	"List of tag IDs"
+//	@Param			page			query		int							false	"Page number"		default(1)
+//	@Param			limit			query		int							false	"Items per page"	default(10)
+//	@Param			Authorization	header		string						true	"Bearer <token>"
+//	@Success		200				{object}	utils.GetBlogsResponse
+//	@Failure		400				{object}	utils.ErrorResponse	"Invalid request format"
+//	@Failure		401				{object}	utils.ErrorResponse	"Unauthorized"
+//	@Failure		404				{object}	utils.ErrorResponse	"No blogs found with these tags"
+//	@Failure		500				{object}	utils.ErrorResponse	"Error fetching blogs"
+//	@Router			/api/blogs/by-tags [POST]
 func GetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) {
 	response, err, status := services.HandleGetBlogsByTagIDs(w, r)
 	if err != nil {
