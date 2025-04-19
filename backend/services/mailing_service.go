@@ -27,10 +27,10 @@ func SendMailSimple(subject string, html string, to []string) {
 
 // SendPasswordResetEmail sends a password reset email
 func SendPasswordResetEmail(email, name, resetURL string) error {
-	from 		:= config.Env("EMAIL_FROM")
-	password 	:= config.Env("EMAIL_PASSWORD")
-	smtpHost 	:= config.Env("SMTP_HOST")
-	smtpPort 	:= config.Env("SMTP_PORT")
+	from := config.Env("EMAIL_FROM")
+	password := config.Env("EMAIL_PASSWORD")
+	smtpHost := config.Env("SMTP_HOST")
+	smtpPort := config.Env("SMTP_PORT")
 
 	subject := "Password Reset Request"
 
@@ -47,6 +47,85 @@ func SendPasswordResetEmail(email, name, resetURL string) error {
 	</body>
 	</html>
 	`, name, resetURL)
+
+	// Construct message
+	message := fmt.Sprintf("To: %s\r\n"+
+		"Subject: %s\r\n"+
+		"Content-Type: text/html; charset=UTF-8\r\n"+
+		"\r\n"+
+		"%s", email, subject, body)
+
+	// Authentication
+	auth := smtp.PlainAuth("", from, password, smtpHost)
+
+	// Send email
+	return smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{email}, []byte(message))
+}
+
+func SendVisibilityChangeEmail(email string, blogID string, visibility bool) error {
+	from := config.Env("EMAIL_FROM")
+	password := config.Env("EMAIL_PASSWORD")
+	smtpHost := config.Env("SMTP_HOST")
+	smtpPort := config.Env("SMTP_PORT")
+
+	subject := "[ZINE] Visibility Change Request"
+
+	// Determine visibility status
+	var visibilityStatus string
+	if visibility {
+		visibilityStatus = "public"
+	} else {
+		visibilityStatus = "protected"
+	}
+
+	// Create email body
+	body := fmt.Sprintf(`
+	<html>
+	<body>
+		<h2>Hello %s,</h2>
+		<p>We received a request to change the visibility of a blog. If you didn't make this request, you can ignore this email.</p>
+		<p>The blog visibility has been changed to %s.</p>
+		<p>Thank you,<br>The Team</p>
+	</body>
+	</html>
+	`, blogID, visibilityStatus)
+
+	// Construct message
+	message := fmt.Sprintf("To: %s\r\n"+
+		"Subject: %s\r\n"+
+		"Content-Type: text/html; charset=UTF-8\r\n"+
+		"\r\n"+
+		"%s", email, subject, body)
+
+	// Authentication
+	auth := smtp.PlainAuth("", from, password, smtpHost)
+
+	// Send email
+	return smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{email}, []byte(message))
+}
+
+func SendBlogInvitationEmail(email string, owner string, blogID string) error {
+	from := config.Env("EMAIL_FROM")
+	password := config.Env("EMAIL_PASSWORD")
+	smtpHost := config.Env("SMTP_HOST")
+	smtpPort := config.Env("SMTP_PORT")
+
+	subject := "[ZINE] Blog Invitation"
+
+	blogURL := fmt.Sprintf("http://localhost:3000/blogs/%s", blogID)
+
+	// Create email body
+	body := fmt.Sprintf(`
+	<html>
+	<body>
+		<h2>Hello %s,</h2>
+		<p>You have been invited to join a blog. If you didn't make this request, you can ignore this email.</p>
+		<p>Blog Url: %s</p>
+		<p>Owner: %s</p>
+		<p>Thank you,<br>The Team</p>
+	</body>
+	</html>
+	`, email, blogURL, owner)
 
 	// Construct message
 	message := fmt.Sprintf("To: %s\r\n"+
