@@ -181,7 +181,7 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResp
 	}, nil, http.StatusOK
 }
 
-func HandleDeleteCover(w http.ResponseWriter, r *http.Request) (*utils.TagResponse, error, int) {
+func HandleDeleteCover(w http.ResponseWriter, r *http.Request) (*utils.DeleteCoverResponse, error, int) {
 	blogId := r.FormValue("blog_id")
 	if blogId == "" {
 		return nil, errors.New("Blog ID is required"), http.StatusBadRequest
@@ -201,7 +201,7 @@ func HandleDeleteCover(w http.ResponseWriter, r *http.Request) (*utils.TagRespon
 		return nil, errors.New("Error deleting image from database"), http.StatusInternalServerError
 	}
 
-	return &utils.TagResponse{
+	return &utils.DeleteCoverResponse{
 		Message: "Image deleted successfully",
 	}, nil, http.StatusOK
 }
