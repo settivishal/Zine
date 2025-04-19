@@ -366,4 +366,25 @@ func TestGetBlogsByTagIDs(t *testing.T) {
 		// Verify that the expected call was made		
 		mockHandleGetBlogsByTagIDs.AssertExpectations(t)
 	})
+
+	// Test case 2: error getting blogs
+	t.Run("Error GetBlogsByTagIDs Response", func(t *testing.T) {
+		mockHandleGetBlogsByTagIDs := new(MockHandleGetBlogsByTagIDs)
+
+		req := httptest.NewRequest(http.MethodGet, "/api/blogs/getByTagIDs", nil)		
+
+		mockHandleGetBlogsByTagIDs.On("MockHandleGetBlogsByTagIDs", req).Return(nil, errors.New("Error getting blog"), http.StatusInternalServerError)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockHandleGetBlogsByTagIDs.MockHandleGetBlogsByTagIDs(w, req)
+
+		// Assertions
+		assert.Nil(t, response)
+		assert.Equal(t, "Error getting blogs", err.Error())		
+		assert.Equal(t, http.StatusInternalServerError, statusCode)
+
+		// Verify that the expected call was made		
+		mockHandleGetBlogsByTagIDs.AssertExpectations(t)
+	})
 }
