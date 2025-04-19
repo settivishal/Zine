@@ -38,6 +38,10 @@ type MockHandleGetBlogsByTagIDs struct {
 	mock.Mock
 }
 
+type MockHandleDeleteCover struct {
+	mock.Mock
+}
+
 func (m *MockHandleGetBlog) MockHandleGetBlog(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
@@ -69,6 +73,11 @@ func (m *MockHandleGetBlogByDate) MockHandleGetBlogByDate(w http.ResponseWriter,
 }
 
 func (m *MockHandleGetBlogsByTagIDs) MockHandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
+	args := m.Called(r)
+	return args.Get(0), args.Error(1), args.Int(2)
+}
+
+func (m *MockHandleDeleteCover) MockHandleDeleteCover(w http.ResponseWriter, r *http.Request) (interface{}, error, int) {
 	args := m.Called(r)
 	return args.Get(0), args.Error(1), args.Int(2)
 }
@@ -387,5 +396,28 @@ func TestGetBlogsByTagIDs(t *testing.T) {
 
 		// Verify that the expected call was made		
 		mockHandleGetBlogsByTagIDs.AssertExpectations(t)
+	})
+}
+
+func TestDeleteCover(t *testing.T) {
+	t.Run("Successful DeleteCover Response", func(t *testing.T) {
+		// Mock dependencies
+		mockHandleDeleteCover := new(MockHandleDeleteCover)
+
+		req := httptest.NewRequest(http.MethodDelete, "/api/blog/cover/delete", nil)
+
+		mockHandleDeleteCover.On("MockHandleDeleteCover", req).Return("Image deleted successfully", nil, http.StatusOK)
+
+		// Call the mock method
+		w := httptest.NewRecorder()
+		response, err, statusCode := mockHandleDeleteCover.MockHandleDeleteCover(w, req)
+
+		// Assertions
+		assert.Equal(t, "Image deleted successfully", response)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, statusCode)
+
+		// Verify that the expected call was made		
+		mockHandleDeleteCover.AssertExpectations(t)
 	})
 }
