@@ -289,6 +289,7 @@ func TestGetBlogs(t *testing.T) {
 	})
 }
 
+// TestGetBlogByDate tests the GetBlogByDate function
 func TestGetBlogByDate(t *testing.T) {
 	// Test case 1: get blogs successfuly by date
 	t.Run("Successful GetBlogsByDate Response", func(t *testing.T) {
