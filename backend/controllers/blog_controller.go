@@ -104,18 +104,18 @@ func UploadCover(w http.ResponseWriter, r *http.Request) {
 
 // Get Blogs for a specific user with pagination
 
-// @Summary		Get Blogs
-// @Description	Get a list of blogs for a specific user with pagination.
-// @Tags			blogs
-// @Accept			json
-// @Produce		json
-// @Param			page			query		int		false	"Page number"		default(1)
-// @Param			limit			query		int		false	"Limit per page"	default(10)
-// @Param			Authorization	header		string	true	"Bearer <token>"
-// @Success		200				{object}	map[string]models.Blog
-// @Failure		400				{object}	utils.ErrorResponse
-// @Failure		500				{object}	utils.ErrorResponse
-// @Router			/api/blogs [get]
+//	@Summary		Get Blogs
+//	@Description	Get a list of blogs for a specific user with pagination.
+//	@Tags			blogs
+//	@Accept			json
+//	@Produce		json
+//	@Param			page			query		int		false	"Page number"		default(1)
+//	@Param			limit			query		int		false	"Limit per page"	default(10)
+//	@Param			Authorization	header		string	true	"Bearer <token>"
+//	@Success		200				{object}	map[string]models.Blog
+//	@Failure		400				{object}	utils.ErrorResponse
+//	@Failure		500				{object}	utils.ErrorResponse
+//	@Router			/api/blogs [get]
 func GetBlogs(w http.ResponseWriter, r *http.Request) {
 	response, err, status := services.HandleGetBlogs(w, r)
 	if err != nil {
@@ -151,6 +151,20 @@ func DeleteCover(w http.ResponseWriter, r *http.Request) {
 }
 
 // Get blogs by specific date
+
+//	@Summary		Get blog by date
+//	@Description	Retrieve a blog for the authenticated user by specific date (YYYY-MM-DD format)
+//	@Tags			blogs
+//	@Accept			json
+//	@Produce		json
+//	@Param			date			path		string	true	"Date in YYYY-MM-DD format"
+//	@Param			Authorization	header		string	true	"Bearer <token>"
+//	@Success		200				{object}	utils.GetBlogsByDateResponse
+//	@Failure		400				{object}	utils.ErrorResponse	"Invalid date format"
+//	@Failure		401				{object}	utils.ErrorResponse	"Unauthorized"
+//	@Failure		404				{object}	utils.ErrorResponse	"No blog found for this date"
+//	@Failure		500				{object}	utils.ErrorResponse	"Error fetching blog"
+//	@Router			/api/blog/{date} [GET]
 func GetBlogByDate(w http.ResponseWriter, r *http.Request) {
 	response, err, status := services.HandleGetBlogByDate(w, r)
 	if err != nil {
