@@ -344,6 +344,7 @@ func TestGetBlogByDate(t *testing.T) {
 	})
 }
 
+// TestGetBlogsByTagIDs tests the GetBlogsByTagIDs function
 func TestGetBlogsByTagIDs(t *testing.T) {
 	// Test case 1: get blogs successfuly by tag ids
 	t.Run("Successful GetBlogsByTagIDs Response", func(t *testing.T) {
