@@ -106,7 +106,7 @@ func HandleUploadCover(w http.ResponseWriter, r *http.Request) (*utils.UploadCov
 	}
 
 	// Get image from request
-	file, header, err := r.FormFile("image")
+	file, _, err := r.FormFile("image")
 	if err != nil {
 		return nil, errors.New("Error getting image"), http.StatusBadRequest
 	}
@@ -116,16 +116,16 @@ func HandleUploadCover(w http.ResponseWriter, r *http.Request) (*utils.UploadCov
 	S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
 
 	// Upload file to S3
-	err = awsservice.UploadFileToS3(s3Client, S3_BUCKET_NAME, header.Filename, file)
+	err = awsservice.UploadFileToS3(s3Client, S3_BUCKET_NAME, blogId, file)
 	if err != nil {
 		return nil, errors.New("Error uploading image to S3"), http.StatusInternalServerError
 	}
 
 	// Generate CloudFront URL
 	cloudFrontDomain := os.Getenv("CLOUDFRONT_DOMAIN")
-	cloudFrontURL := awsservice.GetCloudFrontURL(cloudFrontDomain, header.Filename)
+	cloudFrontURL := awsservice.GetCloudFrontURL(cloudFrontDomain, blogId)
 
-	print(cloudFrontURL)
+	// print(cloudFrontURL)
 
 	err = database.UploadCover(blogId, cloudFrontURL)
 
