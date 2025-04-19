@@ -201,6 +201,6 @@ type GetBlogsByDateRequest struct {
 }
 
 type GetBlogsByDateResponse struct {
-	Message string       `json:"message"`
-	Blog    BlogResponse `json:"blog"`
+	Message string        `json:"message"`
+	Blog    *BlogResponse `json:"blog, omitempty"`
 }

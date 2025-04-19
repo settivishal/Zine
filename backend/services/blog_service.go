@@ -229,19 +229,22 @@ func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlog
 		return nil, errors.New("Error fetching blog: " + err.Error()), http.StatusInternalServerError
 	}
 
-	if blog == nil {
-		return nil, errors.New("No blog found for this date"), http.StatusNotFound
-	}
+	var blogResponse *utils.BlogResponse
+	returnMessage := "No Blog found for this date"
 
-	blogResponse := utils.BlogResponse{
-		ID:     blog.ID,
-		Title:  blog.Title,
-		Cover:  blog.Cover,
-		TagIDs: blog.TagIDs,
+	if blog != nil {
+		blogResponse = &utils.BlogResponse{
+			ID:     blog.ID,
+			Title:  blog.Title,
+			Cover:  blog.Cover,
+			TagIDs: blog.TagIDs,
+		}
+
+		returnMessage = "Blog fetched successfully"
 	}
 
 	return &utils.GetBlogsByDateResponse{
-		Message: "Blog fetched successfully",
+		Message: returnMessage,
 		Blog:    blogResponse,
 	}, nil, http.StatusOK
 }
