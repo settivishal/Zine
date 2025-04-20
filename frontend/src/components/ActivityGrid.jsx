@@ -150,7 +150,7 @@ export default function ActivityGrid() {
                                 <div
                                     key={dayIndex}
                                     className={`w-3 h-3 rounded-sm ${getCellColor(day?.isActive)}`}
-                                    title={day ? `${day.date}: ${day.isActive} submissions` : ''}
+                                    title={day ? `${day.date}` : ''}
                                 ></div>
                             ))}   
                         </div>
