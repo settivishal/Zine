@@ -179,6 +179,20 @@ func DeleteCover(BlogId string) error {
 	return err
 }
 
+func DeleteImage(userId string) error {
+	collection := client.Database("zine").Collection("users")
+	// Convert userId to MongoDB ObjectID
+	objectID, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return fmt.Errorf("invalid blog ID: %v", err)
+	}
+
+	filter := bson.M{"_id": objectID}
+	update := bson.M{"$set": bson.M{"image": ""}}
+	_, err = collection.UpdateOne(context.TODO(), filter, update)
+	return err
+}
+
 func GetBlogByDate(email, date string) (*models.Blog, error) {
 	collection := client.Database("zine").Collection("blogs")
 

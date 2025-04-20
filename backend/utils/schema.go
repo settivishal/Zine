@@ -214,3 +214,7 @@ type ChangeVisibilityRequest struct {
 type ChangeVisibilityResponse struct {
 	Message string `json:"message"`
 }
+
+type DeleteProfileImageResponse struct {
+	Message string `json:"message"`
+}
