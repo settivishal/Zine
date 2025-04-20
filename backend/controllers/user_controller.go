@@ -79,6 +79,16 @@ func UpdateImage(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, response, status)
 }
 
+func DeleteImage(w http.ResponseWriter, r *http.Request) {
+	response, err, status := services.HandleDeleteImage(w, r)
+	if err != nil {
+		utils.SendErrorResponse(w, "Error deleting image", err, status)
+		return
+	}
+
+	utils.SendJSONResponse(w, response, status)
+}
+
 // Update Profile of an user
 
 //	@Summary		Update Profile
@@ -101,7 +111,6 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.SendJSONResponse(w, response, status)
-
 }
 
 // Update Hobbies of an user
