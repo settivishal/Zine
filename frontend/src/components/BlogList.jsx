@@ -29,7 +29,13 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
 
     // Update isDateFiltered when selectedDate changes
     useEffect(() => {
-        setIsDateFiltered(!!selectedDate);
+        if (selectedDate) {
+            setIsDateFiltered(true);
+            fetchBlogByDate(selectedDate);
+        } else {
+            setIsDateFiltered(false);
+            fetchBlogs(currentPage);
+        }
     }, [selectedDate]);
 
     const fetchTagsByIds = async (tagIds) => {
@@ -196,12 +202,10 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
 
     // Update useEffect to use the new fetchBlogs function
     useEffect(() => {
-        if (isDateFiltered && selectedDate) {
-            fetchBlogByDate(selectedDate);
-        } else {
+        if (!isDateFiltered) {
             fetchBlogs(currentPage);
         }
-    }, [accessToken, currentPage, isFiltered, selectedTagIds, isDateFiltered, selectedDate]);
+    }, [accessToken, currentPage, isFiltered, selectedTagIds, isDateFiltered]);
 
     useEffect(() => {
         if (accessToken) {

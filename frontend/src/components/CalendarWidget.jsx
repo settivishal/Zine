@@ -5,6 +5,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { Paper, Box, IconButton, Tooltip } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
+import { parseISO } from 'date-fns';
 
 const CalendarWidget = ({ onDateSelect, selectedDate }) => {
   const handleDateChange = (newDate) => {
@@ -23,6 +24,19 @@ const CalendarWidget = ({ onDateSelect, selectedDate }) => {
     if (onDateSelect) {
       onDateSelect(null);
     }
+  };
+
+  // Check if today's date is the selected date
+  const isTodaySelected = () => {
+    if (!selectedDate) return false;
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const formattedToday = `${year}-${month}-${day}`;
+
+    return formattedToday === selectedDate;
   };
 
   return (
@@ -59,8 +73,9 @@ const CalendarWidget = ({ onDateSelect, selectedDate }) => {
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Box>
           <DateCalendar
-            value={selectedDate ? new Date(selectedDate) : null}
+            value={selectedDate ? parseISO(selectedDate) : null}
             onChange={handleDateChange}
+            disableHighlightToday={selectedDate && !isTodaySelected()}
             sx={{
               backgroundColor: 'transparent',
               width: '90%',
@@ -68,9 +83,11 @@ const CalendarWidget = ({ onDateSelect, selectedDate }) => {
               margin: 'auto',
               fontSize: '0.875rem', // Slightly larger font size for readability
               '& .MuiPickersDay-today': {
-                backgroundColor: '#1a73e8',
-                color: 'white',
+                // Only apply special styling to today if it's not the selected date
+                backgroundColor: selectedDate && !isTodaySelected() ? 'transparent' : '#1a73e8',
+                color: selectedDate && !isTodaySelected() ? 'inherit' : 'white',
                 borderRadius: '50%',
+                border: selectedDate && !isTodaySelected() ? '1px solid #1a73e8' : 'none',
               },
               '& .MuiPickersDay-root:hover': {
                 backgroundColor: '#e8f0fe',
