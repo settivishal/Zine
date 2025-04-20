@@ -9,6 +9,8 @@ import { useAuth } from '../../hooks/authcontext';
 export default function Page() {
     const [tags, setTags] = useState([]);
     const { accessToken } = useAuth();
+    const [selectedDate, setSelectedDate] = useState(null);
+
     console.log(accessToken);
 
     useEffect(() => {
@@ -33,6 +35,10 @@ export default function Page() {
         } catch (error) {
             console.error("Error:", error);
         }
+    };
+
+    const handleDateSelect = (date) => {
+        setSelectedDate(date);
     };
 
     const handleViewChange = (newView) => {
@@ -72,7 +78,10 @@ export default function Page() {
                 {/* Sidebar */}
                 <div className="flex-shrink-0 space-y-4">
                     {/* Calendar Widget */}
-                    <CalendarWidget />
+                    <CalendarWidget
+                        onDateSelect={handleDateSelect}
+                        selectedDate={selectedDate}
+                    />
 
                     {/* Tags Component */}
                     <TagsComponent tags={tags} setTags={setTags} />
@@ -80,7 +89,12 @@ export default function Page() {
 
                 {/* Blog List */}
                 <div className="flex-grow bg-white rounded-lg shadow-md p-4">
-                    <BlogList availableTags={tags} onTagsUpdate={fetchTags} />
+                    <BlogList
+                        availableTags={tags}
+                        onTagsUpdate={fetchTags}
+                        selectedDate={selectedDate}
+                        onDateSelect={handleDateSelect}
+                    />
                 </div>
             </div>
         </div>

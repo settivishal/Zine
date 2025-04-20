@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import Filter from './filter';
 
 
-const BlogList = () => {
+const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) => {
     const { accessToken } = useAuth();
     const { tags, fetchTags } = useTags();
     const router = useRouter();
@@ -24,6 +24,13 @@ const BlogList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedTagIds, setSelectedTagIds] = useState([]);
     const [isFiltered, setIsFiltered] = useState(false);
+    const [isDateFiltered, setIsDateFiltered] = useState(false);
+    const [singleBlog, setSingleBlog] = useState(null);
+
+    // Update isDateFiltered when selectedDate changes
+    useEffect(() => {
+        setIsDateFiltered(!!selectedDate);
+    }, [selectedDate]);
 
     const fetchTagsByIds = async (tagIds) => {
         if (!tagIds || tagIds.length === 0) return [];
@@ -55,6 +62,11 @@ const BlogList = () => {
     // Move fetchBlogs outside useEffect so we can reuse it
     const fetchBlogs = async (page = currentPage) => {
         if (!accessToken) {
+            return;
+        }
+
+        // If we have a date filter active, don't run the regular fetch
+        if (isDateFiltered) {
             return;
         }
 
@@ -97,6 +109,7 @@ const BlogList = () => {
                         }, {});
 
                     setRealBlogs(reversedBlogs);
+                    setSingleBlog(null); // Clear any single blog when viewing multiple blogs
 
                     // Collect all unique tag IDs from all blogs
                     const allTagIds = Object.values(reversedBlogs)
@@ -125,10 +138,70 @@ const BlogList = () => {
         }
     };
 
+    // New function to fetch blog by date
+    const fetchBlogByDate = async (date) => {
+        if (!accessToken || !date) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/blog/date/${date}`, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                if (data.blog) {
+                    // Create a "fake" blogs object with just this one blog
+                    const singleBlogObj = {
+                        [date]: data.blog
+                    };
+                    setRealBlogs(singleBlogObj);
+                    setSingleBlog(data.blog);
+
+                    // Fetch tags for this blog if it has any
+                    if (data.blog.tagIds && data.blog.tagIds.length > 0) {
+                        const tags = await fetchTagsByIds(data.blog.tagIds);
+                        const tagMapping = {};
+                        tagMapping[data.blog.id] = tags.filter(tag =>
+                            data.blog.tagIds.includes(tag.ID)
+                        );
+                        setBlogTags(tagMapping);
+                    } else {
+                        setBlogTags({});
+                    }
+                } else {
+                    // If no blog found for this date
+                    setRealBlogs({});
+                    setSingleBlog(null);
+                    setBlogTags({});
+                }
+            } else {
+                console.error('Failed to fetch blog by date');
+                // Clear blogs if there's an error
+                setRealBlogs({});
+                setSingleBlog(null);
+            }
+        } catch (error) {
+            console.error('Error fetching blog by date:', error);
+            // Clear blogs if there's an error
+            setRealBlogs({});
+            setSingleBlog(null);
+        }
+    };
+
     // Update useEffect to use the new fetchBlogs function
     useEffect(() => {
-        fetchBlogs(currentPage);
-    }, [accessToken, currentPage, isFiltered, selectedTagIds]);
+        if (isDateFiltered && selectedDate) {
+            fetchBlogByDate(selectedDate);
+        } else {
+            fetchBlogs(currentPage);
+        }
+    }, [accessToken, currentPage, isFiltered, selectedTagIds, isDateFiltered, selectedDate]);
 
     useEffect(() => {
         if (accessToken) {
@@ -191,8 +264,6 @@ const BlogList = () => {
                 date: blogDate
             };
 
-
-
             const response = await fetch('http://localhost:8080/api/tag/set', {
                 method: 'POST',
                 headers: {
@@ -204,7 +275,11 @@ const BlogList = () => {
 
             if (response.ok) {
                 // Refresh the blogs data immediately after adding tag
-                await fetchBlogs();
+                if (isDateFiltered && selectedDate) {
+                    await fetchBlogByDate(selectedDate);
+                } else {
+                    await fetchBlogs();
+                }
             } else {
                 const errorData = await response.json().catch(() => null);
                 console.error('Failed to add tag to blog:', {
@@ -255,8 +330,6 @@ const BlogList = () => {
                 date: blogDate
             };
 
-
-
             const response = await fetch('http://localhost:8080/api/tag/remove', {
                 method: 'POST',
                 headers: {
@@ -267,8 +340,11 @@ const BlogList = () => {
             });
 
             if (response.ok) {
-
-                await fetchBlogs(); // Refresh the blogs data
+                if (isDateFiltered && selectedDate) {
+                    await fetchBlogByDate(selectedDate);
+                } else {
+                    await fetchBlogs(); // Refresh the blogs data
+                }
             } else {
                 const errorData = await response.json().catch(() => null);
                 console.error('Failed to remove tag from blog:', {
@@ -301,17 +377,23 @@ const BlogList = () => {
 
     const handleFilterApply = (tagIds) => {
         setSelectedTagIds(tagIds);
-        console.log(tagIds);
         setIsFiltered(tagIds.length > 0);
         // Reset to first page when filtering
         setCurrentPage(1);
+        // Clear date filter if tag filter is applied
+        if (tagIds.length > 0 && onDateSelect) {
+            onDateSelect(null);
+        }
         // Fetch the filtered data with the new filter state
-        fetchBlogs();
+        fetchBlogs(1);
     };
 
     const handleClearFilters = () => {
         setSelectedTagIds([]);
         setIsFiltered(false);
+        if (onDateSelect) {
+            onDateSelect(null);
+        }
         // Fetch unfiltered data
         fetchBlogs(currentPage);
     };
@@ -338,61 +420,68 @@ const BlogList = () => {
                     scrollbar-width: none !important;  /* Firefox */
                 }
             `}</style>
+
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-black">My Blogs</h2>
+                <h2 className="text-xl font-semibold text-black">
+                    {isDateFiltered ? `Blog for ${selectedDate}` : "My Blogs"}
+                </h2>
                 <div className="flex items-center gap-2">
                     <Filter
                         onFilter={handleFilterApply}
                         onClearFilters={handleClearFilters}
                     />
-                    <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={<ArrowBackIcon />}
-                        onClick={handlePrevPage}
-                        disabled={currentPage >= totalPages}
-                        sx={{
-                            minWidth: '40px',
-                            padding: '4px 8px',
-                            borderColor: currentPage >= totalPages ? '#9e9e9e' : 'primary.main',
-                            color: currentPage >= totalPages ? '#616161' : 'primary.main',
-                            '&.Mui-disabled': {
-                                borderColor: '#9e9e9e',
-                                color: '#616161',
-                                opacity: 0.8,
-                            },
-                            '&:hover': {
-                                borderColor: currentPage >= totalPages ? '#757575' : 'primary.dark',
-                                backgroundColor: currentPage >= totalPages ? 'rgba(0, 0, 0, 0.04)' : 'rgba(25, 118, 210, 0.12)',
-                            }
-                        }}
-                    >
-                        Prev
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        size="small"
-                        endIcon={<ArrowForwardIcon />}
-                        onClick={handleNextPage}
-                        disabled={currentPage <= 1}
-                        sx={{
-                            minWidth: '40px',
-                            padding: '4px 8px',
-                            borderColor: currentPage <= 1 ? '#9e9e9e' : 'primary.main',
-                            color: currentPage <= 1 ? '#616161' : 'primary.main',
-                            '&.Mui-disabled': {
-                                borderColor: '#9e9e9e',
-                                color: '#616161',
-                                opacity: 0.8,
-                            },
-                            '&:hover': {
-                                borderColor: currentPage <= 1 ? '#757575' : 'primary.dark',
-                                backgroundColor: currentPage <= 1 ? 'rgba(0, 0, 0, 0.04)' : 'rgba(25, 118, 210, 0.12)',
-                            }
-                        }}
-                    >
-                        Next
-                    </Button>
+                    {!isDateFiltered && (
+                        <>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<ArrowBackIcon />}
+                                onClick={handlePrevPage}
+                                disabled={currentPage >= totalPages}
+                                sx={{
+                                    minWidth: '40px',
+                                    padding: '4px 8px',
+                                    borderColor: currentPage >= totalPages ? '#9e9e9e' : 'primary.main',
+                                    color: currentPage >= totalPages ? '#616161' : 'primary.main',
+                                    '&.Mui-disabled': {
+                                        borderColor: '#9e9e9e',
+                                        color: '#616161',
+                                        opacity: 0.8,
+                                    },
+                                    '&:hover': {
+                                        borderColor: currentPage >= totalPages ? '#757575' : 'primary.dark',
+                                        backgroundColor: currentPage >= totalPages ? 'rgba(0, 0, 0, 0.04)' : 'rgba(25, 118, 210, 0.12)',
+                                    }
+                                }}
+                            >
+                                Prev
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                endIcon={<ArrowForwardIcon />}
+                                onClick={handleNextPage}
+                                disabled={currentPage <= 1}
+                                sx={{
+                                    minWidth: '40px',
+                                    padding: '4px 8px',
+                                    borderColor: currentPage <= 1 ? '#9e9e9e' : 'primary.main',
+                                    color: currentPage <= 1 ? '#616161' : 'primary.main',
+                                    '&.Mui-disabled': {
+                                        borderColor: '#9e9e9e',
+                                        color: '#616161',
+                                        opacity: 0.8,
+                                    },
+                                    '&:hover': {
+                                        borderColor: currentPage <= 1 ? '#757575' : 'primary.dark',
+                                        backgroundColor: currentPage <= 1 ? 'rgba(0, 0, 0, 0.04)' : 'rgba(25, 118, 210, 0.12)',
+                                    }
+                                }}
+                            >
+                                Next
+                            </Button>
+                        </>
+                    )}
                     <Button
                         variant="contained"
                         size="small"
@@ -412,6 +501,21 @@ const BlogList = () => {
             </div>
 
             <div className="overflow-y-auto hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {Object.keys(realBlogs).length === 0 && isDateFiltered && (
+                    <Card className="mb-4 p-4 text-center">
+                        <Typography variant="body1">
+                            No blog found for {selectedDate}.
+                            <Button
+                                onClick={() => handleCreateBlog()}
+                                size="small"
+                                sx={{ ml: 1 }}
+                            >
+                                Create one?
+                            </Button>
+                        </Typography>
+                    </Card>
+                )}
+
                 {realBlogs && Object.entries(realBlogs).map(([date, blog]) => (
                     <Card
                         data-testid="blog-card"
@@ -471,7 +575,10 @@ const BlogList = () => {
                                         <Chip
                                             label={tag.text}
                                             size="small"
-                                            onClick={() => handleTagClick(tag.text)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleTagClick(tag.text);
+                                            }}
                                             sx={{
                                                 backgroundColor: tag.color || '#666',
                                                 color: 'white',
@@ -504,7 +611,10 @@ const BlogList = () => {
                                     icon={<AddIcon />}
                                     label="Add Tag"
                                     size="small"
-                                    onClick={() => handleAddTags(blog.id, date)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleAddTags(blog.id, date);
+                                    }}
                                     sx={{
                                         backgroundColor: 'rgba(255, 255, 255, 0.9)',
                                         color: '#666',
@@ -540,7 +650,6 @@ const BlogList = () => {
                 <DialogTitle>Select a Tag</DialogTitle>
                 <DialogContent>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 2 }}>
-
                         {tags && tags.map((tag, index) => (
                             <Chip
                                 key={index}
