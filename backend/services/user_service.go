@@ -1,17 +1,17 @@
 package services
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"backend/database"
-	"backend/utils"
-
-	"encoding/json"
-	"log"
-	"os"
-
 	"backend/services/awsservice"
+	"backend/utils"
 )
 
 func HandleProfile(w http.ResponseWriter, r *http.Request) (*utils.UserInfoResponse, error, int) {
@@ -50,35 +50,39 @@ func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateIma
 		return nil, errors.New("Error getting email"), http.StatusBadRequest
 	}
 
-	user, err := database.GetUser(email);
-	if err != nil {
-		return nil, errors.New("User not found"), http.StatusBadRequest
-	}
-
-	if user.ID == "" {
+	user, err := database.GetUser(email)
+	if err != nil || user.ID == "" {
 		return nil, errors.New("User not found"), http.StatusBadRequest
 	}
 
 	userId := user.ID
 
-	file, header, err := r.FormFile("image")
+	file, filename, err := r.FormFile("image")
 	if err != nil {
 		return nil, errors.New("Error getting image"), http.StatusBadRequest
 	}
 	defer file.Close()
 
+	ext := filepath.Ext(filename.Filename)
+	fmt.Print("extension: ", ext)
+	if ext == "" {
+		return nil, errors.New("file has no extension"), http.StatusBadRequest
+	}
+
+	s3Key := userId + ext
+
 	s3Client := awsservice.GetS3Client()
 	S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
 
 	// Upload file to S3
-	err = awsservice.UploadFileToS3(s3Client, S3_BUCKET_NAME, userId, file)
+	err = awsservice.UploadFileToS3(s3Client, S3_BUCKET_NAME, s3Key, file)
 	if err != nil {
 		return nil, errors.New("Error uploading image to S3"), http.StatusInternalServerError
 	}
 
 	// Generate CloudFront URL
 	cloudFrontDomain := os.Getenv("CLOUDFRONT_DOMAIN")
-	cloudFrontURL := awsservice.GetCloudFrontURL(cloudFrontDomain, header.Filename)
+	cloudFrontURL := awsservice.GetCloudFrontURL(cloudFrontDomain, s3Key)
 
 	err = database.UpdateImage(email, cloudFrontURL)
 	if err != nil {
@@ -90,11 +94,11 @@ func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateIma
 
 func HandleDeleteProfileImage(w http.ResponseWriter, r *http.Request) (*utils.DeleteProfileImageResponse, error, int) {
 	email, ok := r.Context().Value("email").(string)
-    if !ok {
-        return nil, errors.New("Error getting email"), http.StatusBadRequest
-    }
+	if !ok {
+		return nil, errors.New("Error getting email"), http.StatusBadRequest
+	}
 
-	user, err := database.GetUser(email);
+	user, err := database.GetUser(email)
 	if err != nil {
 		return nil, errors.New("User not found"), http.StatusBadRequest
 	}
