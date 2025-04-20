@@ -112,21 +112,18 @@ export default function ActivityGrid() {
     };
     
     // Calculate total active days
-    const totalActiveDays = activityData ? 
-      activityData.filter(item => item.count > 0).length : 0;
+    const totalActiveDays = activityData ? activityData.length : 0;
+    //   activityData.filter(item => item.count > 0).length : 0;
     
-    // Calculate total submissions
-    const totalSubmissions = activityData ?
-      activityData.reduce((sum, item) => sum + item.count, 0) : 0;
     
     return (
         <div className="bg-white p-6 rounded-lg">
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold">
+                {/* <h2 className="text-xl font-semibold">
                     <span className="text-white">{totalSubmissions}</span> 
                     <span className="text-gray-400"> submissions in the past one year </span>
                     <span className="text-gray-400 text-sm ml-1 cursor-help">ⓘ</span>
-                </h2>
+                </h2> */}
                 <div className="flex gap-2 space-x-6">
                     <div className="flex items-center">
                         <span className="text-gray-400 mr-2">Total active days:</span>
