@@ -3,7 +3,6 @@ package services
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -58,7 +57,6 @@ func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateIma
 	userId := user.ID
 
 	file, filename, err := r.FormFile("image")
-	fmt.Println("filename: ", filename.Filename)
 	if err != nil {
 		return nil, errors.New("Error getting image"), http.StatusBadRequest
 	}
@@ -70,16 +68,9 @@ func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateIma
 	}
 
 	s3Key := userId + ext
-	fmt.Println("s3Key: ", s3Key)
 
 	s3Client := awsservice.GetS3Client()
 	S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
-
-	// // Delete old image from S3
-	// err = awsservice.DeleteFileFromS3(s3Client, S3_BUCKET_NAME, s3Key)
-	// if err != nil {
-	// 	return nil, errors.New("Error deleting old image from S3"), http.StatusInternalServerError
-	// }
 
 	// Upload file to S3
 	err = awsservice.UploadFileToS3(s3Client, S3_BUCKET_NAME, s3Key, file)
