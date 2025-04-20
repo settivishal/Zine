@@ -80,7 +80,7 @@ func UpdateImage(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteImage(w http.ResponseWriter, r *http.Request) {
-	response, err, status := services.HandleDeleteProfileImage(w, r)
+	response, err, status := services.HandleDeleteImage(w, r)
 	if err != nil {
 		utils.SendErrorResponse(w, "Error deleting image", err, status)
 		return

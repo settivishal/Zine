@@ -88,7 +88,7 @@ func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateIma
 	return &utils.UpdateImageResponse{Message: "Image updated successfully", Image: cloudFrontURL}, nil, http.StatusOK
 }
 
-func HandleDeleteProfileImage(w http.ResponseWriter, r *http.Request) (*utils.DeleteProfileImageResponse, error, int) {
+func HandleDeleteImage(w http.ResponseWriter, r *http.Request) (*utils.DeleteProfileImageResponse, error, int) {
 	email, ok := r.Context().Value("email").(string)
 	if !ok {
 		return nil, errors.New("Error getting email"), http.StatusBadRequest
