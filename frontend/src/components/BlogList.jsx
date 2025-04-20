@@ -520,6 +520,17 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
                     </Card>
                 )}
 
+                {Object.keys(realBlogs).length === 0 && !isDateFiltered && (
+                    <Card className="mb-4 p-4 text-center">
+                        <Typography variant="h6" sx={{ mb: 2 }}>
+                            Wow, so empty!
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary">
+                            No blogs found
+                        </Typography>
+                    </Card>
+                )}
+
                 {realBlogs && Object.entries(realBlogs).map(([date, blog]) => (
                     <Card
                         data-testid="blog-card"
