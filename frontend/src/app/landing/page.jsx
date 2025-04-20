@@ -5,7 +5,6 @@ import * as React from "react";
 import { useState } from "react";
 
 import Base from "../../components/Base.jsx";
-import AuthModal from "../Modal/page";
 
 const style = {
     position: "absolute",

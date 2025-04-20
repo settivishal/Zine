@@ -3,9 +3,22 @@
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { Suspense } from 'react';
+
 export default function AuthSuccess() {
+    return(
+        <div>
+            <Suspense fallback={<div>Loading...</div>}>
+                <AuthSuccessComponent />
+            </Suspense>
+        </div>
+    )
+}
+
+function AuthSuccessComponent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    
 
     useEffect(() => {
         const status = searchParams.get('status');
