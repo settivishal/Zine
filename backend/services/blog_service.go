@@ -17,7 +17,6 @@ import (
 )
 
 // Handle Get Blog - _id is there in the query
-
 func HandleGetBlog(w http.ResponseWriter, r *http.Request) (*utils.GetBlogResponse, error, int) {
 	// Extract _id from the URL path parameters
 	vars := r.URL.Path
@@ -42,7 +41,6 @@ func HandleGetBlog(w http.ResponseWriter, r *http.Request) (*utils.GetBlogRespon
 }
 
 // Handle Create Blog
-
 func HandleCreateBlog(w http.ResponseWriter, r *http.Request) (*utils.CreateBlogResponse, error, int) {
 	Email, ok := r.Context().Value("email").(string)
 
@@ -78,7 +76,6 @@ func HandleCreateBlog(w http.ResponseWriter, r *http.Request) (*utils.CreateBlog
 }
 
 // HandleSaveBlog - Save the blog content to the database
-
 func HandleSaveBlog(w http.ResponseWriter, r *http.Request) (*utils.SaveBlogContentResponse, error, int) {
 
 	// Parse request body
@@ -99,7 +96,6 @@ func HandleSaveBlog(w http.ResponseWriter, r *http.Request) (*utils.SaveBlogCont
 }
 
 // HandleUploadCover - Upload the cover image to s3
-
 func HandleUploadCover(w http.ResponseWriter, r *http.Request) (*utils.UploadCoverResponse, error, int) {
 
 	// Parse request body
@@ -184,6 +180,7 @@ func HandleGetBlogs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResp
 	}, nil, http.StatusOK
 }
 
+// HandleDeleteCover - Delete the cover image from s3 and database
 func HandleDeleteCover(w http.ResponseWriter, r *http.Request) (*utils.DeleteCoverResponse, error, int) {
 	blogId := r.FormValue("blog_id")
 	if blogId == "" {
@@ -209,6 +206,7 @@ func HandleDeleteCover(w http.ResponseWriter, r *http.Request) (*utils.DeleteCov
 	}, nil, http.StatusOK
 }
 
+// HandleGetBlogByDate - Get blog by date
 func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsByDateResponse, error, int) {
 	email, ok := r.Context().Value("email").(string)
 
@@ -229,29 +227,33 @@ func HandleGetBlogByDate(w http.ResponseWriter, r *http.Request) (*utils.GetBlog
 		return nil, errors.New("Error fetching blog: " + err.Error()), http.StatusInternalServerError
 	}
 
-	if blog == nil {
-		return nil, errors.New("No blog found for this date"), http.StatusNotFound
-	}
+	var blogResponse *utils.BlogResponse
+	returnMessage := "No Blog found for this date"
 
-	blogResponse := utils.BlogResponse{
-		ID:     blog.ID,
-		Title:  blog.Title,
-		Cover:  blog.Cover,
-		TagIDs: blog.TagIDs,
+	if blog != nil {
+		blogResponse = &utils.BlogResponse{
+			ID:     blog.ID,
+			Title:  blog.Title,
+			Cover:  blog.Cover,
+			TagIDs: blog.TagIDs,
+		}
+
+		returnMessage = "Blog fetched successfully"
 	}
 
 	return &utils.GetBlogsByDateResponse{
-		Message: "Blog fetched successfully",
+		Message: returnMessage,
 		Blog:    blogResponse,
 	}, nil, http.StatusOK
 }
 
+// HandleGetBlogsByTagIDs - Get blogs by tag IDs
 func HandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (*utils.GetBlogsResponse, error, int) {
 	email, ok := r.Context().Value("email").(string)
 
-    if !ok {
-        return nil, errors.New("Error getting email"), http.StatusBadRequest
-    }
+	if !ok {
+		return nil, errors.New("Error getting email"), http.StatusBadRequest
+	}
 
 	var payload utils.TagsRequestPayload
 
@@ -261,44 +263,91 @@ func HandleGetBlogsByTagIDs(w http.ResponseWriter, r *http.Request) (*utils.GetB
 	}
 
 	if len(payload.TagIDs) == 0 {
-        return nil, errors.New("At least one tag ID is required"), http.StatusBadRequest
-    }
+		return nil, errors.New("At least one tag ID is required"), http.StatusBadRequest
+	}
 
 	// Get pagination parameters
-    query := r.URL.Query()
-    page, _ := strconv.Atoi(query.Get("page"))
-    if page < 1 {
-        page = 1
-    }
-    limit, _ := strconv.Atoi(query.Get("limit"))
-    if limit < 1 {
-        limit = 10 // Default page size
-    }
+	query := r.URL.Query()
+	page, _ := strconv.Atoi(query.Get("page"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(query.Get("limit"))
+	if limit < 1 {
+		limit = 10 // Default page size
+	}
 
 	// Fetch blogs by tag IDs
-    blogs, err, count, totalPages := database.GetBlogsByTagIDs(email, payload.TagIDs, page, limit)
-    if err != nil {
+	blogs, err, count, totalPages := database.GetBlogsByTagIDs(email, payload.TagIDs, page, limit)
+	if err != nil {
 		return nil, errors.New("Error fetching blog: " + err.Error()), http.StatusNotFound
 	}
 
-	if len(blogs) == 0 {
-        return nil, errors.New("No blogs found with these tags"), http.StatusNotFound
-    }
-
 	blogResponse := make(map[string]utils.BlogResponse)
-    for _, blog := range blogs {
-        blogResponse[blog.Date] = utils.BlogResponse{
-            ID:     blog.ID,
-            Title:  blog.Title,
-            Cover:  blog.Cover,
-            TagIDs: blog.TagIDs,
-        }
-    }
+	returnMessage := "No Blogs found with these tags"
 
-    return &utils.GetBlogsResponse{
-        Message:    "Blogs fetched successfully",
-        Blogs:      blogResponse,
-        Count:      count,
-        TotalPages: totalPages,
-    }, nil, http.StatusOK
+	if len(blogs) > 0 {
+		for _, blog := range blogs {
+			blogResponse[blog.Date] = utils.BlogResponse{
+				ID:     blog.ID,
+				Title:  blog.Title,
+				Cover:  blog.Cover,
+				TagIDs: blog.TagIDs,
+			}
+		}
+
+		returnMessage = "Blogs fetched successfully"
+	}
+
+	return &utils.GetBlogsResponse{
+		Message:    returnMessage,
+		Blogs:      blogResponse,
+		Count:      count,
+		TotalPages: totalPages,
+	}, nil, http.StatusOK
+}
+
+func HandleChangeVisibility(w http.ResponseWriter, r *http.Request) (*utils.ChangeVisibilityResponse, error, int) {
+	// Extract email from context
+	email, ok := r.Context().Value("email").(string)
+
+	if !ok {
+		return nil, errors.New("Error getting email"), http.StatusBadRequest
+	}
+	// Parse request body
+	var Request utils.ChangeVisibilityRequest
+	if err := json.NewDecoder(r.Body).Decode(&Request); err != nil {
+		return nil, errors.New(err.Error() + ": Invalid request format"), http.StatusBadRequest
+	}
+
+	// Validate blog ID
+	if Request.BlogID == "" {
+		return nil, errors.New("Blog ID is required"), http.StatusBadRequest
+	}
+
+	// Change visibility in the database
+	err := database.ChangeVisibility(Request)
+
+	if err != nil {
+		return nil, errors.New("Error changing visibility: " + err.Error()), http.StatusInternalServerError
+	}
+
+	// Send email notification that the blog visibility has changed
+	err = SendVisibilityChangeEmail(email, Request.BlogID, Request.IsPublic)
+	if err != nil {
+		return nil, errors.New("Error sending email: " + err.Error()), http.StatusInternalServerError
+	}
+
+	// Send Email to Users who have got access to the blog
+	for _, user := range Request.Users {
+		err = SendBlogInvitationEmail(user, email, Request.BlogID)
+		if err != nil {
+			return nil, errors.New("Error sending email to user: " + err.Error()), http.StatusInternalServerError
+		}
+	}
+
+	// Return structured response
+	return &utils.ChangeVisibilityResponse{
+		Message: "Visibility changed successfully",
+	}, nil, http.StatusOK
 }
