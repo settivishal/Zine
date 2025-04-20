@@ -111,10 +111,10 @@ func HandleDeleteProfileImage(w http.ResponseWriter, r *http.Request) (*utils.De
 	}
 
 	// Delete profile image from database
-	// err = database.DeleteCover(userId)
-	// if err != nil {
-	// 	return nil, errors.New("Error deleting image from database"), http.StatusInternalServerError
-	// }
+	err = database.DeleteImage(userId)
+	if err != nil {
+		return nil, errors.New("Error deleting image from database"), http.StatusInternalServerError
+	}
 
 	return &utils.DeleteProfileImageResponse{
 		Message: "Profile Image deleted successfully",
