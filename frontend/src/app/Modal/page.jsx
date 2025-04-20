@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import SignUp from "../signin/signup";
-import SignIn from "../signin/signin";
+import SignUp from "../signinn/signup";
+import SignIn from "../signinn/signin";
 import { useAuth } from '../../hooks/authcontext';
 
 export default function AuthModal({ isOpen, onClose }) {
