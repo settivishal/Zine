@@ -380,16 +380,19 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
     };
 
     const handleFilterApply = (tagIds) => {
+        // Use a callback function for state that depends on previous state
+        setCurrentPage(1);
         setSelectedTagIds(tagIds);
         setIsFiltered(tagIds.length > 0);
-        // Reset to first page when filtering
-        setCurrentPage(1);
+
         // Clear date filter if tag filter is applied
         if (tagIds.length > 0 && onDateSelect) {
             onDateSelect(null);
         }
-        // Fetch the filtered data with the new filter state
-        fetchBlogs(1);
+
+        // Use setState callback to ensure we have latest state
+        // We don't need to call fetchBlogs directly, the useEffect will handle it
+        // when the state values change
     };
 
     const handleClearFilters = () => {
