@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"backend/database"
 	"backend/services/awsservice"
@@ -44,7 +43,6 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) (*utils.UserInfoRespo
 
 func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateImageResponse, error, int) {
 	email, ok := r.Context().Value("email").(string)
-
 	if !ok {
 		return nil, errors.New("Error getting email"), http.StatusBadRequest
 	}
@@ -56,31 +54,31 @@ func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateIma
 
 	userId := user.ID
 
-	file, filename, err := r.FormFile("image")
+	file, _, err := r.FormFile("image")
 	if err != nil {
 		return nil, errors.New("Error getting image"), http.StatusBadRequest
 	}
 	defer file.Close()
 
-	ext := filepath.Ext(filename.Filename)
-	if ext == "" {
-		return nil, errors.New("file has no extension"), http.StatusBadRequest
-	}
+	// ext := filepath.Ext(filename.Filename)
+	// if ext == "" {
+	// 	return nil, errors.New("file has no extension"), http.StatusBadRequest
+	// }
 
-	s3Key := userId + ext
+	// s3Key := userId + ext
 
 	s3Client := awsservice.GetS3Client()
 	S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
 
 	// Upload file to S3
-	err = awsservice.UploadFileToS3(s3Client, S3_BUCKET_NAME, s3Key, file)
+	err = awsservice.UploadFileToS3(s3Client, S3_BUCKET_NAME, userId, file)
 	if err != nil {
 		return nil, errors.New("Error uploading image to S3"), http.StatusInternalServerError
 	}
 
 	// Generate CloudFront URL
 	cloudFrontDomain := os.Getenv("CLOUDFRONT_DOMAIN")
-	cloudFrontURL := awsservice.GetCloudFrontURL(cloudFrontDomain, s3Key)
+	cloudFrontURL := awsservice.GetCloudFrontURL(cloudFrontDomain, userId)
 
 	err = database.UpdateImage(email, cloudFrontURL)
 	if err != nil {
@@ -97,11 +95,7 @@ func HandleDeleteProfileImage(w http.ResponseWriter, r *http.Request) (*utils.De
 	}
 
 	user, err := database.GetUser(email)
-	if err != nil {
-		return nil, errors.New("User not found"), http.StatusBadRequest
-	}
-
-	if user.ID == "" {
+	if err != nil || user.ID == "" {
 		return nil, errors.New("User not found"), http.StatusBadRequest
 	}
 
@@ -116,13 +110,14 @@ func HandleDeleteProfileImage(w http.ResponseWriter, r *http.Request) (*utils.De
 		return nil, errors.New("Error deleting image from S3"), http.StatusInternalServerError
 	}
 
-	err = database.DeleteCover(userId)
-	if err != nil {
-		return nil, errors.New("Error deleting image from database"), http.StatusInternalServerError
-	}
+	// Delete profile image from database
+	// err = database.DeleteCover(userId)
+	// if err != nil {
+	// 	return nil, errors.New("Error deleting image from database"), http.StatusInternalServerError
+	// }
 
 	return &utils.DeleteProfileImageResponse{
-		Message: "Image deleted successfully",
+		Message: "Profile Image deleted successfully",
 	}, nil, http.StatusOK
 }
 
