@@ -1,5 +1,13 @@
 "use client";
 
+import Link from "next/link";
+
+import InstagramIcon from "@mui/icons-material/Instagram";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import RedditIcon from "@mui/icons-material/Reddit";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+
+
 import axios from "axios";
 import { useState, useEffect} from "react";
 import { useAuth } from "../hooks/authcontext";
@@ -13,6 +21,7 @@ import exp from "constants";
 
 const updateProfileField = async (
     field,
+    // fields,
     value,
     endpoint,
     accessToken,
@@ -29,7 +38,10 @@ const updateProfileField = async (
         return;
     }
     try {
-        const payload = { [field]: value };
+        const payload = typeof field === "object" ? field : { [field]: value };
+        // const payload = { [field]: value };
+
+        // const payload = fields; // Send the entire object as the payload
         const response = await axios.post(
             `http://localhost:8080/${endpoint}`,
             payload, // Ensure the payload matches the server's expected format
@@ -100,7 +112,7 @@ function UpdateBio({ currentBio }) {
             {isEditing ? (
                 <form onSubmit={handleBio} className="space-y-4">
                     <div>
-                        <textarea
+                        <TextField
                             id="paragraphInput"
                             name="paragraphInput"
                             value={bio}
@@ -114,6 +126,7 @@ function UpdateBio({ currentBio }) {
                         {error && (
                             <p className="mt-1 text-sm text-red-600">{error}</p>
                         )}
+                        
                     </div>
 
                     <div className="flex gap-2">
@@ -131,6 +144,10 @@ function UpdateBio({ currentBio }) {
                             Cancel
                         </Button>
                     </div>
+                    
+                    {success && (
+                        <p className="mt-1 text-sm text-green-600">{success}</p>
+                    )}
                 </form>
             ) : (
                 <div className="flex justify-between items-center">
@@ -144,7 +161,6 @@ function UpdateBio({ currentBio }) {
                         className="text-gray-500">
                         ✏️
                     </Button>
-                    {/* <Button onClick={() => setIsEditing(true)}>Edit</Button> */}
                 </div>
             )}
         </div>
@@ -355,7 +371,7 @@ function UpdateHobbies({ currentHobbies }) {
         if (currentHobbies) {
             setHobbies(currentHobbies); // Initialize hobbies from props
         }
-    }, [currentHobbies]);
+    }, [currentHobbies, accessToken]);
 
     const handleAddHobby = () => {
         if (newHobby.trim() && !hobbies.includes(newHobby.trim())) {
@@ -484,5 +500,160 @@ function UpdateHobbies({ currentHobbies }) {
     );
 }
 
+function UpdateSocialLinks({ currentLinks }) {
+    const [links, setLinks] = useState({
+        instagram_url: "",
+        twitter_url: "",
+        reddit_url: "",
+        linkedin_url: "",
+    });
+    const [isEditing, setIsEditing] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+    const { accessToken } = useAuth();
 
-export { UpdateBio, UpdateAge, UpdateGender, UpdateHobbies };
+    useEffect(() => {
+        if (currentLinks && Object.keys(currentLinks).length > 0) {
+            setLinks(currentLinks); // Initialize links from props
+        }
+    }, [currentLinks, accessToken]);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setLinks((prevLinks) => ({
+            ...prevLinks,
+            [name]: value,
+        }));
+    };
+
+    const handleLinksUpdate = async (e) => {
+        e.preventDefault();
+
+        if (JSON.stringify(links) === JSON.stringify(currentLinks)) {
+            setIsEditing(false);
+            return;
+        }
+
+        setError("");
+        setIsSubmitting(true);
+        await updateProfileField(
+            links,
+            null,
+            "api/profile/update_socials",
+            accessToken,
+            setSuccess,
+            setError,
+            setIsEditing,
+            setIsSubmitting
+        );
+    };
+
+    const RenderSocialLinks = Object.entries(links).map(([key, value]) => {
+        let icon;
+        switch (key) {
+            case "instagram_url":
+                icon = <InstagramIcon className="text-pink-500 mr-2" />;
+                break;
+            case "twitter_url":
+                icon = <TwitterIcon className="text-blue-400 mr-2" />;
+                break;
+            case "reddit_url":
+                icon = <RedditIcon className="text-orange-500 mr-2" />;
+                break;
+            case "linkedin_url":
+                icon = <LinkedInIcon className="text-blue-700 mr-2" />;
+                break;
+            default:
+                icon = null;
+        }
+        return (
+            <p key={key} className="text-gray-900 flex items-center">
+                {value ? (
+                    <Link
+                        href={value} passHref
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center"
+                    >
+                        {icon}
+                        {/* <span>{key.replace("_url", "").replace("_", " ").toUpperCase()}</span> */}
+                    </Link>
+                ) : (
+                    <span className="flex items-center">
+                        {icon}
+                        {/* <span>{key.replace("_url", "").replace("_", " ").toUpperCase()}</span> */}
+                    </span>
+                )}
+                
+            </p>
+        );
+    });
+
+
+    return (
+        <div className="space-y-4">
+            {isEditing ? (
+                <form onSubmit={handleLinksUpdate} className="space-y-4">
+                    {Object.keys(links).map((key) => (
+                        <div key={key}>
+                            <TextField
+                                label={key.replace("_url", "").replace("_", " ").toUpperCase()}
+                                name={key}
+                                value={links[key]}
+                                onChange={handleInputChange}
+                                fullWidth
+                                variant="outlined"
+                                size="small"
+                                disabled={isSubmitting}
+                            />
+                        </div>
+                    ))}
+                    <div className="flex gap-2 mt-4">
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? "Saving..." : "Save"}
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            onClick={() => {
+                                setLinks(currentLinks);
+                                setIsEditing(false);
+                                setError("");
+                            }}
+                            disabled={isSubmitting}
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                    {error && (
+                        <p className="mt-1 text-sm text-red-600">{error}</p>
+                    )}
+                    {success && (
+                        <p className="mt-1 text-sm text-green-600">{success}</p>
+                    )}
+                </form>
+            ) : (
+                <div>
+                    <div className="space-y-2">
+                        {RenderSocialLinks}
+                    </div>
+                    <Button
+                        onClick={() => setIsEditing(true)}
+                        variant="text"
+                        size="small"
+                        className="text-gray-500 mt-4"
+                    >
+                        ✏️
+                    </Button>
+                </div>
+            )}
+        </div>
+    );
+}
+
+export { UpdateBio, UpdateAge, UpdateGender, UpdateHobbies, UpdateSocialLinks };
