@@ -6,10 +6,11 @@ import {
     Typography,
     LinearProgress,
 } from "@mui/material";
+
 import { useState, useEffect } from "react";
 import { useAuth } from '../../hooks/authcontext';
 
-import {UpdateBio, UpdateAge, UpdateGender, UpdateHobbies} from "../../components/UpdateBio";
+import {UpdateBio, UpdateAge, UpdateGender, UpdateHobbies, UpdateSocialLinks} from "../../components/UpdateBio";
 import ActivityGrid from "../../components/ActivityGrid";
 import Navbar from "../../components/Navbar";
 import ProfilePicture from "../../components/ProfilePicture";
@@ -17,9 +18,9 @@ import ProfilePicture from "../../components/ProfilePicture";
 export default function ProfilePage() {
     const [image, setImage] = useState();
     const [profileData, setProfileData] = useState({});
-    const [errorMessage, setErrorMessage] = useState("");
+    const [error, setError] = useState("");
 
-    const [activityData, setActivityData] = useState([]);
+    // const [activityData, setActivityData] = useState([]);
     const { accessToken } = useAuth();
     
     const handleImageUpload = async (event) => {
@@ -41,15 +42,15 @@ export default function ProfilePage() {
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    setErrorMessage(errorData.message || "Failed to upload image.");
+                    const error = await response.json();
+                    setError(error.message || "Failed to upload image.");
                     return;
                 }
 
                 const data = await response.json();
                 setImage(data.image); // Assuming the response contains the URL of the uploaded image
             } catch (error) {
-                setErrorMessage("An error occurred while uploading the image.");
+                setError("An error occurred while uploading the image.");
             }
         }
     };
@@ -72,17 +73,17 @@ export default function ProfilePage() {
                     })
                     .catch((error) => {
                         if (error.response && error.response.data) {
-                            setErrorMessage(error.response.data.message || "Failed to fetch profile data.");
+                            setError(error.response.data.message || "Failed to fetch profile data.");
                         } else {
-                            setErrorMessage("Failed to fetch profile data.");
+                            setError("Failed to fetch profile data.");
                         }
                     });
             };
 
             fetchProfileData();
         }
-        const mockActivity = generateMockActivityData();
-        setActivityData(mockActivity);
+        // const mockActivity = generateMockActivityData();
+        // setActivityData(mockActivity);
     }, [accessToken]);
     
     
@@ -90,7 +91,7 @@ export default function ProfilePage() {
         <>
             <Navbar Page={"Home"} />
             <div className="min-h-screen px-16 flex items-center justify-center">
-                <div className="bg-amber-100 shadow-xl rounded-lg w-full p-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-orange-100 shadow-xl rounded-lg w-full p-8 grid grid-cols-1 md:grid-cols-4 gap-6">
                     {/* Left Section */}
                     <div className="bg-orange-50 p-6 rounded-lg flex flex-col items-center gap-4">
                         <ProfilePicture currentPic={profileData?.image} />
@@ -122,7 +123,6 @@ export default function ProfilePage() {
                                 className="font-bold text-gray-700 mt-2">
                                 Hobbies:
                             </Typography>
-                            {/* <Chip label="Frequent Flyer" color="primary" /> */}
                         </div>
                         <UpdateHobbies currentHobbies={profileData?.hobbies} />
                     </div>
@@ -145,104 +145,33 @@ export default function ProfilePage() {
                                 className="font-bold text-gray-800">
                                 Activity Grid
                             </Typography>
-                            <div className="container mx-auto px-4 py-8 bg-white p-6 rounded-lg shadow h-96">
+                            <div className="container mx-auto px-4 py-8 bg-amber-100 p-6 rounded-lg shadow h-96">
                                 <h2 className="text-slate-600 text-xl font-semibold mb-4">
                                     Your Activity
                                 </h2>
-                                <ActivityGrid activityData={activityData} />
+                                <ActivityGrid/>
                             </div>
                         </div>
-                        <div className="shadow-xl rounded-lg w-full p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Personality Section */}
-                            {/* <div className="p-8">
-                                <Typography
-                                    variant="h6"
-                                    className="font-bold text-gray-800">
-                                    Personality
-                                </Typography>
-                                {[
-                                    "Introvert",
-                                    "Analytical",
-                                    "Loyal",
-                                    "Passive",
-                                ].map((trait, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex items-center gap-4 mt-1">
-                                        <span className="text-sm text-gray-600">
-                                            {trait}
-                                        </span>
-                                        <LinearProgress
-                                            variant="determinate"
-                                            value={(index + 1) * 20}
-                                            sx={{ width: "100%", height: 8 }}
-                                            color={
-                                                index % 2 === 0
-                                                    ? "primary"
-                                                    : "secondary"
-                                            }
-                                        />
-                                    </div>
-                                ))}
-                            </div> */}
+                        {/* Social Profiles Section */}
+                        <div>
+                            <Typography
+                                variant="h5"
+                                className="font-bold text-gray-800">
+                                Social Profiles
+                            </Typography>
 
-                            {/* Frustrations Section */}
-                            {/* <div className="p-8">
-                                <Typography
-                                    variant="h6"
-                                    className="font-bold text-gray-800">
-                                    Frustrations
-                                </Typography>
-                                <ul className="list-disc list-inside mt-2 text-sm text-gray-600 space-y-1">
-                                    <li>
-                                        Too much time spent booking – she’s
-                                        busy!
-                                    </li>
-                                    <li>Too many websites visited per trip</li>
-                                    <li>
-                                        Not tech-savvy – dislikes the process
-                                    </li>
-                                </ul>
-                            </div> */}
-
-                            {/* Goals Section */}
-                            {/* <div className="p-8">
-                                <Typography
-                                    variant="h6"
-                                    className="font-bold text-gray-800">
-                                    Goals
-                                </Typography>
-                                <ul className="list-disc list-inside mt-2 text-sm text-gray-600 space-y-1">
-                                    <li>To spend less time booking travel</li>
-                                    <li>To narrow her options quickly</li>
-                                </ul>
-                            </div> */}
-
-                            {/* Favorite Brands Section */}
-                            {/* <div className="p-8">
-                                <Typography
-                                    variant="h6"
-                                    className="font-bold text-gray-800">
-                                    Favourite Brands
-                                </Typography>
-                                <div className="flex gap-4 mt-4 items-center justify-start flex-wrap">
-                                    {[
-                                        "Adidas",
-                                        "Nike",
-                                        "Netflix",
-                                        "Airbnb",
-                                        "Zara",
-                                    ].map((brand) => (
-                                        // Replace with brand logos if available
-                                        <Chip
-                                            key={brand}
-                                            label={brand}
-                                            color={"default"}
-                                            size={"medium"}
-                                        />
-                                    ))}
-                                </div>
-                            </div> */}
+                            {profileData ? (
+                                <UpdateSocialLinks
+                                    currentLinks={{
+                                        instagram_url: profileData?.instagram_url || "",
+                                        twitter_url: profileData?.twitter_url || "",
+                                        reddit_url: profileData?.reddit_url || "",
+                                        linkedin_url: profileData?.linkedin_url || "",
+                                    }}
+                                />
+                                ) : (
+                                    <p>Loading...</p>
+                            )}
                         </div>
                     </div>
                 </div>

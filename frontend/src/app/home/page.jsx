@@ -7,9 +7,11 @@ import TagsComponent from '../../components/Tags';
 import { useAuth } from '../../hooks/authcontext';
 
 export default function Page() {
-    const [calendarView, setCalendarView] = useState('dayGridMonth');
     const [tags, setTags] = useState([]);
     const { accessToken } = useAuth();
+    const [selectedDate, setSelectedDate] = useState(null);
+
+    console.log(accessToken);
 
     useEffect(() => {
         if (accessToken) {
@@ -35,6 +37,10 @@ export default function Page() {
         }
     };
 
+    const handleDateSelect = (date) => {
+        setSelectedDate(date);
+    };
+
     const handleViewChange = (newView) => {
         setCalendarView(newView);
     };
@@ -42,14 +48,40 @@ export default function Page() {
     return (
         <div className="relative flex flex-col p-4 min-h-screen bg-white">
             {/* Navbar */}
-            <Navbar Page={"profile"}/>
+            <Navbar Page={"profile"} />
 
             {/* Main Content */}
-            <div className="flex flex-row gap-4 h-[calc(100vh-80px)] overflow-y-auto">
+            <div
+                id="home-main-content"
+                className="flex flex-row gap-4 h-[calc(100vh-80px)] hide-scrollbar"
+                style={{
+                    overflow: 'auto',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
+                }}
+            >
+                <style jsx global>{`
+                    /* Hide scrollbar for Chrome, Safari and Opera */
+                    #home-main-content::-webkit-scrollbar,
+                    .hide-scrollbar::-webkit-scrollbar {
+                        display: none !important;
+                    }
+                    
+                    /* Hide scrollbar for IE, Edge and Firefox */
+                    #home-main-content,
+                    .hide-scrollbar {
+                        -ms-overflow-style: none !important;  /* IE and Edge */
+                        scrollbar-width: none !important;  /* Firefox */
+                    }
+                `}</style>
+
                 {/* Sidebar */}
                 <div className="flex-shrink-0 space-y-4">
                     {/* Calendar Widget */}
-                    <CalendarWidget />
+                    <CalendarWidget
+                        onDateSelect={handleDateSelect}
+                        selectedDate={selectedDate}
+                    />
 
                     {/* Tags Component */}
                     <TagsComponent tags={tags} setTags={setTags} />
@@ -57,7 +89,12 @@ export default function Page() {
 
                 {/* Blog List */}
                 <div className="flex-grow bg-white rounded-lg shadow-md p-4">
-                    <BlogList availableTags={tags} onTagsUpdate={fetchTags} />
+                    <BlogList
+                        availableTags={tags}
+                        onTagsUpdate={fetchTags}
+                        selectedDate={selectedDate}
+                        onDateSelect={handleDateSelect}
+                    />
                 </div>
             </div>
         </div>
