@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './authcontext';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const useProfile = () => {
     const [profileImage, setProfileImage] = useState('/profile2.jpg'); // Default fallback image
     const [loading, setLoading] = useState(true);
@@ -13,7 +15,7 @@ const useProfile = () => {
 
             try {
                 setLoading(true);
-                const response = await fetch('http://localhost:8080/api/profile', {
+                const response = await fetch(`${API_BASE_URL}/api/profile`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }

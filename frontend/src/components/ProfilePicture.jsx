@@ -5,6 +5,8 @@ import Image from "next/image";
 import { Avatar, Button } from "@mui/material";
 import { useAuth } from "../hooks/authcontext";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function ProfilePicture({ currentPic }) {
     const [selectedImage, setSelectedImage] = useState(null);
     const [error, setError] = useState("");
@@ -41,7 +43,7 @@ export default function ProfilePicture({ currentPic }) {
             // console.log("formData")
 
             try {
-                const response = await fetch("http://localhost:8080/api/image/update", {
+                const response = await fetch(`${API_BASE_URL}/api/image/update`, {
                     method: "POST",
                     headers: {
                         // "Content-Type": "multipart/form-data", // Do not set this header; the browser will set it automatically

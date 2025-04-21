@@ -9,6 +9,8 @@ import GoogleLoginButton from './GoogleLoginButton';
 
 import { useState } from "react";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function SignUp({ onTabChange }) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -52,7 +54,7 @@ export default function SignUp({ onTabChange }) {
         };
 
         try {
-            const response = await fetch("http://localhost:8080/consumer/register", {
+            const response = await fetch(`${API_BASE_URL}/consumer/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

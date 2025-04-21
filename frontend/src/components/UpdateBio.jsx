@@ -19,6 +19,8 @@ import {
 import Button from "./Button";
 import exp from "constants";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const updateProfileField = async (
     field,
     // fields,
@@ -43,7 +45,7 @@ const updateProfileField = async (
 
         // const payload = fields; // Send the entire object as the payload
         const response = await axios.post(
-            `http://localhost:8080/${endpoint}`,
+            `${API_BASE_URL}/${endpoint}`,
             payload, // Ensure the payload matches the server's expected format
             {
                 headers: {

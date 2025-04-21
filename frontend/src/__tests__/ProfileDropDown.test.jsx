@@ -6,6 +6,7 @@ import ProfileDropDown from '../components/ProfileDropDown';
 import useProfile from '../hooks/useProfile';
 import { useAuth } from '../hooks/authcontext';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 // Mock the hooks
 jest.mock('../hooks/useProfile');
 jest.mock('../hooks/authcontext');
@@ -122,7 +123,7 @@ describe('ProfileDropDown Component', () => {
     
     // Check API call
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('http://localhost:8080/consumer/logout', {
+      expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/consumer/logout`, {
         method: 'POST',
         headers: {
           Authorization: 'Bearer mock-token'

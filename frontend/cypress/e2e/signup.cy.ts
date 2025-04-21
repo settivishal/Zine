@@ -61,7 +61,7 @@ describe("Sign Up Button Functionality", () => {
     // Mock API request for successful signup (optional)
     cy.intercept(
       "POST",
-      "http://localhost:8080/consumer/register",
+      `http://localhost:8080/consumer/register`,
       { statusCode: 200, body: { success: true } }
     );
 
