@@ -10,6 +10,7 @@ import { useTags } from '../hooks/tagsContext';
 import { useRouter } from 'next/navigation';
 import Filter from './Filter';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) => {
     const { accessToken } = useAuth();
@@ -42,7 +43,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
         if (!tagIds || tagIds.length === 0) return [];
 
         try {
-            const response = await fetch("http://localhost:8080/api/tags/getByIDs", {
+            const response = await fetch(`${API_BASE_URL}/api/tags/getByIDs`, {
                 method: "POST",
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -81,7 +82,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
 
             if (isFiltered && selectedTagIds.length > 0) {
                 // Make a POST request to the filter API with the correct endpoint
-                response = await fetch(`http://localhost:8080/api/blogs/getByTagIDs?page=${page}&limit=7`, {
+                response = await fetch(`${API_BASE_URL}/api/blogs/getByTagIDs?page=${page}&limit=7`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
@@ -93,7 +94,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
                 });
             } else {
                 // Make the normal GET request for unfiltered blogs
-                response = await fetch(`http://localhost:8080/api/blogs?page=${page}&limit=7`, {
+                response = await fetch(`${API_BASE_URL}/api/blogs?page=${page}&limit=7`, {
                     method: 'GET',
                     headers: { Authorization: `Bearer ${accessToken}` },
                 });
@@ -151,7 +152,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/blog/date/${date}`, {
+            const response = await fetch(`${API_BASE_URL}/api/blog/date/${date}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${accessToken}`
@@ -219,7 +220,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
             const today = new Date();
             const formattedDate = today.toISOString().split('T')[0];
 
-            const response = await fetch('http://localhost:8080/api/blog/create', {
+                const response = await fetch(`${API_BASE_URL}/api/blog/create`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -252,7 +253,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
                 return;
             }
 
-            const response = await fetch('http://localhost:8080/api/blog/create', {
+            const response = await fetch(`${API_BASE_URL}/api/blog/create`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -301,7 +302,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
                 date: blogDate
             };
 
-            const response = await fetch('http://localhost:8080/api/tag/set', {
+            const response = await fetch(`${API_BASE_URL}/api/tag/set`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -367,7 +368,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
                 date: blogDate
             };
 
-            const response = await fetch('http://localhost:8080/api/tag/remove', {
+            const response = await fetch(`${API_BASE_URL}/api/tag/remove`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,

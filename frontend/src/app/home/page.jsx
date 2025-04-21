@@ -6,6 +6,8 @@ import BlogList from '../../components/BlogList';
 import TagsComponent from '../../components/Tags';
 import { useAuth } from '../../hooks/authcontext';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function Page() {
     const [tags, setTags] = useState([]);
     const { accessToken } = useAuth();
@@ -21,7 +23,7 @@ export default function Page() {
 
     const fetchTags = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/tags", {
+            const response = await fetch(`${API_BASE_URL}/api/tags`, {
                 method: "GET",
                 headers: { Authorization: `Bearer ${accessToken}` },
             });

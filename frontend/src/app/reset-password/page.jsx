@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import myImg from "../../../public/zine.png";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -37,7 +39,7 @@ export default function ResetPassword() {
         password: password,
       };
 
-      const response = await fetch('http://localhost:8080/consumer/reset_password', {
+      const response = await fetch(`${API_BASE_URL}/consumer/reset_password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

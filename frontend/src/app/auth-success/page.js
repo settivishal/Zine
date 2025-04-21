@@ -2,11 +2,11 @@
 
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-
+import { useAuth } from '../../hooks/authcontext';
 import { Suspense } from 'react';
 
 export default function AuthSuccess() {
-    return(
+    return (
         <div>
             <Suspense fallback={<div>Loading...</div>}>
                 <AuthSuccessComponent />
@@ -18,7 +18,8 @@ export default function AuthSuccess() {
 function AuthSuccessComponent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    
+    const { updateAuthState } = useAuth();
+
 
     useEffect(() => {
         const status = searchParams.get('status');
@@ -40,6 +41,9 @@ function AuthSuccessComponent() {
             localStorage.setItem('userName', name);
             localStorage.setItem('userEmail', email);
 
+            // Update auth context with the new token
+            updateAuthState();
+
             // Redirect to home page
             router.push('/home');
         } else {
@@ -48,7 +52,7 @@ function AuthSuccessComponent() {
             console.error('Authentication failed:', errorMessage);
             router.push('/login?error=' + encodeURIComponent(errorMessage));
         }
-    }, [searchParams, router]);
+    }, [searchParams, router, updateAuthState]);
 
     return (
         <div className="flex items-center justify-center min-h-screen">

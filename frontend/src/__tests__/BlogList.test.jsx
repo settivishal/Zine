@@ -5,6 +5,7 @@ import BlogList from '../components/BlogList';
 import { useAuth } from '../hooks/authcontext';
 import { useTags } from '../hooks/tagsContext';
 import { useRouter } from 'next/navigation';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Mock the hooks and modules
 jest.mock('../hooks/authcontext');
@@ -55,7 +56,7 @@ describe('BlogList Component', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:8080/api/blogs?page=1&limit=7',
+        `${API_BASE_URL}/api/blogs?page=1&limit=7`,
         expect.any(Object)
       );
     });
@@ -78,7 +79,7 @@ describe('BlogList Component', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:8080/api/blog/create',
+        `${API_BASE_URL}/api/blog/create`,
         expect.any(Object)
       );
     });

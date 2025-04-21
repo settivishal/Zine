@@ -15,6 +15,8 @@ import ActivityGrid from "../../components/ActivityGrid";
 import Navbar from "../../components/Navbar";
 import ProfilePicture from "../../components/ProfilePicture";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function ProfilePage() {
     const [image, setImage] = useState();
     const [profileData, setProfileData] = useState({});
@@ -31,7 +33,7 @@ export default function ProfilePage() {
             
 
             try {
-                const response = await fetch("http://localhost:8080/api/image/update", {
+                const response = await fetch(`${API_BASE_URL}/api/image/update`, {
                     method: "POST",
                     headers: {
                         // "Content-Type": "multipart/form-data", // Do not set this header; the browser will set it automatically
@@ -67,7 +69,7 @@ export default function ProfilePage() {
                 };
 
                 axios
-                    .get("http://localhost:8080/api/profile", config)
+                    .get(`${API_BASE_URL}/api/profile`, config)
                     .then((response) => {
                         setProfileData(response.data); // Set profile data (username, email, etc.)
                     })

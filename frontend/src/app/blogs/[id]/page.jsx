@@ -16,6 +16,8 @@ import "@blocknote/core/fonts/inter.css";
 import { Room } from '../../../components/Room';
 import { Editor } from '../../../components/Editor';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 // Memoized tag component to prevent unnecessary re-renders
 const TagItem = memo(({ tag, isHovered, onMouseEnter, onMouseLeave, onRemove }) => {
     return (
@@ -133,7 +135,7 @@ export default function Blog() {
 
     const fetchContentFromBackend = async (id) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/blog/${id}`,
+            const response = await axios.get(`${API_BASE_URL}/api/blog/${id}`,
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -162,7 +164,7 @@ export default function Blog() {
         if (!tagIds || tagIds.length === 0) return;
 
         try {
-            const response = await fetch("http://localhost:8080/api/tags/getByIDs", {
+            const response = await fetch(`${API_BASE_URL}/api/tags/getByIDs`, {
                 method: "POST",
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -200,7 +202,7 @@ export default function Blog() {
             formData.append('blog_id', id);
 
             const response = await axios.post(
-                'http://localhost:8080/api/blog/cover/upload',
+                `${API_BASE_URL}/api/blog/cover/upload`,
                 formData,
                 {
                     headers: {
@@ -227,7 +229,7 @@ export default function Blog() {
             const formData = new FormData();
             formData.append('blog_id', id);
             const response = await axios.post(
-                'http://localhost:8080/api/blog/cover/delete',
+                `${API_BASE_URL}/api/blog/cover/delete`,
                 formData,
                 {
                     headers: {
@@ -276,7 +278,7 @@ export default function Blog() {
                 date: data.Date
             };
 
-            const response = await fetch('http://localhost:8080/api/tag/set', {
+            const response = await fetch(`${API_BASE_URL}/api/tag/set`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -307,7 +309,7 @@ export default function Blog() {
                 date: data.Date
             };
 
-            const response = await fetch('http://localhost:8080/api/tag/remove', {
+            const response = await fetch(`${API_BASE_URL}/api/tag/remove`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
