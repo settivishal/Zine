@@ -244,6 +244,36 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
         }
     };
 
+    const handleCreateBlog_date = async (date) => {
+        try {
+            // Get today's date in YYYY-MM-DD format
+            //const formattedDate = date.toISOString().split('T')[0];
+
+            const response = await fetch('http://localhost:8080/api/blog/create', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    date: date
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Extract just the path from blog_url and combine with origin
+                const blogPath = data.blog_url.replace('localhost:3000', '');
+                window.location.href = `${window.location.origin}${blogPath}`;
+            } else {
+                console.error('Failed to create blog:', data.message);
+            }
+        } catch (error) {
+            console.error('Error creating blog:', error);
+        }
+    };
+
     const handleTagClick = (tag) => {
         // Implement tag click functionality
         //console.log(`Tag clicked: ${tag}`);
@@ -494,7 +524,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
                         size="small"
                         startIcon={<AddIcon />}
                         onClick={blogExistsForToday() ? undefined : handleCreateBlog}
-                        disabled={blogExistsForToday()}
+                        disabled={blogExistsForToday() || (isDateFiltered || isFiltered)}
                         sx={{
                             backgroundColor: blogExistsForToday() ? '#e0e0e0' : '#1a73e8',
                             '&:hover': {
@@ -510,16 +540,23 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
             <div className="overflow-y-auto hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {Object.keys(realBlogs).length === 0 && isDateFiltered && (
                     <Card className="mb-4 p-4 text-center">
-                        <Typography variant="body1">
+                        <Typography variant="body1" sx={{ mb: 2 }}>
                             No blog found for {selectedDate}.
-                            <Button
-                                onClick={() => handleCreateBlog()}
-                                size="small"
-                                sx={{ ml: 1 }}
-                            >
-                                Create one?
-                            </Button>
                         </Typography>
+                        <Button
+                            variant="contained"
+                            size="small"
+                            startIcon={<AddIcon />}
+                            onClick={() => handleCreateBlog_date(selectedDate)}
+                            sx={{
+                                backgroundColor: '#1a73e8',
+                                '&:hover': {
+                                    backgroundColor: '#1557b0'
+                                }
+                            }}
+                        >
+                            Create one
+                        </Button>
                     </Card>
                 )}
 
