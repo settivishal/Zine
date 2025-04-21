@@ -10,7 +10,7 @@ import Image from "next/image";
 import myImg from "../../public/zine.png";
 
 
-import AuthModal from "../app/Modal/page";
+import AuthModal from "../components/Modal";
 
 
 
