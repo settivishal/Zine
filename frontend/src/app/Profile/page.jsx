@@ -15,7 +15,7 @@ import ActivityGrid from "../../components/ActivityGrid";
 import Navbar from "../../components/Navbar";
 import ProfilePicture from "../../components/ProfilePicture";
 
-export default function ProfilePage({ children }) {
+export default function ProfilePage() {
     const [image, setImage] = useState();
     const [profileData, setProfileData] = useState({});
     const [error, setError] = useState("");
