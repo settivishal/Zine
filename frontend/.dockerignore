@@ -1,0 +1,32 @@
+# Node modules (will be installed inside container)
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Local build output (recreated during Docker build)
+.next
+out
+dist
+
+# Environment files (handled manually or with secrets)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Git
+.git
+.gitignore
+
+# Docker-related files (except the ones you want to include)
+Dockerfile*
+docker-compose*
+
+# System / IDE files
+.DS_Store
+*.swp
+*.swo
+.vscode
+.idea
+*.log

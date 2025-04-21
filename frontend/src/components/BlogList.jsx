@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { useAuth } from '../hooks/authcontext';
 import { useTags } from '../hooks/tagsContext';
 import { useRouter } from 'next/navigation';
-import Filter from './filter';
+import Filter from './Filter';
 
 
 const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) => {
