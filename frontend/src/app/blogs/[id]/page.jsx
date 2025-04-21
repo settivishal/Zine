@@ -346,14 +346,14 @@ export default function Blog() {
         const [year, month, day] = date.split("-");
         const formattedDate = `${parseInt(day)} ${months[parseInt(month) - 1]}`;
 
-        return <span suppressHydrationWarning className="text-gray-700 bg-gray-200 text-2xl font-bold rounded p-2">{formattedDate}</span>;
+        return <span suppressHydrationWarning className="text-gray-700 bg-gray-200 py-2 px-4 text-base font-semibold rounded-md">{formattedDate}</span>;
     }
     return (
         <>
             <div className='p-5'>
                 <Navbar Page={'Home'} />
-                <div className="flex grid-cols-2 tems-center mb-4">
-                    <div className="flex items-center mb-4">
+                <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center">
                         <FormattedDate date={data?.Date} />
                     </div>
                     <div>

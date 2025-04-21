@@ -246,8 +246,11 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
 
     const handleCreateBlog_date = async (date) => {
         try {
-            // Get today's date in YYYY-MM-DD format
-            //const formattedDate = date.toISOString().split('T')[0];
+            // Check if the selected date is in the future
+            if (new Date(date) > new Date()) {
+                console.error('Cannot create blogs for future dates');
+                return;
+            }
 
             const response = await fetch('http://localhost:8080/api/blog/create', {
                 method: 'POST',
@@ -543,20 +546,26 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
                         <Typography variant="body1" sx={{ mb: 2 }}>
                             No blog found for {selectedDate}.
                         </Typography>
-                        <Button
-                            variant="contained"
-                            size="small"
-                            startIcon={<AddIcon />}
-                            onClick={() => handleCreateBlog_date(selectedDate)}
-                            sx={{
-                                backgroundColor: '#1a73e8',
-                                '&:hover': {
-                                    backgroundColor: '#1557b0'
-                                }
-                            }}
-                        >
-                            Create one
-                        </Button>
+                        {new Date(selectedDate) > new Date() ? (
+                            <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+                                Cannot create blogs for future dates.
+                            </Typography>
+                        ) : (
+                            <Button
+                                variant="contained"
+                                size="small"
+                                startIcon={<AddIcon />}
+                                onClick={() => handleCreateBlog_date(selectedDate)}
+                                sx={{
+                                    backgroundColor: '#1a73e8',
+                                    '&:hover': {
+                                        backgroundColor: '#1557b0'
+                                    }
+                                }}
+                            >
+                                Create one
+                            </Button>
+                        )}
                     </Card>
                 )}
 
