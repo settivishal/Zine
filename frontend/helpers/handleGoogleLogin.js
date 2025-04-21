@@ -1,8 +1,10 @@
 // Handles the initial Google login by redirecting the user to the Google auth URL
+
 export const handleGoogleLogin = async (e) => {
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
   e.preventDefault();
   try {
-    const response = await fetch("http://localhost:8080/auth/google", {
+    const response = await fetch(`${API_BASE_URL}/auth/google`, {
       method: "GET",
       headers: {
         Accept: "application/json",

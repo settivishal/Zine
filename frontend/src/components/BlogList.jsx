@@ -10,6 +10,7 @@ import { useTags } from '../hooks/tagsContext';
 import { useRouter } from 'next/navigation';
 import Filter from './Filter';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) => {
     const { accessToken } = useAuth();
@@ -42,7 +43,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
         if (!tagIds || tagIds.length === 0) return [];
 
         try {
-            const response = await fetch("http://localhost:8080/api/tags/getByIDs", {
+            const response = await fetch(`${API_BASE_URL}/api/tags/getByIDs`, {
                 method: "POST",
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -81,7 +82,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
 
             if (isFiltered && selectedTagIds.length > 0) {
                 // Make a POST request to the filter API with the correct endpoint
-                response = await fetch(`http://localhost:8080/api/blogs/getByTagIDs?page=${page}&limit=7`, {
+                response = await fetch(`${API_BASE_URL}/api/blogs/getByTagIDs?page=${page}&limit=7`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
@@ -93,7 +94,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
                 });
             } else {
                 // Make the normal GET request for unfiltered blogs
-                response = await fetch(`http://localhost:8080/api/blogs?page=${page}&limit=7`, {
+                response = await fetch(`${API_BASE_URL}/api/blogs?page=${page}&limit=7`, {
                     method: 'GET',
                     headers: { Authorization: `Bearer ${accessToken}` },
                 });
@@ -151,7 +152,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/blog/date/${date}`, {
+            const response = await fetch(`${API_BASE_URL}/api/blog/date/${date}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${accessToken}`
@@ -219,7 +220,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
             const today = new Date();
             const formattedDate = today.toISOString().split('T')[0];
 
-            const response = await fetch('http://localhost:8080/api/blog/create', {
+                const response = await fetch(`${API_BASE_URL}/api/blog/create`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -227,6 +228,39 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
                 },
                 body: JSON.stringify({
                     date: formattedDate
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Extract just the path from blog_url and combine with origin
+                const blogPath = data.blog_url.replace('localhost:3000', '');
+                window.location.href = `${window.location.origin}${blogPath}`;
+            } else {
+                console.error('Failed to create blog:', data.message);
+            }
+        } catch (error) {
+            console.error('Error creating blog:', error);
+        }
+    };
+
+    const handleCreateBlog_date = async (date) => {
+        try {
+            // Check if the selected date is in the future
+            if (new Date(date) > new Date()) {
+                console.error('Cannot create blogs for future dates');
+                return;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/api/blog/create`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    date: date
                 })
             });
 
@@ -268,7 +302,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
                 date: blogDate
             };
 
-            const response = await fetch('http://localhost:8080/api/tag/set', {
+            const response = await fetch(`${API_BASE_URL}/api/tag/set`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -334,7 +368,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
                 date: blogDate
             };
 
-            const response = await fetch('http://localhost:8080/api/tag/remove', {
+            const response = await fetch(`${API_BASE_URL}/api/tag/remove`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -494,7 +528,7 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
                         size="small"
                         startIcon={<AddIcon />}
                         onClick={blogExistsForToday() ? undefined : handleCreateBlog}
-                        disabled={blogExistsForToday()}
+                        disabled={blogExistsForToday() || (isDateFiltered || isFiltered)}
                         sx={{
                             backgroundColor: blogExistsForToday() ? '#e0e0e0' : '#1a73e8',
                             '&:hover': {
@@ -510,16 +544,29 @@ const BlogList = ({ selectedDate, onDateSelect, availableTags, onTagsUpdate }) =
             <div className="overflow-y-auto hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {Object.keys(realBlogs).length === 0 && isDateFiltered && (
                     <Card className="mb-4 p-4 text-center">
-                        <Typography variant="body1">
+                        <Typography variant="body1" sx={{ mb: 2 }}>
                             No blog found for {selectedDate}.
-                            <Button
-                                onClick={() => handleCreateBlog()}
-                                size="small"
-                                sx={{ ml: 1 }}
-                            >
-                                Create one?
-                            </Button>
                         </Typography>
+                        {new Date(selectedDate) > new Date() ? (
+                            <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+                                Cannot create blogs for future dates.
+                            </Typography>
+                        ) : (
+                            <Button
+                                variant="contained"
+                                size="small"
+                                startIcon={<AddIcon />}
+                                onClick={() => handleCreateBlog_date(selectedDate)}
+                                sx={{
+                                    backgroundColor: '#1a73e8',
+                                    '&:hover': {
+                                        backgroundColor: '#1557b0'
+                                    }
+                                }}
+                            >
+                                Create one
+                            </Button>
+                        )}
                     </Card>
                 )}
 

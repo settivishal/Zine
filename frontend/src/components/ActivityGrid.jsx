@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/authcontext";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ActivityGrid() {
     const [monthGrids, setMonthGrids] = useState([]);
@@ -14,7 +15,7 @@ export default function ActivityGrid() {
 
     const fetchGridData = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/api/profile/grid", {
+            const response = await axios.get(`${API_BASE_URL}/api/profile/grid`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${accessToken}`,

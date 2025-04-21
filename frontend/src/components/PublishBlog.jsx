@@ -5,6 +5,7 @@ import { useAuth } from "../hooks/authcontext";
 
 import { Button, TextField, Tabs, Tab, Chip, Dialog, DialogTitle, DialogContent } from "@mui/material";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const PublishBlog = ({ blog_data }) => {
     const [isEditing, setIsEditing] = useState(false); // Controls the modal state
     const [tab, setTab] = useState(0); // 0 for Public, 1 for Private
@@ -51,7 +52,7 @@ const PublishBlog = ({ blog_data }) => {
         try {
             
             const response = await axios.post(
-                "http://localhost:8080/api/blog/change-visibility",
+                `${API_BASE_URL}/api/blog/change-visibility`,
                 payload,
                 {
                     headers: {

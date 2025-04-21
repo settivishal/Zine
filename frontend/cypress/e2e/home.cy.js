@@ -1,3 +1,4 @@
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 describe('Home Page', () => {
   beforeEach(() => {
     // Set future expiration date
@@ -35,7 +36,7 @@ describe('Home Page', () => {
   describe('Tags Component', () => {
     beforeEach(() => {
       // Mock the initial tags fetch - this matches the actual API response
-      cy.intercept('GET', 'http://localhost:8080/api/tags', {
+      cy.intercept('GET', `${API_BASE_URL}/api/tags`, {
         statusCode: 200,
         body: [
           { text: 'Tag1', color: '#ff0000' },
@@ -53,7 +54,7 @@ describe('Home Page', () => {
   describe('BlogList', () => {
     beforeEach(() => {
       // Mock the API responses
-      cy.intercept('GET', 'http://localhost:8080/api/blogs*', {
+      cy.intercept('GET', `${API_BASE_URL}/api/blogs*`, {
         statusCode: 200,
         body: {
           blogs: {
@@ -68,7 +69,7 @@ describe('Home Page', () => {
       }).as('getBlogs');
 
       // This call happens when tags need to be fetched for blog cards
-      cy.intercept('POST', 'http://localhost:8080/api/tags/getByIDs', {
+      cy.intercept('POST', `${API_BASE_URL}/api/tags/getByIDs`, {
         statusCode: 200,
         body: [
           { text: 'Tag1', color: '#ff0000' },
@@ -77,7 +78,7 @@ describe('Home Page', () => {
       }).as('getTagsByIDs');
 
       // This is for the general tags list
-      cy.intercept('GET', 'http://localhost:8080/api/tags', {
+      cy.intercept('GET', `${API_BASE_URL}/api/tags`, {
         statusCode: 200,
         body: [
           { text: 'Tag1', color: '#ff0000' },
@@ -103,7 +104,7 @@ describe('Home Page', () => {
     });
 
     it('should allow adding tags to blogs', () => {
-      cy.intercept('POST', 'http://localhost:8080/api/tag/set', {
+      cy.intercept('POST', `${API_BASE_URL}/api/tag/set`, {
         statusCode: 200,
         body: { success: true }
       }).as('addTag');
@@ -117,7 +118,7 @@ describe('Home Page', () => {
     });
 
     it('should handle creating new blog', () => {
-      cy.intercept('POST', 'http://localhost:8080/api/blog/create', {
+      cy.intercept('POST', `${API_BASE_URL}/api/blog/create`, {
         statusCode: 200,
         body: { blog_url: '/blogs/new-blog' }
       }).as('createBlog');
@@ -129,7 +130,7 @@ describe('Home Page', () => {
 
     it('should disable Create New Blog button if blog exists for today', () => {
       const today = new Date().toISOString().split('T')[0];
-      cy.intercept('GET', 'http://localhost:8080/api/blogs*', {
+      cy.intercept('GET', `${API_BASE_URL}/api/blogs*`, {
         statusCode: 200,
         body: {
           blogs: {

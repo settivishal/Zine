@@ -19,8 +19,13 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
+    const updateAuthState = () => {
+        const token = getCookie('accessToken');
+        setAccessToken(token);
+    };
+
     return (
-        <AuthContext.Provider value={{ accessToken, loading }}>
+        <AuthContext.Provider value={{ accessToken, loading, updateAuthState }}>
             {children}
         </AuthContext.Provider>
     );

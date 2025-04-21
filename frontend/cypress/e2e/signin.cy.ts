@@ -23,7 +23,7 @@ describe("Sign In Button Functionality", () => {
     // Mock API request for successful login (optional)
     cy.intercept(
       "POST",
-      "http://localhost:8080/consumer/login",
+      `http://localhost:8080/consumer/login`,
       { statusCode: 200, body: { access_token: "mockAccessToken", refresh_token: "mockRefreshToken" } }
     );
 
@@ -61,5 +61,5 @@ describe("Sign In Button Functionality", () => {
       "user not found: invalid credentials" // This message comes from your backend response or error handling logic
     );
   });
-  
+
 });

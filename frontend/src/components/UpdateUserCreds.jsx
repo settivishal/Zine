@@ -5,6 +5,8 @@ import { useAuth } from "../hooks/authcontext";
 
 import Button from "./Button";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function UpdatePassword() {
     const [Email, setEmail] = useState("");
     const [Password, setPassword] = useState("");
@@ -48,7 +50,7 @@ export default function UpdatePassword() {
         setIsSubmitting(true);
 
         try {
-            const response = await fetch("http://localhost:8080/api/change_password", {
+            const response = await fetch(`${API_BASE_URL}/api/change_password`, {
                 method: "POST",
                 headers: {
                 "Content-Type": "application/json",
