@@ -9,6 +9,7 @@ import { useAuth } from '../../../hooks/authcontext';
 import { useTags } from '../../../hooks/tagsContext';
 import { Chip, Box, Dialog, DialogTitle, DialogContent } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import PublishBlog from '../../../components/PublishBlog';
 
 import "@blocknote/mantine/style.css";
 import "@blocknote/core/fonts/inter.css";
@@ -324,9 +325,13 @@ export default function Blog() {
         <>
             <div className='p-5'>
                 <Navbar Page={'Home'} />
-
-                <div className="flex items-center mb-4">
-                    <FormattedDate date={data?.Date} />
+                <div className="flex grid-cols-2 tems-center mb-4">
+                    <div className="flex items-center mb-4">
+                        <FormattedDate date={data?.Date} />
+                    </div>
+                    <div>
+                        <PublishBlog blog_data={data} />
+                    </div>
                 </div>
 
                 <div className="relative">
@@ -338,15 +343,15 @@ export default function Blog() {
                         height={1000}
                     />
                     <div 
-                                style={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    width: '100%',
-                                    height: '25%',
-                                    background: 'linear-gradient(to bottom, rgb(0, 0, 0, 0.8) 0%, rgba(0,0,0,0) 100%)',
-                                    zIndex: 1
-                                }}
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '25%',
+                            background: 'linear-gradient(to bottom, rgb(0, 0, 0, 0.8) 0%, rgba(0,0,0,0) 100%)',
+                            zIndex: 1
+                        }}
                     />
                     {/* Tags positioned at the top left of the cover image */}
                     <TagsContainer
