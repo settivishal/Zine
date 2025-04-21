@@ -221,6 +221,33 @@ export default function Blog() {
         }
     };
 
+    const handleCoverImageDelete = async () => {
+        try {
+            setUploading(true);
+            const formData = new FormData();
+            formData.append('blog_id', id);
+            const response = await axios.post(
+                'http://localhost:8080/api/blog/cover/delete',
+                formData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            if (response.data) {
+                // Refresh blog data to get the updated cover image
+                fetchContentFromBackend(id);
+            }
+        } catch (error) {
+            console.error('Error deleting cover image:', error);
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const handleAddTags = useCallback(() => {
         setOpenTagDialog(true);
     }, []);
@@ -342,7 +369,7 @@ export default function Blog() {
                         width={1000}
                         height={1000}
                     />
-                    <div 
+                    <div
                         style={{
                             position: 'absolute',
                             top: 0,
@@ -362,7 +389,22 @@ export default function Blog() {
                         removeTagFromBlog={removeTagFromBlog}
                     />
 
-                    <label className="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-all transform hover:scale-105">
+                    {data?.Cover && (
+                        <button
+                            onClick={handleCoverImageDelete}
+                            disabled={uploading}
+                            className="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-all transform hover:scale-105"
+                        >
+                            {uploading ? (
+                                <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            )}
+                        </button>
+                    )}
+                    <label className={`absolute bottom-4 ${data?.Cover ? 'right-20' : 'right-4'} w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-all transform hover:scale-105`}>
                         <input
                             type="file"
                             className="hidden"
@@ -379,6 +421,7 @@ export default function Blog() {
                             </svg>
                         )}
                     </label>
+
                 </div>
 
                 <MemoizedEditor roomId={id} />
