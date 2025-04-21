@@ -19,6 +19,40 @@ To prioritize user security and ensure a seamless login experience, the platform
 Journal entries are stored in an object storage system or an equivalent alternative to ensure scalability, reliability, and efficient data management. This approach supports the secure and long-term storage of user-generated content. <br/>
 <br/>
 
+## Tech Stack
+### Frontend
+- **Framework**: Next.js (React)
+- **Styling**: Tailwind CSS
+- **Real-time Collaboration**: LiveBlocks
+- **Testing**: Jest, Cypress
+- **Containerization**: Docker
+
+### Backend
+- **Language**: Go (Golang)
+- **Database**: MongoDB (NoSQL)
+- **Authentication**: JWT, OAuth 2.0
+- **Storage**: AWS S3 (or alternative)
+- **API Documentation**: Swagger
+- **Containerization**: Docker
+
+## Installation
+```bash
+# Clone the repository
+git clone https://github.com/settivishal/Zine.git
+
+# Frontend setup
+cd frontend
+npm install
+npm run dev
+
+# Backend setup
+cd ../backend
+go mod download
+go mod tidy
+go build
+go run main.go
+```
+
 ## Team Members
 Vishal Karthikeyan Setti <br/>
 GatorID - 47670880 <br/>
