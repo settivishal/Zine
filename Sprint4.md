@@ -1,4 +1,4 @@
-# ZINE - Sprint 3
+# ZINE - Sprint 4
 
 Zine is a digital journaling platform designed to offer users an intuitive and feature-rich journaling experience. The platform focuses on enhancing creativity, collaboration, and security, making it a versatile tool for maintaining personal records and sharing meaningful moments.
 
@@ -8,72 +8,44 @@ https://github.com/settivishal/Zine
 
 ## Video Link
 
-Video Demo: https://drive.google.com/file/d/1wlqkZzrSATRPi1kTcLThvR0gw4-MJA9H/view?usp=sharing
+Video Demo: [Demo Link]()
 
 ## Authors
 
 -  **Frontend** (Sravani Garapati, Shiva Kumar Thummanapalli)
 -  **Backend** (Jaiharishan Arunagiri Veerakumar, Vishal Karthikeyan Setti)
 
-## Sprint 3 - Objectives
+## Sprint 4 - Objectives
+The Backend prioritizes the development of critical API routes to enhance both profile management and home page functionality, delivering improved user experience and content discoverability. Concurrently, we will implement comprehensive containerization of the backend system using Docker, establishing a standardized deployment process that ensures environment consistency across development, staging, and production. The infrastructure work will culminate in a production deployment, generating stable, versioned API endpoints with a dedicated production URL.
 
-<!-- objectives -->
-
-**Frontend:**
-- To fix all the bugs from past sprints 
-- UI enhancements to make all pages consistent make design intuitive
-- Add new features to Profile page and Blog page and settings page
-  
+This sprint emphasizes the integration of backend APIs to significantly enhance user experience across core application interfaces, including the home page, blog management system, and profile pages. Additionally, we will implement comprehensive UI/UX enhancements, introducing a toggleable Light/Dark mode feature. On the infrastructure front, frontend components will undergo complete containerization using Docker, ensuring environment consistency and streamlined deployment workflows. The containerized application will be deployed to a production environment, generating a stable, versioned production URL.
 
 ## Accomplishments
 
 **Backend:**
-
-- Profile Page Endpoints (Update Profile, Bio, Image)
-- Redis Cloud Setup 
-- AWS Upload Methods
-- Improved Email Templates
-- Home Page Endpoints (Get Blogs, Create Blog, Get tags by ID)
-- Blog Page Endpoints (Get Blog, Save Blog)
-- Unit tests for new Methods
-- Swagger updated
-
-
+- Successfully implemented upload and delete routes for profile and blog cover images
+- Added new endpoints for retrieving blogs with tag ID and date range filtering
+- Introduced blog visibility controls for customizable sharing settings
+- Containerized the backend using Docker for consistent deployment
+- Deployed to production with a dedicated, versioned URL
+- Achieved full unit test coverage for all new components
+- Updated Swagger documentation for all API modifications
+- Established production-ready infrastructure
 
 **Frontend:**
-
-- Added route protection using Middleware
-- Authentication and Navigation Flow improvements, fixed bugs from sprint2 
-- Improved homepage UI to let users create Blogs and fetch their existing Blogs
-- Feature to delete user tags, and to Set and Remove tags from particular Blogs
-- Added Custom Hooks to get Access Tokens (from cookies) and Tags
-- Designed Settings page to let users update their credentials
-- Added functionality to set default profile pics if user did not upload a picture
-- Improved UI of activity grid
-- Features to Update Profile pic, update Bio
-- Features to update Age, Gender in profile
-- Added new component Hobbies with add, delete functionalities to the Profile page
-- Improved the UI of Profile Page overall.
-- Altered the async post api function call to work for all the profile components
-
-## Spill Over
-
-**Backend:**
-
-- API endpoint for saving the blog content
-
-**Frontend:**
-
-- Integration of Save API Endpoint
-- Footer Integration in all pages
-
+- Implemented GitHub-style interactive profile grid for user activity tracking
+- Integrated backend APIs for:
+    - Blog publishing functionality
+    - Profile image management (upload/delete)
+    - Tag-based content filtering
+- Added LiveBlocks integration for real-time content synchronization across blog pages
+- Established comprehensive testing framework with:
+    - Jest unit tests
+    - Cypress end-to-end tests
+- Containerized frontend application using Docker
+- Deployed to production with stable, versioned URL
 
 ## Unit Tests for Backend
-
-Unit tests are written for each controller to ensure API functionality.
-
-### Controllers with Unit Tests
-
 | **Controllers**                  | **Test File**                          | **Purpose** |
 |---------------------------------|--------------------------------|-----------|
 | `auth_controller.go`            | `auth_controller_test.go`            | Tests authentication APIs (login, registration, JWT validation). |
@@ -81,6 +53,7 @@ Unit tests are written for each controller to ensure API functionality.
 | `swagger_controller.go`         | `swagger_controller_test.go`         | Verifies Swagger API documentation endpoints. |
 | `tags_controller.go`            | `tags_controller_test.go`            | Tests CRUD operations for tags. |
 | `user_controller.go`            | `user_controller_test.go`            | Tests user-related operations (profile update, deletion, etc.). |
+| `blog_controller.go`            | `blog_controller_test.go`            | Tests blog-related operations (create blog, get blogs, get blogs by IDs, upload cover image). |
 | `blog_controller.go`            | `blog_controller_test.go`            | Tests blog-related operations (create blog, get blogs, get blogs by IDs, upload cover image). |
 
 ### Services with Unit Tests
@@ -111,21 +84,11 @@ Unit tests are written for each controller to ensure API functionality.
 | `token_utils.go`        | `token_utils_test.go`               | Tests utility functions for generating reset token. |
 
 ## Unit Tests and Cypress for Frontend
- ### Cypress
-  - added more test cases to homepage and profile page
-  
-  ### Unit Tests
-  - Created tests for Banner.jsx to test proper rendering
-  - Created tests for Base.jsx, Section.jsx to test proper rendering of child components
-  - Created tests for CenteredFooter.jsx, Footer.jsx to test proper rendering of logo, navigation links, icon list and children components
-  - Created tests Hero.jsx to check working and rendering of buttons
-  - Added new tests to Tags.jsx to test removal of tags and new tag hooks and tag selection
-  - Created tests for BlogList.jsx to test fetching blogs, creating blogs, and tags 
-  - Added tests to Navbar to check proper redirecting
-  - Added tests for ProfileDropDown.jsx, ProfilePicture.jsx to check proper icon and profile pic rendering and working of logout functionality
-- Added tests to UpdateBio to test : UpdateBio Component (current, edit, cancel) , UpdateAge Component , UpdateGender Component
-- Added tests to UpdateUserCreds.jsx to test update of credentials, form submission , error handling
-- Created tests for VerticalFeatures.jsx to test proper rendering and correct prop passing.
+### Cypress
+
+
+### Unit Tests
+
 
 ## API Documentation
 
@@ -134,9 +97,7 @@ Unit tests are written for each controller to ensure API functionality.
 
 ### Authentication & Authorization
 -   The APs use JWT-based authentication.
-    
 -   Protected routes require an `Authorization: Bearer <token>` header.
-    
 -   Users must be authenticated to create, update, set or delete tags.
 
 ### API Endpoints
@@ -629,5 +590,124 @@ Unit tests are written for each controller to ensure API functionality.
     }
     ```
 
+25. **Get Blogs by Tag IDs**
+    - Endpoint: `POST /api/blogs/getByTagIDs?page=1&limit=7`
+	
+	- Headers: `Authorization: Bearer <token>`
 
+    - Request Body:
 
+    ```json
+    {
+        "tag_ids": [
+            "6803195b01ac6ec5b7270917",
+            "68067e29c673363c6e9a09a8",
+            "67e8531a759214d9d24c8697"
+        ]
+    }
+    ```
+
+    - Response:
+    ```json
+    {
+        "message": "Blogs fetched successfully",
+        "blogs": {
+            "2025-03-23": {
+                "id": "67e84b8ad950e85ca14a8d7e",
+                "title": "",
+                "cover": "",
+                "tagIds": [
+                    "68067e29c673363c6e9a09a8"
+                ]
+            },
+            "2025-03-24": {
+                "id": "67e84b88d950e85ca14a8d7d",
+                "title": "",
+                "cover": "",
+                "tagIds": [
+                    "67e7884db0c4836677dc1e6e",
+                    "6803195b01ac6ec5b7270917",
+                    "67e8531a759214d9d24c8697",
+                    "68067e29c673363c6e9a09a8"
+                ]
+            }
+        },
+        "count": 2,
+        "total_pages": 1
+    }
+    ```
+
+26. **Get Blog by Date**
+    - Endpoint: `GET /api/blog/date/2025-03-24`
+	
+	- Headers: `Authorization: Bearer <token>`
+
+    - Response:
+    ```json
+    {
+        "message": "Blog fetched successfully",
+        "blog": {
+            "id": "67e84b88d950e85ca14a8d7d",
+            "title": "",
+            "cover": "",
+            "tagIds": [
+                "67e7884db0c4836677dc1e6e",
+                "6803195b01ac6ec5b7270917",
+                "67e8531a759214d9d24c8697",
+                "68067e29c673363c6e9a09a8"
+            ]
+        }
+    }
+    ```
+
+27. **Delete cover image**
+    - Endpoint: `POST /api/blog/cover/delete`
+	
+	- Headers: `Authorization: Bearer <token>`
+
+    - Request Body:
+
+    ```form-data
+    blog_id: 67e84b82d950e85ca14a8d79
+    ```
+
+    - Response:
+    ```json
+    {
+        "message": "Image deleted successfully"
+    }
+    ```
+
+28. **Delete profile image**
+    - Endpoint: `DELETE /api/image/delete`
+	
+	- Headers: `Authorization: Bearer <token>`
+
+    - Response:
+    ```json
+    {
+        "message": "Profile Image deleted successfully"
+    }
+    ``` 
+
+29. **Change Visibility API**
+    - Endpoint: `POST /api/blog/change-visibility`
+	
+	- Headers: `Authorization: Bearer <token>`
+
+    - Request Body:
+
+    ```json
+    {
+        "blog_id": "67e813a49f9de36ffe49beb7",
+        "is_public": false,
+        "users": ["jaiharishanav@gmail.com"]
+    }
+    ```
+
+    - Response:
+    ```json
+    {
+        "message": "Visibility changed successfully"
+    }
+    ```
