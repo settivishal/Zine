@@ -8,7 +8,7 @@ https://github.com/settivishal/Zine
 
 ## Video Link
 
-Video Demo: [Demo Link](https://drive.google.com/file/d/1wlqkZzrSATRPi1kTcLThvR0gw4-MJA9H/view?usp=sharing)
+Video Demo: [Demo Link]()
 
 ## Authors
 
