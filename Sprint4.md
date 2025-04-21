@@ -23,10 +23,27 @@ This sprint emphasizes the integration of backend APIs to significantly enhance 
 ## Accomplishments
 
 **Backend:**
-We successfully implemented robust media management capabilities, including dedicated routes for uploading and deleting both profile and cover images for blogs. The team delivered enhanced blog retrieval functionality through new endpoints that support filtering by tag IDs and date ranges. We introduced comprehensive blog visibility control features, enabling users to modify sharing settings with precision. On the infrastructure front, we containerized the backend using Docker and completed production deployment with a dedicated production URL. To ensure system reliability, we implemented thorough unit tests for all components and updated the API documentation through Swagger to accurately reflect all new endpoints and modifications. These achievements have resulted in a more versatile media handling system, significantly improved content discoverability, and a fully production-ready deployment, all while maintaining our high standards of code quality through rigorous testing and documentation practices.
+- Successfully implemented upload and delete routes for profile and blog cover images
+- Added new endpoints for retrieving blogs with tag ID and date range filtering
+- Introduced blog visibility controls for customizable sharing settings
+- Containerized the backend using Docker for consistent deployment
+- Deployed to production with a dedicated, versioned URL
+- Achieved full unit test coverage for all new components
+- Updated Swagger documentation for all API modifications
+- Established production-ready infrastructure
 
 **Frontend:**
-We successfully implemented an interactive profile page grid, modeled after GitHub's contribution grid, to visually track and display user activity. The frontend now seamlessly integrates with backend APIs for publishing blogs, deleting profile images, and filtering content by tags. To enable real-time collaboration, we integrated LiveBlocks, which effectively manages and synchronizes dynamic content across blog pages. Our quality assurance process included comprehensive test coverage using Jest for unit testing and Cypress for end-to-end testing. The frontend application was containerized using Docker and deployed to production with a dedicated, stable URL, significantly improving scalability and reliability. These enhancements have resulted in a more engaging user experience while maintaining robust performance standards.
+- Implemented GitHub-style interactive profile grid for user activity tracking
+- Integrated backend APIs for:
+    - Blog publishing functionality
+    - Profile image management (upload/delete)
+    - Tag-based content filtering
+- Added LiveBlocks integration for real-time content synchronization across blog pages
+- Established comprehensive testing framework with:
+    - Jest unit tests
+    - Cypress end-to-end tests
+- Containerized frontend application using Docker
+- Deployed to production with stable, versioned URL
 
 ## Unit Tests for Backend
 | **Controllers**                  | **Test File**                          | **Purpose** |
