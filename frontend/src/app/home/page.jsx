@@ -6,6 +6,7 @@ import BlogList from '../../components/BlogList';
 import TagsComponent from '../../components/Tags';
 import { useAuth } from '../../hooks/authcontext';
 
+// Get the API base URL from the environment variable
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Page() {
