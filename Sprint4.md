@@ -16,7 +16,9 @@ Video Demo: [Demo Link](https://drive.google.com/file/d/1wlqkZzrSATRPi1kTcLThvR0
 -  **Backend** (Jaiharishan Arunagiri Veerakumar, Vishal Karthikeyan Setti)
 
 ## Sprint 4 - Objectives
+Sprint 4 focuses on implementing robust media management capabilities, including dedicated routes for uploading and deleting profile and cover images for blogs, as well as enhanced blog retrieval functionality through new endpoints for fetching blogs by tag IDs and date ranges. The sprint also introduces blog visibility control features, allowing users to modify visibility settings while sharing content. On the infrastructure side, the backend will be containerized using Docker and deployed to production with a dedicated production URL. To ensure reliability, comprehensive unit tests will be implemented for each component, and API documentation will be updated through Swagger to reflect all new endpoints and modifications. This sprint aims to deliver a more versatile media handling system, improved content discoverability, and a production-ready deployment while maintaining high code quality through rigorous testing and documentation standards.
 
+The frontend development will focus on implementing a profile page grid to track user activity (modeled after GitHub’s contribution grid), along with seamless integration of backend routes for publishing blogs, deleting profile images, and filtering blogs by tags. To enhance real-time collaboration, LiveBlocks will be integrated to manage and synchronize dynamic content on blog pages. Rigorous testing will be implemented using Jest for unit tests and Cypress for end-to-end testing. Additionally, the frontend will be containerized using Docker and deployed to production with a dedicated production URL, ensuring scalability and reliability.
 
 ## Accomplishments
 
