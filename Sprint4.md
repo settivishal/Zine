@@ -20,6 +20,11 @@ The Backend prioritizes the development of critical API routes to enhance both p
 
 This sprint emphasizes the integration of backend APIs to significantly enhance user experience across core application interfaces, including the home page, blog management system, and profile pages. Additionally, we will implement comprehensive UI/UX enhancements, introducing a toggleable Light/Dark mode feature. On the infrastructure front, frontend components will undergo complete containerization using Docker, ensuring environment consistency and streamlined deployment workflows. The containerized application will be deployed to a production environment, generating a stable, versioned production URL.
 
+**Frontend:**
+
+The primary objective of Sprint 4 was to significantly enhance both the functionality and user experience of the blogging platform. This included fixing bugs from Sprint 3, improving visual consistency through a unified color palette, and introducing a toggle for light/dark themes. Key features such as a GitHub-style interactive activity grid, profile image and cover image management, and an advanced blog publishing system (with public/private access and selective email-based permissions) were implemented. Enhancements also included a calendar-integrated blog creation system for past dates, tag-based content filtering, and pagination for blog fetch and filter operations. To ensure a seamless collaborative experience, LiveBlocks was integrated for real-time synchronization. A robust testing pipeline was established using Jest and Cypress, while the frontend was containerized with Docker and deployed to production with versioned URLs.
+
+
 ## Accomplishments
 
 **Backend:**
@@ -32,18 +37,39 @@ This sprint emphasizes the integration of backend APIs to significantly enhance 
 - Updated Swagger documentation for all API modifications
 - Established production-ready infrastructure
 
-**Frontend:**
+**Frontend**
+- Fixed bugs from Sprint3
 - Implemented GitHub-style interactive profile grid for user activity tracking
-- Integrated backend APIs for:
-    - Blog publishing functionality
-    - Profile image management (upload/delete)
-    - Tag-based content filtering
+
+- Integrated backend APIs:
+
+- To upload and remove cover images in Blog pages
+- Handled pagenation in front end for both fetch/bogs and filter/blogs responses 
+- Fetching blogs for particular date using the calendar widget
+- Ability to create blogs for the selected date in past
+- Added tags and date functionality in Blog page
+-  Enhanced UI by using a consistent colour palate  across all pages
+- Added a toggle to switch between dark theme and light theme
+- Gave the user to update their socials in profile page
+
+- Blog publishing functionality
+
+- Profile image management (upload/delete)
+
+- Tag-based content filtering
+- Users are able to publish their blog as public/ private (select email addresses that can access the blog)
+- Users will be get mails regardign access changes on their blogs
+
+
 - Added LiveBlocks integration for real-time content synchronization across blog pages
+
 - Established comprehensive testing framework with:
-    - Jest unit tests
-    - Cypress end-to-end tests
+
+- Jest unit tests
+
+- Cypress end-to-end tests
+
 - Containerized frontend application using Docker
-- Deployed to production with stable, versioned URL
 
 ## Unit Tests for Backend
 | **Controllers**                  | **Test File**                          | **Purpose** |
@@ -86,8 +112,88 @@ This sprint emphasizes the integration of backend APIs to significantly enhance 
 ## Unit Tests and Cypress for Frontend
 ### Cypress
 
+#### added E2E tests for :
+- Forgot Password page
+- Reset password Page
+- Updated Homepage and Profile Page tests
+  
+  
 
 ### Unit Tests
+
+  #### Filter: 
+   √  renders Filter button                                                
+    √ opens popover when Filter button is clicked                          
+    √ selects tags when clicked in popover                                 
+    √ selects multiple tags                                         
+    √ deselects tags when clicked again                                    
+    √ shows active filter count on button                            
+    √ shows Clear button when filters are active                     
+    √ clears all filters when Clear button is clicked                
+    √ clears selected tags in popover when Clear button inside popover is clicked                                                                               
+    √ closes popover when Cancel button is clicked
+    √ Apply button is disabled when no tags are selected               
+    √ renders empty state when no tags are available
+
+#### ActivityGrid
+
+√ displays the correct number of active days
+    √ renders month grids for the past 12 months
+    √ renders active cells for dates in the activity data
+    √ handles empty activity data gracefully
+    √ handles API errors gracefully
+    √ does not fetch data when no access token is available
+    √ grid has the correct number of cells for each month
+
+#### SignIn
+
+√ renders signin form                                                 
+    √ shows error when form is submitted with empty fields                  
+    √ shows error for invalid email format
+    √ submits the form successfully with valid credentials           
+    √ handles API error response                                           
+    √ handles network error during API call                                
+    √ closes error message when X button is clicked                         
+    √ updates email input when typed                                     
+    √ updates password input when typed                                    
+    √ navigates to forgot password page when link is clicked
+
+#### SignUp
+
+√ renders signup form                                                    
+    √ shows error when form is submitted with empty fields                  
+    √ shows error for invalid email format 
+    √ shows error when passwords do not match                          
+    √ submits the form successfully with valid data                         
+    √ handles API error response                                        
+    √ handles network error during API call                               
+    √ closes error message when X button is clicked                        
+    √ closes success message when X button is clicked
+
+#### Publish Blog
+
+√ renders the Publish Blog button                                      
+    √ shows existing user emails when in private mode                   
+    √ allows adding new email in private mode                            
+    √ prevents adding duplicate email                                    
+    √ prevents adding empty email)                                           
+    √ submits with public visibility when in public mode                    
+    √ submits with private visibility and new emails                       
+    √ handles API error on submission                                     
+    √ closes dialog when cancel button is clicked
+#### Modal 
+
+√ renders nothing when isOpen is false                              
+    √ renders modal when isOpen is true                                    
+    √ shows sign in tab by default                                     
+    √ switches to sign up tab when clicked                           
+    √ switches back to sign in tab when clicked                             
+    √ calls onClose when close button is clicked                            
+    √ shows success message after registration                               
+    √ success message is not shown by default                                
+    √ success message is not shown when switching tabs manually
+
+#### Updated tests for BlogList, UpdateBio
 
 
 ## API Documentation
