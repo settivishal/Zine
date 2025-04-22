@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import GoogleLoginButton from '../components/googleLoginButton';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 import { handleGoogleLogin } from '../../helpers/handleGoogleLogin';
 
 // Mock the handleGoogleLogin function
