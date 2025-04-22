@@ -5,6 +5,8 @@ import myImg from '../../../public/zine.png';
 import { useState } from 'react';
 import GoogleLoginButton from '../../components/GoogleLoginButton';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function LoginPage() {
   // State variables for form inputs
   const [identifier, setIdentifier] = useState('');
@@ -27,7 +29,7 @@ export default function LoginPage() {
     };
 
     try {
-      const response = await fetch("http://localhost:8080/consumer/login", {
+      const response = await fetch(`${API_BASE_URL}/consumer/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

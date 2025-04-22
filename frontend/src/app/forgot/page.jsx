@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Image from "next/image";
 import myImg from "../../../public/zine.png";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState(null);
@@ -37,7 +39,7 @@ export default function ForgotPassword() {
       const payload = {
         email: email,
       };
-      const res = await fetch('http://localhost:8080/consumer/forgot_password', {
+      const res = await fetch(`${API_BASE_URL}/consumer/forgot_password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

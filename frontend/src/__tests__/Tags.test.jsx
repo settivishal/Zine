@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Tags from "../components/Tags";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 // Mock the hooks
 jest.mock("../hooks/authcontext", () => ({
   useAuth: () => ({
@@ -164,7 +165,7 @@ describe("Tags", () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/api/tag/create",
+        `${API_BASE_URL}/api/tag/create`,
         expect.objectContaining({
           method: "POST",
           headers: expect.objectContaining({
@@ -212,7 +213,7 @@ describe("Tags", () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/api/tag/delete",
+        `${API_BASE_URL}/api/tag/delete`,
         expect.objectContaining({
           method: "POST",
           headers: expect.objectContaining({
