@@ -75,7 +75,7 @@ export default function Tags() {
   };
 
   return (
-    <div className="p-4 bg-white border rounded shadow-md">
+    <div className="bg-primary-light dark:bg-primary-dark p-4 border rounded shadow-md">
       <h2 className="text-lg text-black font-semibold mb-2">Tags</h2>
 
       {!showInput && (

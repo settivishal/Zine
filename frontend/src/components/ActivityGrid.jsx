@@ -108,7 +108,7 @@ export default function ActivityGrid() {
     // Function to determine cell color based on activity count
     const getCellColor = (isActive)=> {
         if (isActive) return "bg-green-700";
-        return "bg-gray-200"; // Default color for inactive days
+        return "bg-gray-600"; // Default color for inactive days
     };
     
     // Calculate total active days
@@ -117,7 +117,7 @@ export default function ActivityGrid() {
     
     
     return (
-        <div className="bg-white p-6 rounded-lg">
+        <div className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg">
             <div className="flex items-center justify-between mb-6">
                 {/* <h2 className="text-xl font-semibold">
                     <span className="text-white">{totalSubmissions}</span> 
@@ -126,16 +126,16 @@ export default function ActivityGrid() {
                 </h2> */}
                 <div className="flex gap-2 space-x-6">
                     <div className="flex items-center">
-                        <span className="text-gray-400 mr-2">Total active days:</span>
-                        <span className="text-black">{totalActiveDays}</span>
+                        <span className="text-gray-600 mr-2">Total active days:</span>
+                        <span className="text-gray-600">{totalActiveDays}</span>
                     </div>
                     <div className="flex items-center">
-                        <span className="text-gray-400 mr-2">Max streak:</span>
-                        <span className="text-black">2</span>
+                        <span className="text-gray-600 mr-2">Max streak:</span>
+                        <span className="text-gray-600">2</span>
                     </div>
                     <div className="flex items-center">
-                        <span className="text-gray-400 mr-2">Current</span>
-                        <svg className="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span className="text-gray-600 mr-2">Current</span>
+                        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                     </div>

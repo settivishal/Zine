@@ -86,14 +86,13 @@ export default function ProfilePage() {
         // setActivityData(mockActivity);
     }, [accessToken]);
     
-    
     return (
-        <>
+        <div className='bg-white dark:bg-gray-900 relative flex flex-col p-4 min-h-screen'>
             <Navbar Page={"Home"} />
             <div className="min-h-screen px-16 flex items-center justify-center">
-                <div className="bg-orange-100 shadow-xl rounded-lg w-full p-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-primary-light dark:bg-primary-dark shadow-xl rounded-lg w-full p-8 grid grid-cols-1 md:grid-cols-4 gap-6">
                     {/* Left Section */}
-                    <div className="bg-orange-50 p-6 rounded-lg flex flex-col items-center gap-4">
+                    <div className="bg-secondary-light dark:bg-secondary-dark p-6 rounded-lg flex flex-col items-center gap-4">
                         <ProfilePicture currentPic={profileData?.image} />
                         <Typography
                             variant="h5"
@@ -145,7 +144,7 @@ export default function ProfilePage() {
                                 className="font-bold text-gray-800">
                                 Activity Grid
                             </Typography>
-                            <div className="container mx-auto px-4 py-8 bg-amber-100 p-6 rounded-lg shadow h-96">
+                            <div className="bg-secondary-light dark:bg-secondary-dark container mx-auto px-4 py-8 p-6 rounded-lg shadow h-96">
                                 <h2 className="text-slate-600 text-xl font-semibold mb-4">
                                     Your Activity
                                 </h2>
@@ -176,7 +175,7 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
