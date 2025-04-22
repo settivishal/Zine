@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState, useCallback, memo } from 'react';
 import axios from 'axios';
-import Navbar from '../../../components/Navbar';
+import Navbar from '../../../components/Navbar_new';
 import Image from 'next/image';
 import { useAuth } from '../../../hooks/authcontext';
 import { useTags } from '../../../hooks/tagsContext';

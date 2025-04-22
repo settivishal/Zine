@@ -4,7 +4,7 @@ import { useState, useEffect, createContext } from "react";
 import UpdatePassword from "../../components/UpdateUserCreds";
 import ProfilePicture from "../../components/ProfilePicture";
 import { useAuth } from "../../hooks/authcontext";
-import Navbar from "../../components/Navbar";
+import Navbar from "../../components/Navbar_new";
 
 export default function SettingsPage() {
     const [profileData, setProfileData] = useState({});

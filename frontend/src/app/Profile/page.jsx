@@ -12,7 +12,7 @@ import { useAuth } from '../../hooks/authcontext';
 
 import {UpdateBio, UpdateAge, UpdateGender, UpdateHobbies, UpdateSocialLinks} from "../../components/UpdateBio";
 import ActivityGrid from "../../components/ActivityGrid";
-import Navbar from "../../components/Navbar";
+import Navbar from "../../components/Navbar_new";
 import ProfilePicture from "../../components/ProfilePicture";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
