@@ -111,8 +111,6 @@ Unit tests are written for each controller to ensure API functionality.
 | `token_utils.go`        | `token_utils_test.go`               | Tests utility functions for generating reset token. |
 
 ## Unit Tests and Cypress for Frontend
-
-<!-- add unit test and cypress details here -->
  ### Cypress
   - added more test cases to homepage and profile page
   

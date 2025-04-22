@@ -5,6 +5,8 @@ import { SketchPicker } from "react-color";
 import { useAuth } from '../hooks/authcontext';
 import { useTags } from '../hooks/tagsContext';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function Tags() {
   const [newTag, setNewTag] = useState("");
   const [color, setColor] = useState("#000000");
@@ -25,7 +27,7 @@ export default function Tags() {
       
 
       try {
-        const response = await fetch("http://localhost:8080/api/tag/create", {
+        const response = await fetch(`${API_BASE_URL}/api/tag/create`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -55,7 +57,7 @@ export default function Tags() {
 
   const handleDeleteTag = async (tagText) => {
     try {
-      const response = await fetch("http://localhost:8080/api/tag/delete", {
+      const response = await fetch(`${API_BASE_URL}/api/tag/delete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,7 +77,7 @@ export default function Tags() {
   };
 
   return (
-    <div className="p-4 bg-white border rounded shadow-md">
+    <div className="bg-primary-light dark:bg-primary-dark p-4 border rounded shadow-md">
       <h2 className="text-lg text-black font-semibold mb-2">Tags</h2>
 
       {!showInput && (

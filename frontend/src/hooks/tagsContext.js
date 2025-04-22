@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useAuth } from './authcontext';
 
 const TagsContext = createContext();
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export function TagsProvider({ children }) {
   const [tags, setTags] = useState([]);
@@ -13,7 +14,7 @@ export function TagsProvider({ children }) {
     if (!accessToken) return;
 
     try {
-      const response = await fetch("http://localhost:8080/api/tags", {
+      const response = await fetch(`${API_BASE_URL}/api/tags`, {
         method: "GET",
         headers: { Authorization: `Bearer ${accessToken}` },
       });

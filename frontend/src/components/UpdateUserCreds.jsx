@@ -5,6 +5,8 @@ import { useAuth } from "../hooks/authcontext";
 
 import Button from "./Button";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function UpdatePassword() {
     const [Email, setEmail] = useState("");
     const [Password, setPassword] = useState("");
@@ -48,7 +50,7 @@ export default function UpdatePassword() {
         setIsSubmitting(true);
 
         try {
-            const response = await fetch("http://localhost:8080/api/change_password", {
+            const response = await fetch(`${API_BASE_URL}/api/change_password`, {
                 method: "POST",
                 headers: {
                 "Content-Type": "application/json",
@@ -106,7 +108,7 @@ export default function UpdatePassword() {
                         placeholder="email"
                         value={Email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="mb-3 w-full py-2 border border-gray-600 rounded  text-sm text-black focus:outline-none focus:ring-1 focus:bor focus:ring-blue-500"
+                        className="bg-gray-400 dark:bg-gray-500 mb-3 w-full py-2 border border-gray-600 rounded  text-sm text-black focus:outline-none focus:ring-1 focus:bor focus:ring-blue-500"
                         disabled={isSubmitting}
                     />
                 </div>
@@ -124,7 +126,7 @@ export default function UpdatePassword() {
                         type={showCurrentPassword ? "text" : "password"}
                         value={Password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="mb-3 w-full py-2 border border-gray-600 rounded  text-sm text-black focus:outline-none focus:ring-1 focus:bor focus:ring-blue-500"
+                        className="bg-gray-400 dark:bg-gray-500 mb-3 w-full py-2 border border-gray-600 rounded  text-sm text-black focus:outline-none focus:ring-1 focus:bor focus:ring-blue-500"
                         disabled={isSubmitting}
                     />
                 </div>
@@ -142,7 +144,7 @@ export default function UpdatePassword() {
                         type={showNewPassword ? "text" : "password"}
                         value={New_Password}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="mb-3 w-full py-2 border border-gray-600 rounded  text-sm text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="bg-gray-400 dark:bg-gray-500 mb-3 w-full py-2 border border-gray-600 rounded  text-sm text-black focus:outline-none focus:ring-1 focus:bor focus:ring-blue-500"
                         disabled={isSubmitting}
                     />
                 </div>
@@ -164,7 +166,7 @@ export default function UpdatePassword() {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         // className="mb-3 w-full px-3 py-2 border border-gray-300 rounded text-sm text-black focus:outline-none focus:ring-1 focus:ring-gray-400"
-                        className="mb-3 w-full py-2 border border-gray-600 rounded  text-sm text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="bg-gray-400 dark:bg-gray-500 mb-3 w-full py-2 border border-gray-600 rounded  text-sm text-black focus:outline-none focus:ring-1 focus:ring-blue-500"
                         disabled={isSubmitting}
                     />
                 </div>

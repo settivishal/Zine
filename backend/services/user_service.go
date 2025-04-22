@@ -1,23 +1,15 @@
 package services
 
 import (
-	"errors"
-	"net/http"
-
-	"backend/database"
-	"backend/utils"
-
-	"context"
 	"encoding/json"
+	"errors"
 	"log"
+	"net/http"
 	"os"
 
+	"backend/database"
 	"backend/services/awsservice"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"backend/utils"
 )
 
 func HandleProfile(w http.ResponseWriter, r *http.Request) (*utils.UserInfoResponse, error, int) {
@@ -50,51 +42,83 @@ func HandleProfile(w http.ResponseWriter, r *http.Request) (*utils.UserInfoRespo
 }
 
 func HandleUpdateImage(w http.ResponseWriter, r *http.Request) (*utils.UpdateImageResponse, error, int) {
-	Email, ok := r.Context().Value("email").(string)
-
+	email, ok := r.Context().Value("email").(string)
 	if !ok {
 		return nil, errors.New("Error getting email"), http.StatusBadRequest
 	}
 
-	file, header, err := r.FormFile("image")
+	user, err := database.GetUser(email)
+	if err != nil || user.ID == "" {
+		return nil, errors.New("User not found"), http.StatusBadRequest
+	}
+
+	userId := user.ID
+
+	file, _, err := r.FormFile("image")
 	if err != nil {
 		return nil, errors.New("Error getting image"), http.StatusBadRequest
 	}
 	defer file.Close()
 
-	// Initialize S3 and CloudFront clients
-	// Load Variables from Environment
-	AWS_ACCESS_KEY := os.Getenv("AWS_ACCESS_KEY")
-	AWS_SECRET_ACCESS_KEY := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	AWS_REGION := os.Getenv("AWS_REGION")
+	// ext := filepath.Ext(filename.Filename)
+	// if ext == "" {
+	// 	return nil, errors.New("file has no extension"), http.StatusBadRequest
+	// }
 
-	cfg, err := config.LoadDefaultConfig(context.TODO(),
-		config.WithRegion(AWS_REGION),
-		config.WithCredentialsProvider(aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, ""))),
-	)
-	if err != nil {
-		log.Fatalf("Unable to load SDK config, %v", err)
-	}
+	// s3Key := userId + ext
 
-	s3Client := s3.NewFromConfig(cfg)
+	s3Client := awsservice.GetS3Client()
 	S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
 
 	// Upload file to S3
-	err = awsservice.UploadFileToS3(s3Client, S3_BUCKET_NAME, header.Filename, file)
+	err = awsservice.UploadFileToS3(s3Client, S3_BUCKET_NAME, userId, file)
 	if err != nil {
 		return nil, errors.New("Error uploading image to S3"), http.StatusInternalServerError
 	}
 
 	// Generate CloudFront URL
 	cloudFrontDomain := os.Getenv("CLOUDFRONT_DOMAIN")
-	cloudFrontURL := awsservice.GetCloudFrontURL(cloudFrontDomain, header.Filename)
+	cloudFrontURL := awsservice.GetCloudFrontURL(cloudFrontDomain, userId)
 
-	err = database.UpdateImage(Email, cloudFrontURL)
+	err = database.UpdateImage(email, cloudFrontURL)
 	if err != nil {
 		return nil, errors.New("Error updating image in database"), http.StatusInternalServerError
 	}
 
 	return &utils.UpdateImageResponse{Message: "Image updated successfully", Image: cloudFrontURL}, nil, http.StatusOK
+}
+
+func HandleDeleteImage(w http.ResponseWriter, r *http.Request) (*utils.DeleteProfileImageResponse, error, int) {
+	email, ok := r.Context().Value("email").(string)
+	if !ok {
+		return nil, errors.New("Error getting email"), http.StatusBadRequest
+	}
+
+	user, err := database.GetUser(email)
+	if err != nil || user.ID == "" {
+		return nil, errors.New("User not found"), http.StatusBadRequest
+	}
+
+	userId := user.ID
+
+	// Initialize S3 client
+	s3Client := awsservice.GetS3Client()
+	S3_BUCKET_NAME := os.Getenv("S3_BUCKET_NAME")
+
+	err = awsservice.DeleteFileFromS3(s3Client, S3_BUCKET_NAME, userId)
+	if err != nil {
+		return nil, errors.New("Error deleting image from S3"), http.StatusInternalServerError
+	}
+
+	// Delete profile image from database
+	err = database.DeleteImage(userId)
+	if err != nil {
+		return nil, errors.New("Error deleting image from database"), http.StatusInternalServerError
+	}
+
+	return &utils.DeleteProfileImageResponse{
+		Message: "Profile Image deleted successfully",
+	}, nil, http.StatusOK
 }
 
 func HandleUpdateProfile(w http.ResponseWriter, r *http.Request) (*utils.UpdateProfileResponse, error, int) {

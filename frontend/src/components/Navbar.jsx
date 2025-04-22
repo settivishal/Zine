@@ -1,10 +1,11 @@
 'use client';
 import ProfileDropdown from './ProfileDropDown';
+import ThemeToggle from './ThemeToggle';
 import Image from 'next/image';
 
 const Navbar = ({Page}) => {
   return (
-    <nav className="bg-gray-100 shadow-lg rounded-lg mb-4 p-4 flex justify-between items-center">
+    <nav className= "bg-gray-100 dark:bg-gray-700 shadow-lg rounded-lg mb-4 p-4 flex justify-between items-center">
       {/* Left Section with Logo */}
       <div className="flex space-x-4 items-center">
         <div
@@ -23,6 +24,7 @@ const Navbar = ({Page}) => {
 
       {/* Right Section (Profile Dropdown) */}
       <div className="w-3/4 flex justify-end">
+        <ThemeToggle />
         <ProfileDropdown Page = {Page} />
       </div>
     </nav>

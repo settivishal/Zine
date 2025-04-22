@@ -5,6 +5,7 @@ import { User, Gear, Question, SignOut } from "@phosphor-icons/react";
 import useProfile from '../hooks/useProfile';
 import { useAuth } from '../hooks/authcontext';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const ProfileDropDown = ({ Page }) => {
   const [toggle, setToggle] = useState(false);
   const { profileImage, loading, error } = useProfile();
@@ -32,7 +33,7 @@ const ProfileDropDown = ({ Page }) => {
       try {
         
 
-        const response = await fetch('http://localhost:8080/consumer/logout', {
+        const response = await fetch(`${API_BASE_URL}/consumer/logout`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${accessToken}`

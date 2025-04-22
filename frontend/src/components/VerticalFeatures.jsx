@@ -17,14 +17,14 @@ const VerticalFeatureRow = (props) => {
   );
   const router = useRouter();
   return (
-    <div className={verticalFeatureClass}>  // "mt-20 flex flex-wrap items-center flex-row-reverse"
+    <div className={verticalFeatureClass}>
       <div className="w-full text-center sm:w-1/2 sm:px-6">
         <h3 className="text-3xl font-semibold text-gray-900">{props.title}</h3>
         <div className="mt-6 text-xl leading-9">{props.description}</div>
       </div>
 
       <div className="w-full p-6 sm:w-1/2">
-        <img src={`${router.basePath}${props.image}`} alt={props.imageAlt} />
+        <img src={`${props.image}`} alt={props.imageAlt} />
       </div>
     </div>
   );
@@ -39,21 +39,22 @@ const VerticalFeatures = () => (
     >
       <VerticalFeatureRow
         title="Home Page"
-        description="Demo of the Home page will be displayed here in the image on the left."
-        image="/assets/images/feature.svg"
+        description="Home page displays all your blogs along with the calendar and tags on the left.
+        Our features enable the users to create, edit and delete their blogs and also add tags to their blogs."
+        image="/images/homePage.png"
         imageAlt="First feature alt text"
       />
       <VerticalFeatureRow
         title="Profile Page"
-        description="Demo of the Profile page of the users will be displayed here in the image on the left."
-        image="/assets/images/feature2.svg"
+        description="The Profile page"
+        image="/images/profilePage.png"
         imageAlt="Second feature alt text"
         reverse
       />
       <VerticalFeatureRow
         title="Blog structure and features"
-        description="Demo of the blog that opens from the home page calendar will be displayed here in the video on the left."
-        image="/assets/images/feature3.svg"
+        description="The Blog page contains everything the user wants to document and can be published to specific set of emails or publicly"
+        image="/images/blogPage.png"
         imageAlt="Third feature alt text"
       />
     </Section>
