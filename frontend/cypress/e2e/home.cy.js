@@ -1,20 +1,31 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-const REAL_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNoaXZhLnRodW1tYW5hcGFsbGlAZ21haWwuY29tIiwic3ViIjoiYWNjZXNzX3Rva2VuIiwiZXhwIjoxNzQ1ODg1NDA0fQ.nDLuZ5yXmgv2DBiX8RLnwbRop3a9z7yYoy0wG8LfQF8';
-
 // Configure longer timeout for all requests
 const requestTimeout = 10000;
 
-// Separate test group for navbar tests with fake token to prevent real token invalidation
-describe('Home Page Navbar Tests', () => {
+// Mock token to use consistently across all tests
+const FAKE_TOKEN = 'fake-test-token';
+
+describe('Home Page Tests', { defaultCommandTimeout: 20000 }, () => {
   beforeEach(() => {
     // Set future expiration date
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 1); // Set to tomorrow
     const expiresAt = futureDate.toISOString();
 
-    // Mock with fake token for navbar tests
-    cy.setCookie('accessToken', 'fake-token');
+    // Mock with fake token for all tests
+    cy.setCookie('accessToken', FAKE_TOKEN);
     cy.setCookie('expires_at', expiresAt);
+
+    // Mock API responses for authenticated endpoints
+    cy.intercept('GET', `${API_BASE_URL}/posts/user/*`, {
+      statusCode: 200,
+      body: [] // Empty array or mock data as needed
+    }).as('getUserPosts');
+
+    cy.intercept('GET', `${API_BASE_URL}/tags/user/*`, {
+      statusCode: 200,
+      body: [] // Empty array or mock data as needed
+    }).as('getUserTags');
 
     // Visit the home page with longer timeout
     cy.visit('http://localhost:3000/home', { timeout: 30000 });
@@ -25,7 +36,7 @@ describe('Home Page Navbar Tests', () => {
     cy.url().should('include', '/home');
   });
 
-  //Test Navbar presence and functionality
+  // Test Navbar presence and functionality
   describe('Navbar', () => {
     it('should display the navbar', () => {
       cy.get('nav', { timeout: 10000 }).should('exist');
@@ -36,23 +47,6 @@ describe('Home Page Navbar Tests', () => {
       cy.get('img[alt="Logo"]', { timeout: 10000 }).click();
       cy.url({ timeout: 10000 }).should('include', '/landing');
     });
-  });
-});
-
-// Main test group with real token - setting longer default timeout
-describe('Home Page Functional Tests', { defaultCommandTimeout: 20000 }, () => {
-  beforeEach(() => {
-    // Set future expiration date
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 1); // Set to tomorrow
-    const expiresAt = futureDate.toISOString();
-
-    // Use real token for all other tests
-    cy.setCookie('accessToken', REAL_TOKEN);
-    cy.setCookie('expires_at', expiresAt);
-
-    // Visit the home page with increased timeout
-    cy.visit('http://localhost:3000/home', { timeout: 30000 });
   });
 
   // Test core functionality - page load
