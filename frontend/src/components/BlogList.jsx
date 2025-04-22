@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { useAuth } from '../hooks/authcontext';
 import { useTags } from '../hooks/tagsContext';
 import { useRouter } from 'next/navigation';
-import Filter from './Filter_new';
+import Filter from './Filter';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 

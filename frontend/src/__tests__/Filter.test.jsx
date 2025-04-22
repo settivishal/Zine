@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Filter from '../components/Filter_new';
+import Filter from '../components/Filter';
 import { useTags } from '../hooks/tagsContext';
 
 // Mock the tagsContext hook
