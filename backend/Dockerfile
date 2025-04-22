@@ -16,6 +16,7 @@ WORKDIR /root/
 
 COPY --from=builder /app/main .
 COPY --from=builder /app/.env . 
+COPY --from=builder /app/templates ./templates/ 
 
 # Expose the port the application runs on
 EXPOSE 8080
