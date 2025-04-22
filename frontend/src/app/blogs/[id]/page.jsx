@@ -372,16 +372,16 @@ export default function Blog() {
                         height={1000}
                     />
                     <div 
-                        // style={{
-                        //     position: 'absolute',
-                        //     top: 0,
-                        //     left: 0,
-                        //     width: '100%',
-                        //     height: '25%',
-                        //     background: 'linear-gradient(to bottom, rgb(0, 0, 0, 0.8) 0%, rgba(0,0,0,0) 100%)',
-                        //     zIndex: 1
-                        // }}
-                        className="absolute top-0 left-0 w-full h-1/4 bg-gradient-to-b from-black/80 to-transparent z-10"
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '25%',
+                            background: 'linear-gradient(to bottom, rgb(0, 0, 0, 0.8) 0%, rgba(0,0,0,0) 100%)',
+                            zIndex: 1
+                        }}
+                        // className="absolute top-0 left-0 w-full h-1/4 bg-gradient-to-b from-black/80 to-transparent z-10"
                     />
                     {/* Tags positioned at the top left of the cover image */}
                     <TagsContainer
