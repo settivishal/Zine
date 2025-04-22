@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import CalendarWidget from '../../components/CalendarWidget';
 import BlogList from '../../components/BlogList';
-import TagsComponent from '../../components/Tags';
+import TagsComponent from '../../components/tags_new';
 import { useAuth } from '../../hooks/authcontext';
 
 // Get the API base URL from the environment variable
