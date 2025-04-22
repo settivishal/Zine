@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import Navbar from '../../components/Navbar_new';
+import Navbar from '../../components/Navbar';
 import CalendarWidget from '../../components/CalendarWidget';
 import BlogList from '../../components/BlogList';
 import TagsComponent from '../../components/Tags';
