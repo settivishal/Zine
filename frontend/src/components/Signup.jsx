@@ -3,7 +3,7 @@
 // import axiosInstance from "../../../helpers/axiosInstance";
 import Image from "next/image";
 import myImg from "../../public/zine.png";
-import GoogleLoginButton from './GoogleLoginButton_new';
+import GoogleLoginButton from './GoogleLoginButton';
 
 
 

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import myImg from '../../../public/zine.png';
 import { useState } from 'react';
-import GoogleLoginButton from '../../components/GoogleLoginButton_new';
+import GoogleLoginButton from '../../components/GoogleLoginButton';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
