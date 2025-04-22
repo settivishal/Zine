@@ -14,6 +14,7 @@ import {UpdateBio, UpdateAge, UpdateGender, UpdateHobbies, UpdateSocialLinks} fr
 import ActivityGrid from "../../components/ActivityGrid";
 import Navbar from "../../components/Navbar";
 import ProfilePicture from "../../components/ProfilePicture";
+import Footer from "../../components/Footer";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -88,14 +89,13 @@ export default function ProfilePage() {
         // setActivityData(mockActivity);
     }, [accessToken]);
     
-    
     return (
-        <>
+        <div className='bg-white dark:bg-gray-900 relative flex flex-col p-4 min-h-screen'>
             <Navbar Page={"Home"} />
             <div className="min-h-screen px-16 flex items-center justify-center">
-                <div className="bg-orange-100 shadow-xl rounded-lg w-full p-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-primary-light dark:bg-primary-dark shadow-xl rounded-lg w-full p-8 grid grid-cols-1 md:grid-cols-4 gap-6">
                     {/* Left Section */}
-                    <div className="bg-orange-50 p-6 rounded-lg flex flex-col items-center gap-4">
+                    <div className="bg-secondary-light dark:bg-secondary-dark p-6 rounded-lg flex flex-col items-center gap-4">
                         <ProfilePicture currentPic={profileData?.image} />
                         <Typography
                             variant="h5"
@@ -147,7 +147,7 @@ export default function ProfilePage() {
                                 className="font-bold text-gray-800">
                                 Activity Grid
                             </Typography>
-                            <div className="container mx-auto px-4 py-8 bg-amber-100 p-6 rounded-lg shadow h-96">
+                            <div className="bg-secondary-light dark:bg-secondary-dark container mx-auto px-4 py-8 p-6 rounded-lg shadow h-96">
                                 <h2 className="text-slate-600 text-xl font-semibold mb-4">
                                     Your Activity
                                 </h2>
@@ -178,31 +178,32 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
-        </>
+            <Footer />
+        </div>
     );
 }
 
 // Helper function to generate mock activity data
-function generateMockActivityData() {
-    const data = [];
-    const today = new Date();
+// function generateMockActivityData() {
+//     const data = [];
+//     const today = new Date();
 
-    // Generate data for the last 12 months
-    for (let i = 0; i < 365; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
+//     // Generate data for the last 12 months
+//     for (let i = 0; i < 365; i++) {
+//         const date = new Date(today);
+//         date.setDate(today.getDate() - i);
 
-        // Random activity count (more likely to be 0)
-        const random = Math.random();
-        let count = 0;
+//         // Random activity count (more likely to be 0)
+//         const random = Math.random();
+//         let count = 0;
 
-        if (random > 0.7) count = Math.floor(Math.random() * 5) + 1;
-        if (random > 0.9) count = Math.floor(Math.random() * 10) + 5;
+//         if (random > 0.7) count = Math.floor(Math.random() * 5) + 1;
+//         if (random > 0.9) count = Math.floor(Math.random() * 10) + 5;
 
-        data.push({
-            date: date.toISOString().split("T")[0],
-            count,
-        });
-    }
-    return data;
-}
+//         data.push({
+//             date: date.toISOString().split("T")[0],
+//             count,
+//         });
+//     }
+//     return data;
+// }

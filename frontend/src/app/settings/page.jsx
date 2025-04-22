@@ -17,9 +17,9 @@ export default function SettingsPage() {
     return (
         <>
             <Navbar Page = {"Home"}/>
-            <main className="container min-h-screen m-24 px-16 items-center rounded-xl bg-amber-200 mx-auto py-8">
+            <main className="bg-primary-light dark:bg-primary-dark container min-h-screen m-24 px-16 items-center rounded-xl mx-auto py-8">
                 {/* Update password section */}
-                <div className="w-1/2 bg-white p-6 m-3 rounded-lg shadow">
+                <div className="bg-secondary-light dark:bg-secondary-dark w-1/2 p-6 m-3 rounded-lg shadow">
                     <h2 className="text-slate-600 text-xl font-semibold mb-4">
                         Security
                     </h2>

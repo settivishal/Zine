@@ -42,73 +42,69 @@ const CalendarWidget = ({ onDateSelect, selectedDate }) => {
   return (
     <Paper
       elevation={3}
-      style={{
-        width: '100%', // Ensures it takes up the full width of its container
-        backgroundColor: '#ffffff', // Matches sidebar background
-        color: '#111111', // Matches text color in dark mode
-        height: '340px', // Adjusted height to fill the screen
-        position: 'relative', // For positioning the clear button
-      }}
+      className="w-full bg-primary-light dark:bg-primary-dark text-gray-900 h-[340px] relative"
     >
       {selectedDate && (
         <Tooltip title="Clear date selection">
           <IconButton
             size="small"
             onClick={handleClearDate}
-            sx={{
-              position: 'absolute',
-              top: 5,
-              right: 5,
-              zIndex: 10,
-              backgroundColor: 'rgba(0, 0, 0, 0.05)',
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.1)',
-              },
-            }}
+            // sx={{
+            //   position: 'absolute',
+            //   top: 5,
+            //   right: 5,
+            //   zIndex: 10,
+            //   backgroundColor: 'rgba(0, 0, 0, 0.05)',
+            //   '&:hover': {
+            //     backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            //   },
+            // }}
+            className="absolute top-1 right-1 z-10 bg-black/5 hover:bg-black/10"
           >
             <ClearIcon fontSize="small" />
           </IconButton>
         </Tooltip>
       )}
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box>
+        <Box >
           <DateCalendar
             value={selectedDate ? parseISO(selectedDate) : null}
             onChange={handleDateChange}
             disableHighlightToday={selectedDate && !isTodaySelected()}
-            sx={{
-              backgroundColor: 'transparent',
-              width: '90%',
-              height: '90%',
-              margin: 'auto',
-              fontSize: '0.875rem', // Slightly larger font size for readability
-              '& .MuiPickersDay-today': {
-                // Only apply special styling to today if it's not the selected date
-                backgroundColor: selectedDate && !isTodaySelected() ? 'transparent' : '#1a73e8',
-                color: selectedDate && !isTodaySelected() ? 'inherit' : 'white',
-                borderRadius: '50%',
-                border: selectedDate && !isTodaySelected() ? '1px solid #1a73e8' : 'none',
-              },
-              '& .MuiPickersDay-root:hover': {
-                backgroundColor: '#e8f0fe',
-              },
-              '& .MuiPickersDay-root': {
-                borderRadius: '50%',
-                fontSize: '0.875rem', // Slightly larger font size for readability
-                width: '30px', // Adjusted size for better fit
-                height: '30px',
-              },
-              '& .MuiPickersDay-dayWithMargin': {
-                margin: '2px', // Adds consistent spacing between days
-              },
-              '& .MuiPickersDay-dayOutsideMonth': {
-                color: '#9AA0A6', // Dimmed color for days outside the current month
-              },
-              '& .Mui-selected': {
-                backgroundColor: '#4285F4 !important', // Highlight selected date
-                color: 'white !important',
-              },
-            }}
+            className = "bg-primary-light dark:bg-primary-dark w-[90%] h-[90%] mx-auto text-sm"
+            // sx={{
+            //   backgroundColor: 'transparent',
+            //   width: '90%',
+            //   height: '90%',
+            //   margin: 'auto',
+            //   fontSize: '0.875rem', // Slightly larger font size for readability
+            //   '& .MuiPickersDay-today': {
+            //     // Only apply special styling to today if it's not the selected date
+            //     backgroundColor: selectedDate && !isTodaySelected() ? 'transparent' : '#1a73e8',
+            //     color: selectedDate && !isTodaySelected() ? 'inherit' : 'white',
+            //     borderRadius: '50%',
+            //     border: selectedDate && !isTodaySelected() ? '1px solid #1a73e8' : 'none',
+            //   },
+            //   '& .MuiPickersDay-root:hover': {
+            //     backgroundColor: '#e8f0fe',
+            //   },
+            //   '& .MuiPickersDay-root': {
+            //     borderRadius: '50%',
+            //     fontSize: '0.875rem', // Slightly larger font size for readability
+            //     width: '30px', // Adjusted size for better fit
+            //     height: '30px',
+            //   },
+            //   '& .MuiPickersDay-dayWithMargin': {
+            //     margin: '2px', // Adds consistent spacing between days
+            //   },
+            //   '& .MuiPickersDay-dayOutsideMonth': {
+            //     color: '#9AA0A6', // Dimmed color for days outside the current month
+            //   },
+            //   '& .Mui-selected': {
+            //     backgroundColor: '#4285F4 !important', // Highlight selected date
+            //     color: 'white !important',
+            //   },
+            // }}
           />
         </Box>
       </LocalizationProvider>
