@@ -4,6 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import UpdatePassword from '../components/UpdateUserCreds';
 import { useAuth } from '../hooks/authcontext';
+import { API_BASE_URL } from '../hooks/authcontext';
 
 jest.mock('../hooks/authcontext', () => ({
   useAuth: jest.fn(),
@@ -112,7 +113,7 @@ describe('UpdatePassword Component', () => {
     
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8080/api/change_password',
+        `${API_BASE_URL}/api/change_password`,
         {
           method: 'POST',
           headers: {

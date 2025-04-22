@@ -6,6 +6,8 @@ import { useState } from "react";
 
 import GoogleLoginButton from './GoogleLoginButton';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function SignIn() {
 
     const [email, setEmail] = useState("");
@@ -39,7 +41,7 @@ export default function SignIn() {
         };
 
         try {
-            const response = await fetch("http://localhost:8080/consumer/login", {
+            const response = await fetch(`${API_BASE_URL}/consumer/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
