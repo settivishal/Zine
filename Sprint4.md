@@ -37,7 +37,8 @@ The primary objective of Sprint 4 was to significantly enhance both the function
 - Updated Swagger documentation for all API modifications
 - Established production-ready infrastructure
 
- - Fixed bugs from Sprint3
+**Frontend**
+- Fixed bugs from Sprint3
 - Implemented GitHub-style interactive profile grid for user activity tracking
 
 - Integrated backend APIs:
