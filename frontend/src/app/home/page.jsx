@@ -5,6 +5,7 @@ import CalendarWidget from '../../components/CalendarWidget';
 import BlogList from '../../components/BlogList';
 import TagsComponent from '../../components/Tags';
 import { useAuth } from '../../hooks/authcontext';
+import Footer from '../../components/Footer';
 
 // Get the API base URL from the environment variable
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -100,6 +101,7 @@ export default function Page() {
                     />
                 </div>
             </div>
+            <Footer />
         </div>
     );
 }

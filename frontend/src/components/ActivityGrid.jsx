@@ -108,7 +108,7 @@ export default function ActivityGrid() {
     
     // Function to determine cell color based on activity count
     const getCellColor = (isActive)=> {
-        if (isActive) return "bg-green-700";
+        if (isActive) return "bg-green-500";
         return "bg-gray-600"; // Default color for inactive days
     };
     

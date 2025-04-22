@@ -14,6 +14,7 @@ import {UpdateBio, UpdateAge, UpdateGender, UpdateHobbies, UpdateSocialLinks} fr
 import ActivityGrid from "../../components/ActivityGrid";
 import Navbar from "../../components/Navbar";
 import ProfilePicture from "../../components/ProfilePicture";
+import Footer from "../../components/Footer";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -177,31 +178,32 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 }
 
 // Helper function to generate mock activity data
-function generateMockActivityData() {
-    const data = [];
-    const today = new Date();
+// function generateMockActivityData() {
+//     const data = [];
+//     const today = new Date();
 
-    // Generate data for the last 12 months
-    for (let i = 0; i < 365; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
+//     // Generate data for the last 12 months
+//     for (let i = 0; i < 365; i++) {
+//         const date = new Date(today);
+//         date.setDate(today.getDate() - i);
 
-        // Random activity count (more likely to be 0)
-        const random = Math.random();
-        let count = 0;
+//         // Random activity count (more likely to be 0)
+//         const random = Math.random();
+//         let count = 0;
 
-        if (random > 0.7) count = Math.floor(Math.random() * 5) + 1;
-        if (random > 0.9) count = Math.floor(Math.random() * 10) + 5;
+//         if (random > 0.7) count = Math.floor(Math.random() * 5) + 1;
+//         if (random > 0.9) count = Math.floor(Math.random() * 10) + 5;
 
-        data.push({
-            date: date.toISOString().split("T")[0],
-            count,
-        });
-    }
-    return data;
-}
+//         data.push({
+//             date: date.toISOString().split("T")[0],
+//             count,
+//         });
+//     }
+//     return data;
+// }

@@ -6,7 +6,7 @@ import Section from "./Section";
 import React from "react";
 
 const Footer = () => (
-    <div className = "bg-gray-100">
+    <div className = "bg-transparent">
         <Section>
             <CenteredFooter
                 // logo={<Logo />}
@@ -69,20 +69,19 @@ const Footer = () => (
                         </Link>
                     </>
                 }>
-                <li>
-                    <Link href="/">Home</Link>
-                </li>
-                <li>
-                    <Link href="/">About</Link>
-                </li>
-                <li>
-                    <Link href="/">Docs</Link>
-                </li>
-                <li>
-                    <Link href="https://github.com/ixartz/Next-JS-Landing-Page-Starter-Template">
-                        GitHub
-                    </Link>
-                </li>
+                <div className = 'flex flex-col items-center justify-center space-x-4 space-y-2 md:flex-row md:space-x-8 md:space-y-0'>
+                    <li>
+                        <Link className='text-blue-500' href="/home">Home </Link>
+                    </li>
+                    <li>
+                        <Link className='text-blue-500' href="/profile"> Profile </Link>
+                    </li>
+                    <li>
+                        <Link className='text-blue-500' href="https://github.com/settivishal/Zine">
+                            GitHub
+                        </Link>
+                    </li>
+                </div>
             </CenteredFooter>
         </Section>
     </div>
