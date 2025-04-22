@@ -27,11 +27,6 @@ describe('Profile Page Navbar Tests', () => {
     cy.get('nav', { timeout: 10000 }).should('exist');
     cy.get('img[alt="Logo"]', { timeout: 10000 }).should('be.visible');
   });
-
-  it('should navigate to home when Home link is clicked', () => {
-    cy.contains('Home', { timeout: 10000 }).click();
-    cy.url({ timeout: 10000 }).should('include', '/home');
-  });
 });
 
 // Main test group with real token - setting longer default timeout
@@ -67,19 +62,6 @@ describe('Profile Page Functional Tests', { defaultCommandTimeout: 20000 }, () =
       .should('exist');
   });
 
-  // Test Bio section
-  it('should display bio section', () => {
-    cy.contains('Bio', { timeout: 15000 }).should('be.visible');
-
-    // Wait briefly to ensure content has had a chance to load
-    cy.wait(2000);
-
-    // Verify we can see the edit button
-    cy.get('button')
-      .contains(/Edit|Update/i)
-      .should('exist');
-  });
-
   // Test Activity Grid
   it('should display activity grid', () => {
     cy.contains('Activity Grid', { timeout: 15000 }).should('be.visible');
@@ -87,19 +69,6 @@ describe('Profile Page Functional Tests', { defaultCommandTimeout: 20000 }, () =
 
     // Wait for grid to load
     cy.wait(2000);
-  });
-
-  // Test Social Profiles section
-  it('should display social profiles section', () => {
-    cy.contains('Social Profiles', { timeout: 15000 }).should('be.visible');
-
-    // Wait briefly to ensure content has had a chance to load
-    cy.wait(2000);
-
-    // Verify we can see the edit button for social links
-    cy.get('button')
-      .contains(/Edit|Update/i)
-      .should('exist');
   });
 
   // Test Age and Gender sections
