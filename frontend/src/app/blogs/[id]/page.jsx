@@ -351,7 +351,7 @@ export default function Blog() {
         return <span suppressHydrationWarning className="text-gray-700 bg-gray-200 py-2 px-4 text-base font-semibold rounded-md">{formattedDate}</span>;
     }
     return (
-        <>
+        <div className='bg-secondary-light dark:bg-secondary-dark relative flex flex-col p-4 min-h-screen'>
             <div className='p-5'>
                 <Navbar Page={'Home'} />
                 <div className="flex justify-between items-center mb-4">
@@ -371,7 +371,7 @@ export default function Blog() {
                         width={1000}
                         height={1000}
                     />
-                    <div
+                    <div 
                         style={{
                             position: 'absolute',
                             top: 0,
@@ -381,6 +381,7 @@ export default function Blog() {
                             background: 'linear-gradient(to bottom, rgb(0, 0, 0, 0.8) 0%, rgba(0,0,0,0) 100%)',
                             zIndex: 1
                         }}
+                        // className="absolute top-0 left-0 w-full h-1/4 bg-gradient-to-b from-black/80 to-transparent z-10"
                     />
                     {/* Tags positioned at the top left of the cover image */}
                     <TagsContainer
@@ -453,6 +454,6 @@ export default function Blog() {
                     </DialogContent>
                 </Dialog>
             </div>
-        </>
+        </div>
     );
 }

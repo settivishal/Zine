@@ -5,6 +5,7 @@ import CalendarWidget from '../../components/CalendarWidget';
 import BlogList from '../../components/BlogList';
 import TagsComponent from '../../components/Tags';
 import { useAuth } from '../../hooks/authcontext';
+import Footer from '../../components/Footer';
 
 // Get the API base URL from the environment variable
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -49,14 +50,14 @@ export default function Page() {
     };
 
     return (
-        <div className="relative flex flex-col p-4 min-h-screen bg-white">
+        <div className="bg-white dark:bg-gray-900 relative flex flex-col p-4 min-h-screen">
             {/* Navbar */}
             <Navbar Page={"profile"} />
 
             {/* Main Content */}
             <div
                 id="home-main-content"
-                className="flex flex-row gap-4 h-[calc(100vh-80px)] hide-scrollbar"
+                className=" flex flex-row gap-4 h-[calc(100vh-80px)] hide-scrollbar"
                 style={{
                     overflow: 'auto',
                     scrollbarWidth: 'none',
@@ -91,7 +92,7 @@ export default function Page() {
                 </div>
 
                 {/* Blog List */}
-                <div className="flex-grow bg-white rounded-lg shadow-md p-4">
+                <div className="flex-grow bg-primary-light dark:bg-primary-dark rounded-lg shadow-md p-4">
                     <BlogList
                         availableTags={tags}
                         onTagsUpdate={fetchTags}
@@ -100,6 +101,7 @@ export default function Page() {
                     />
                 </div>
             </div>
+            <Footer />
         </div>
     );
 }
