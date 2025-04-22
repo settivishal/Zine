@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import Tags from "../components/tags_new";
+import Tags from "../components/Tags";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 // Mock the hooks
